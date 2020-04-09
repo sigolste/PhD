@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+
+\input{preambule.tex}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\begin{document}
+\setlength{\parindent}{0cm}
+\frontmatter
+\input{00_frontmatter/titlepage.tex}
+
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
+\glsaddall 
+% ---------------------------------------------------------------- 
+\pagestyle{plain} %on reprend les paramètre par défaut
+
+% \glsaddall % permet d'ajouter tout les glossary
+\printglossary[type=\acronymtype,nonumberlist,style=long] % prints just the list of acronyms
+%\printglossary[nonumberlist,style=long]
+\addtocontents{toc}{}
+
+%%%%%%%%%%%%%%%%
+% Main Content %
+%%%%%%%%%%%%%%%%
+\mainmatter
+\input{introduction.tex}
+\input{system_model.tex}
+\input{performance.tex} 
+\input{simu.tex}
+\input{conclusion.tex}
+
+% %%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY %
+%%%%%%%%%%%%%%%%
+\newpage
+\printbibliography[type=article,title={Bibliography : Articles}]
+
+
+%% ----------------------------------------------------------------
+% Now begin the Appendices, including them as separate files
+%% ----------------------------------------------------------------
+
+\backmatter
+
+\appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
+\makeatletter
+\renewcommand{\thesection}{\theparagraph\@arabic\c@section}
+\makeatother
+\input{appendices/appendix.tex}
+
+\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
+
+\end{document}
+
+
+
+
+
+
+
+
+
+

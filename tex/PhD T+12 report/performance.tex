@@ -1,0 +1,235 @@
+\section{Performance Assessment} 
+\label{sec:perf}
+The \gls{sr} is defined as the maximum transmission rate that can be supported by the legitimate receiver's channel while ensuring the impossibility for the eavesdropper to retrieve the data, \cite{TR_Tran_secrecy_capa}. In the ergodic sense, it can be expressed as:
+\begin{equation}
+\begin{split}
+    C_S &=  \EX{\log_2{\left(1+\gamma_B\right)} - \log_2{\left(1+\gamma_E\right)}} \; \; \; , \; \; \;  \gamma_B > \gamma_E \\
+    &\leq   \log_2 \left( 1+ \EX{\gamma_B} \right) - \log_2 \left( 1+ \EX{\gamma_E}\right) 
+    \end{split}
+    \label{eq:SR}
+\end{equation}
+with $\gamma_B$ and $\gamma_E$ being respectively the \gls{sinr} at Bob and Eve's positions. The inequality in (\ref{eq:SR}) arises from the Jensen's inequality. 
+
+
+In the following, we consider these assumptions:
+\begin{itemize}
+    \item Bob and Eve channels are independent: $h_{B,i} \independent h_{E,i},\; \forall i$
+    \item No frequency correlation between subcarriers\footnote{Thanks to the design of the spreading matrix, the $U$ subcarriers composing one symbol are spaced by $N = Q/U$ subcarriers. If this distance is larger than the coherence bandwidth of the channel, the assumption holds. This usually occurs in rich multipath environments and for sufficiently large bandwidths and moderate BOR values.}: $h_{B,i} \independent h_{B,j},\; \forall i\neq j$ ; $h_{E,i} \independent h_{E,j},\; \forall i\neq j$
+\end{itemize}
+
+
+
+\subsection{SINR determination}
+\subsubsection{At Bob, i.e., the intended position}
+At Bob, the received signal after despreading is given by (\ref{eq:rx_bob_AN}). Using the Jensen's inequality, a lower bound on the average \gls{sinr} can be derived for the transmitted symbols $n$ as:
+\begin{equation}
+\begin{split}
+    \EX{\gamma_{B,n}} &= \EX{ \frac{  \alpha \left| k_n x_n \right|^2  }{  \left| v_{B,n} \right|^2} }  = \alpha \EX{\left| k_n  x_n\right|^2}  \EX{\frac{1}{\left| v_{B,n} \right|^2}}  \\
+    & \geq  \frac{\alpha \EX{  \left| k_n  x_n\right|^2 } }{\EX{ \left| v_{B,n} \right|^2 }} =  \frac{\alpha \EX{ \left| k_n \right|^2 } \EX{ \left| x_n \right|^2 } }{\EX{ \left| v_{B,n} \right|^2 }}
+    \label{eq:RV_sinr_b}
+\end{split}
+\end{equation}
+where $k_n = \frac{1}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2$, $x_n$ is the $n^{\text{th}}$ data symbol, and $v_{B,n} = \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} \left| v_{\text{B}, n + iN}\right|$ is the $n^{\text{th}}$ noise symbol component and where it is observed that $k_n \independent x_n \independent v_{B,n}$.
+We find\footnote{See Appendix \ref{appA:SINR_deriv}}:
+\begin{equation}
+    \begin{split}
+        &\EX{|k_n|^2} = \frac{\alpha(U+1)}{U} \\
+        &\EX{|x_n|^2} = 1\\
+        &\EX{|v_{B,n}|^2} = \sigma^2_{V,B}
+    \end{split}
+    \label{eq:expected_bob}
+\end{equation}
+The \gls{sinr} for a particular symbol at the intended position is then given by:
+\begin{equation}
+    \EX{\gamma_{B,n}} \geq \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2}
+    \label{sinr_bob}
+\end{equation}
+It was observed in simulations than the lower-bound (\ref{sinr_bob}) is tight enough to be used as an approximation of the averaged \gls{sinr} at the intended position. 
+
+
+
+
+
+\subsubsection{At Eve, i.e., the unintended position}
+At the unintended position, the received signal before \gls{zf} equalization is given by (\ref{eq:rx_eve_an}). Let's introduce $\textbf{A}_1 = \sqrt{\alpha}  \textbf{G} \HE \HB^* \spread\textbf{x} $, $\textbf{A}_2 = \textbf{G}  \textbf{v}_\text{E}$ and $\textbf{A}_3 = \sqrt{1-\alpha} \textbf{G} \HE \w$ being respectively the data component, the noise component and the \gls{an} component of the received signal for a particular decoding structure $\textbf{G}$. Using the Jensen's inequality, an approximation of a lower-bound of the averaged \gls{sinr} of the symbols $n$ at the unintended position can be derived as\footnote{Neglecting the covariance between $\left|A_{1,n}\right|^2$ and $\left| A_{2,n} + A_{3,n}\right|^2$, as  done in the first line of (\ref{eq:expected_sinr_eve}), makes the nature of the bound, i.e., lower or upper, obtained for $\EX{\gamma_{E,n}}$ uncertain. However, we have observed by simulations that it remains a lower one for all considered scenarios.}:
+
+\begin{equation}
+\begin{split}
+    \EX{\gamma_{E,n}} &= \EX{  \frac{ \left| A_{1,n} \right|^2  }{ \left| A_{2,n} + A_{3,n} \right|^2 } }  \approx  \EX{ \left| A_{1,n} \right|^2 }  \EX{ \frac{1}{ \left| A_{2,n} + A_{3,n} \right|^2} }  \\
+    & \geq \frac{\EX{   \left| A_{1,n} \right|^2  } }{\EX{ \left| A_{2,n} + A_{3,n} \right|^2  }} =  \frac{\EX{  \left| A_{1,n}\right|^2  } }{\EX{  \left| A_{2,n} \right|^2  } +  \EX{  \left|A_{3,n}\right|^2  }}
+    \label{eq:expected_sinr_eve}
+\end{split}
+\end{equation}
+
+where $A_{1,n}$, $A_{2,n}$ and $A_{3,n}$ being respectively the data, noise and \gls{an} $n^{\text{th}}$ symbol components of the received signal. The expression of the \gls{sinr} at Eve will depend on her receiving structure $\textbf{G}$ and we will investigate four of them.
+% Parler des différentes structures 
+
+\paragraph{Same structure as Bob}
+\label{par:eve_same_bob}
+In this scenario, Eve has the same capabilities as Bob, i.e., she despread the received signal thanks to $\textbf{G}=\spread^H$. In that case, the received signal is:
+\begin{equation}
+    \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \HE \textbf{H}^*_{\text{B}} \spread\; \textbf{x} \; +  \; \sqrt{1-\alpha} \; \spread^H \HE \w  \; +  \; \spread^H  \ve 
+    \label{eq:rx_eve_filt0}
+\end{equation}
+We then have 
+\begin{equation}
+    \begin{split}
+        A_{1,n} &= \sqrt{\alpha}\frac{1}{U}\sum_{i=0}^{U-1}  h_{\text{E}, n + iN} \; h^*_{\text{B}, n + iN} \\
+        A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1}  v_{\text{E}, n + iN}\\
+        A_{3,n} &= \sqrt{1-\alpha}\frac{1}{\sqrt{U}}\sum_{i=0}^{U-1}  h_{\text{E}, n + iN} \; w_{n + iN}
+    \end{split}
+\end{equation}
+After some mathematical manipulations, we have\footnote{see Appendix  \ref{appA:SINR_deriv}}:
+\begin{equation}
+    \begin{split}
+        &\EX{|A_{1,n}|^2} = \frac{\alpha}{U} \\
+        &\EX{|A_{2,n}|^2} = \sigma^2_{\text{V,E}}\\
+        &\EX{|A_{3,n}|^2} = (1-\alpha)\sigma^2_{\text{AN}}
+    \end{split}
+    \label{eq:expected_eve_filt0}
+\end{equation}
+which lead to an ergodic \gls{sinr} at the unintended position given by:
+\begin{equation}
+    \EX{\gamma_{E,n}} \gtrapprox \frac{\alpha}{U(\sigma^2_{\text{V,E}}+(1-\alpha)\sigma^2_{\text{AN}})}
+    \label{eq:sinr_eve_filt0}
+\end{equation}
+Low performances at Eve are expected with this decoding structure since the despreading operation will not coherently add the received symbol components. It is therefore suboptimal leading to high \gls{sr} values. This will be confirmed in section \ref{subsubsec:sec_result_despreading}.
+
+
+\paragraph{Eve's estimator: matched Filtering}
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.5\linewidth]{img/matched_filter.png}
+    \caption{Matched filtering decoding structure}
+    \label{fig:matched_filter}
+\end{figure}
+Eve can also perform a matched filtering to maximize its \gls{snr} before despreading. If we denote by $\Gamma_E = \textbf{H}_E \textbf{H}_B^* \spread$, the decoding matrix is then given by: $\textbf{G}=\Gamma_E^H$. It simply consists in performing a weight multiplication at each subcarrier and then perform despreading as shown in fig.\ref{fig:matched_filter}. This operation is possible since Eve can estimate $\textbf{H}_E \textbf{H}_B^*$ while receiving data from Alice. However, it requires more processing resources than the classical receiver of Bob since a processing is performed on the whole bandwidth, i.e., all $Q$ subcarriers. This will lead to more efficient decoding performances at the eavesdropper. The received signal is then:
+\begin{equation}
+    \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \module{\HE}^2 \module{\HB}^2 \spread\; \textbf{x} \; +  \; \sqrt{1-\alpha} \; \spread^H \HB\module{\HE}^2 \w  \; +  \; \spread^H  \textbf{H}^*_E \textbf{H}_B \;\ve
+    \label{eq:rx_eve_filt1}
+\end{equation}
+If we compare the received signal at Bob (\ref{eq:rx_bob_AN}) with the received signal at Eve (\ref{eq:rx_eve_filt1}), we remark that the data component in (\ref{eq:rx_eve_filt1}) will be more amplified than in (\ref{eq:rx_bob_AN}). In fact, we amplify the data by a factor $\frac{U+3}{U}$ in (\ref{eq:rx_eve_filt1}), and only by a factor $\frac{U+1}{U}$ in (\ref{eq:rx_bob_AN})\footnote{see Appendix \ref{appA:SINR_deriv}}. However, we note that the \gls{an} component of the received signal will be amplified with teh matched filtering decoding strategy. With this structure, we have:
+\begin{equation}
+    \begin{split}
+        A_{1,n} &= \sqrt{\alpha}\frac{1}{U}\sum_{i=0}^{U-1}  \left|h_{\text{E}, n + iN}\right|^2 \; \left|h_{\text{B}, n + iN}\right|^2 \\
+        A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} h^*_{\text{E}, n + iN} \; h_{\text{B}, n + iN} \; v_{\text{E}, n + iN}\\
+        A_{3,n} &= \sqrt{1-\alpha}\frac{1}{\sqrt{U}}\sum_{i=0}^{U-1}    h_{\text{\textbf{B}}, n + iN} \left|h_{\text{E}, n + iN}\right|^2\; w_{n + iN}
+    \end{split}
+\end{equation}
+After computations, the expected values are:
+\begin{equation}
+    \begin{split}
+        &\EX{|A_{1,n}|^2} = \alpha \frac{U+3}{U} \\
+        &\EX{|A_{2,n}|^2} = \sigma^2_{\text{V,E}}\\
+        &\EX{|A_{3,n}|^2} = 2(1-\alpha) \left( \sigma^2_{\text{AN}} + \text{cov}(\module{\w}^2,\module{\textbf{H}_\text{B}}^2) \right)
+    \end{split}
+    \label{eq:expected_eve_filt1}
+\end{equation}
+The details can be found in Appendix  \ref{appA:SINR_deriv}. We then obtain an ergodic \gls{sinr} which takes the following form:
+\begin{equation}
+    \EX{\gamma_{E,n}} \gtrapprox \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + 2(1-\alpha) \left( \sigma^2_{\text{AN}} + \text{cov}(\module{\w}^2,\module{\textbf{H}_\text{B}}^2) \right)}
+    \label{eq:sinr_eve_filt1}
+\end{equation}
+
+\paragraph{Eve's estimator: AN killer}
+\label{par:perf_an_suppression}
+Eve can adapt her decoder to kill the \gls{an} signal. In fact, by performing $\textbf{G} = \spread^H \textbf{H}_\text{B} \textbf{H}^{-1}_\text{E}$, the \gls{an} term will become $\sqrt{1-\alpha}\spread^H \textbf{H}_\text{B} \textbf{H}^{-1}_\text{E} \textbf{H}_\text{E} \w = \sqrt{1-\alpha}\spread^H \textbf{H}_\text{B}  \w = \textbf{0}$ since it is projected in the null space of $\spread^H\textbf{H}_\text{B}$. However, this considers that Eve is able to estimate its own channel $\HE$, which is a very strong assumption. If Alice always communicates to Bob using $\HB^*$ as a precoder, the data received by Eve is always affected by a term $\HB^*\HE$ which avoids Eve to estimate $\HE$ with classical preamble-based channel estimation methods for instance. However, if an uncoded reference signal is sent by Alice at some point, the Eve might be able to estimate $\HE$ (if the channel remains constant between the time at which Alice sends a reference signal and at which Alice sends the $\HB^*$-precoded data). It also requires a processing on the full bandwidth, as suggested in fig.\ref{fig:an_killer}. 
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.5\linewidth]{img/AN_killer.png}
+    \caption{AN killer decoding structure}
+    \label{fig:an_killer}
+\end{figure}\\
+In that case, the received signal is:
+\begin{equation}
+    \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \module{\HB}^2 \spread\; \textbf{x} \; +  \; \spread^H  \textbf{H}^{-1}_E \textbf{H}_B \;\ve
+    \label{eq:rx_eve_filt2}
+\end{equation}
+The received signal (\ref{eq:rx_eve_filt2}) is similar to Bob's one (\ref{eq:rx_bob_AN}) except that the noise term is multiplied by $\textbf{H}^{-1}_E$ which is not optimal. In fact, if $\textbf{H}_E$ has low gains at some subcarriers, the noise will be highly amplified. In that situation, we obtain:
+\begin{equation}
+    \begin{split}
+        A_{1,n} &= \sqrt{\alpha}\frac{1}{U}\sum_{i=0}^{U-1}  \left|h_{\text{B}, n + iN}\right|^2\\
+        A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} h^{-1}_{\text{E}, n + iN} \; h_{\text{B}, n + iN} \; v_{\text{E}, n + iN}
+    \end{split}
+\end{equation}
+No analytic expression can be found for the expected value of the energy of the noise $\EX{|A_{2,n}|^2}$ since we have to deal with $\frac{1}{|h_{\text{E}, n + iN}|^2}$ which follows an inverse chi-square distribution of $\nu=2$ degrees of freedom. It therefore has an infinite mean\footnote{Intuitively, if one subcarrier has zero gain, which arises from example when two waves arrive with destructive interference, $\frac{1}{|h_{\text{E}, n + iN}|^2}$ will tend to infinity. This is why $\EX{|A_{2,n}|^2} = +\infty$.}. Only the \gls{cdf} of the noise energy can be derived, and consequently the \gls{cdf} of the \gls{sinr} for that decoding structure. \\
+For the data symbol, we have:
+\begin{equation}
+    \begin{split}
+        &\EX{|A_{1,n}|^2} = \alpha \frac{U+1}{U}
+    \end{split}
+    \label{eq:expected_eve_filt2}
+\end{equation}
+The derivations are found in Appendix \ref{appA:SINR_deriv}.
+
+\paragraph{Eve's estimator: LMMSE}
+The \gls{lmmse} equalizer aims to minimize the \gls{mse} of the estimated symbol $\hat{\textbf{x}}_\text{E} = \textbf{G} \textbf{y}_{\text{E}}^G$. The equalizer $\textbf{G}$ has to fulfill the orthogonality principle which states that the estimator $\hat{\textbf{x}}_\text{E}$ achieves \gls{mmse} if and only if:
+\begin{equation}
+    \EX{\left( \hat{\textbf{x}}_\text{E} - \textbf{x}\right)(\textbf{y}_{\text{E}}^G)^H} = \textbf{0}
+    \label{eq:orhogonality_principle}
+\end{equation}
+From (\ref{eq:orhogonality_principle}), we find an expression of the equalizer as\footnote{see Appendix \ref{appA:SINR_deriv}}:
+\begin{equation}
+    \textbf{G} = \sqrt{\alpha}\; \sigma_{\text{X}}^2\; \Gamma_E^H \left( \alpha \;\sigma_\text{X}^2 \; \Gamma_E \Gamma_E^H + (1-\alpha) \module{\HE}^2 \sigma^2_{\text{AN}} + \sigma^2_{\text{V,E}} \textbf{I}_{\text{Q}} \right)^{-1}
+    \label{eq:lmmse_expression}
+\end{equation}
+where $\sigma_\text{X}^2 \textbf{I}_{\text{N}} = \EX{\textbf{xx}^H}$. We remark from (\ref{eq:lmmse_expression}) that the implementation of the \gls{lmmse} requires at Eve the knowledge of $\HE$ as well as the $\gls{an}$ energy $\sigma^2_{\text{AN}}$\\
+So far, no analytic expression of the \gls{sinr} has been found for the \gls{lmmse} implementation.
+
+
+\subsection{Optimal amount of AN to inject}
+\label{subsec:best_alpha}
+\textit{This section is only dedicated for the scenario where Eve has the same capabilities as Bob. This is subject to further completion where the different decoding structures will be included.}\\
+
+With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt0}), it is possible to obtain a closed-form approximation of the SR upper bound and therefore to determine the amount of AN energy to inject that maximizes the SR. If we introduce: $T_1 = U(U+1)\sigma_{\text{AN}}^2$, $T_2 = U(U+1)(\sigma_{\text{E}}^2+\sigma_{\text{AN}}^2) - U^2 \sigma_{\text{B}}^2\sigma_{\text{AN}}^2$, $T_3 = U(\sigma_{\text{B}}^2+\sigma_{\text{E}}^2+\sigma_{\text{AN}}^2)$, and $T_4= U\sigma_{\text{B}}^2(1-U\sigma_{\text{AN}}^2)$, we obtain\footnote{see Appendix \ref{appB:alpha}}:
+\begin{equation}
+    C_s \lessapprox \log_2 \left( \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \right)
+    \label{eq:SR_anal2}
+\end{equation}
+To  maximize the secrecy rate as a function of the parameter $\alpha$, we find the zeroes of:
+\begin{equation}
+\begin{split}
+    \frac{\partial C_s}{\partial \alpha} &= \frac{ \frac{-\alpha^2 T_1 T_4 \; - \; 2 \alpha T_1 T_3 \; + \; \left( T_2 T_3 \; - \; T_3 T_4 \right) }{\left( \alpha T_4 \; + \; T_3\right)^2} }{ \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \; . \; \ln{2}} 
+    \label{eq:SR_derivative}
+\end{split}
+\end{equation}
+After some algebraic manipulations, one obtains: 
+\begin{equation}
+         \frac{\partial C_s}{\partial \alpha} = 0
+         \; \Leftrightarrow \; \alpha_{opt} = \frac{\pm\sqrt{T_1^2 T_3^2 \; + \; T_1 T_2 T_3 T_4 \; - \; T_1 T_3 T_4^2} \; - \; T_1 T_3}{T_1 T_4}
+         \label{eq:best_alpha}
+\end{equation}
+where only the positive roots are solutions since $\alpha \in [0,1]$.
+
+
+
+
+\subsection{Secrecy rate optimization via waterfilling}
+\label{subsec:perf_waterf}
+From section \ref{subsec:best_alpha}, the optimal amount of radiated energy dedicated for the transmission of the data signal is derived. The analytic expression (\ref{eq:best_alpha}) lead to the coefficient $\alpha_{\text{opt}}$ that maximizes the ergodic \gls{sr} of the communication. As a reminder, this is only obtained for the scenario where Eve and Bob present the same decoding capabilities. Before despreading, the received signals at Bob and Eve are respectively given by:
+\begin{equation}
+    \begin{split}
+        \textbf{y}_{\text{B}} &= \sqrt{\alpha_{\text{opt}}} \; \module{\HB}^2 \spread\; \textbf{x} \; +  \;  \vb \\
+        \textbf{y}_{\text{E}} &= \sqrt{\alpha_{\text{opt}}} \; \HE \textbf{H}^*_{\text{B}} \spread\; \textbf{x} \; +  \; \sqrt{1-\alpha_{\text{opt}}} \; \HE \w  \; +  \;  \ve
+    \end{split}
+    \label{eq:rx_signal_bob_eve}
+\end{equation}
+We observe from (\ref{eq:rx_signal_bob_eve}) that an unique coefficient $\alpha_{\text{opt}}$ weights the $Q$ components of the useful data. That is, each subcarrier will be affected by the same coefficient. However, we know that the channel capacity at one subcarrier is proportional to the subcarrier energy. Therefore, subcarriers with higher gains will contribute more to the total channel capacity than subcarriers with lower gains. We also consider throughout this paper that Alice can instantaneously estimate Bob's channel but does not have any information about Eve instantaneous \gls{csi} such that we can compute the instantaneous capacity at Bob but we only have access to the ergodic capacity at Eve. From this discussion, we can state that, if we could have access to Eve's instantaneous capacity, we could tune the weights at each subcarrier, i.e., applying a different weight at each subcarrier depending on its power, in such a way that it enhances the instantaneous capacity at Bob and it degrades the instantaneous capacity at the eavesdropper position. \\
+
+Since we only have access to the ergodic capacity at Eve, we proceed as follows:\\
+Based on the statistics of Bob and Eve channels, we obtain a closed form expression of the ergodic \gls{sr} given by (\ref{eq:SR_anal2}). From that, we find via (\ref{eq:best_alpha}) the value of $\alpha_{\text{opt}}$ that, in the ergodic sense, will maximize the \gls{sr}. Then, at each channel realization, we determine a new set of coefficients, denoted by $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob while ensuring that:
+\begin{itemize}
+    \item[1.] The total radiated energy should remain constant:
+    \begin{equation}
+        \module{\sqrt{\alpha_{\text{opt}}} \;\HB^* \spread \textbf{x} + \sqrt{1-\alpha_{\text{opt}}} \odot  \w }^2  =   \module{\sqrt{\boldsymbol\alpha_{\text{w}}} \; \HB^* \spread \textbf{x} + \sqrt{1-\boldsymbol\alpha_{\text{w}}} \w }^2
+    \end{equation}
+    \item[2.] The energy radiated dedicated to the \gls{an} signal should remain constant:
+    \begin{equation}
+        \module{\sqrt{1-\alpha_{\text{opt}}}\w}^2 = \module{\sqrt{1-\boldsymbol\alpha_{\text{w}}} \odot\w}^2
+    \end{equation}
+    \item[3.] The \gls{an} signal should still lie in the null space of Bob:
+    \begin{equation}
+        \spread^H \HB \sqrt{1-\boldsymbol\alpha_{\text{w}}}\odot \w < \epsilon
+    \end{equation}
+\end{itemize}
+Since we consider that Bob and Eve channels are independent, optimizing the coefficients that weight each subcarrier to enhance the capacity at Bob will not modify the capacity at Eve. In doing so, with the waterfilling optimization procedure, the \gls{sr} will increase as it will be shown in section \ref{subsub:simu_waterfilling}. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization

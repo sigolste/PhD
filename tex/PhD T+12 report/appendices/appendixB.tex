@@ -1,0 +1,19 @@
+\renewcommand{\theparagraph}{B}
+
+\section{Optimal amount of AN to inject derivation}\label{appB:alpha}
+As a recall, the \gls{sinr} at Bob and Eve are respectively given by:
+\begin{equation}
+    \begin{split}
+        \EX{\gamma_{B,n}} &= \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \\
+        \EX{\gamma_{E,n}} &= \frac{\alpha}{U(\sigma^2_{\text{V,E}}+(1-\alpha)\sigma^2_{\text{AN}})} 
+    \end{split}
+\end{equation}
+The \gls{sr} becomes:
+\begin{subequations}
+\begin{align}
+    C_s &= \log_2\left(1+ \frac{\alpha (U+1)}{U  \sigma_{\text{V,B}}^2}\right) - \log_2\left(1 + \frac{\alpha}{U(\sigma^2_{\text{V,E}}+(1-\alpha)\sigma^2_{\text{AN}})} \right)\\
+    \Leftrightarrow C_s &= \log_2\left( \frac{\alpha (U+1) + U  \sigma_{\text{V,B}}^2}{U  \sigma_{\text{V,B}}^2} \right) - \log_2\left(  \frac{\alpha + U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}{U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}  \right)\\
+    \Leftrightarrow C_s &= \log_2\left(  \frac{-\alpha^2(U+1)U\sigma^2_{\text{AN}} + \alpha\left[ U(U+1)(\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) - U^2\sigma^2_{\text{V,B}}\sigma^2_{\text{AN}}\right]  + U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}})}{\alpha U \sigma^2_{\text{V,B}}(1-U\sigma^2_{\text{AN}}) + U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) }   \right)
+\end{align}
+\end{subequations}
+If we introduce $T_1=(U+1)U\sigma^2_{\text{AN}}$, $T_2=U(U+1)(\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) - U^2\sigma^2_{\text{V,B}}\sigma^2_{\text{AN}}$, $T_3=U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}})$, and $T_4=U \sigma^2_{\text{V,B}}(1-U\sigma^2_{\text{AN}})$, we come back to (\ref{eq:SR_anal2}).

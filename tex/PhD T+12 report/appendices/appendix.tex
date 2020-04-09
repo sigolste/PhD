@@ -1,0 +1,27 @@
+\section*{Appendices}
+\renewcommand\thefigure{\thesection\arabic{figure}}    
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+%\renewcommand{\thesection}{\Alph{section}.\arabic{section}}
+
+\begin{appendices}
+%\renewcommand{\appendixtocname}{Annexes} 
+\addcontentsline{toc}{section}{Appendices}
+
+% ANNEXE A
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\setcounter{section}{0}
+\setcounter{equation}{0}
+\numberwithin{equation}{section}
+\input{appendices/appendixA.tex}
+
+\newpage
+% ANNEXE N
+%\setcounter{figure}{0}
+%\setcounter{table}{0}
+%\setcounter{section}{0}
+%\setcounter{equation}{0}
+%\numberwithin{equation}{section}
+\input{appendices/appendixB.tex}
+\end{appendices}

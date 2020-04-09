@@ -1,0 +1,16 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {english}{}
+\contentsline {figure}{\numberline {1}{\ignorespaces Security scenario\relax }}{2}{figure.caption.3}% 
+\contentsline {figure}{\numberline {2}{\ignorespaces Conventional FD TR SISO OFDM system\relax }}{2}{figure.caption.4}% 
+\contentsline {figure}{\numberline {3}{\ignorespaces Illustration of conventional FD TR SISO OFDM system\relax }}{3}{figure.caption.5}% 
+\contentsline {figure}{\numberline {4}{\ignorespaces FD TR SISO OFDM system with added artificial noise\relax }}{5}{figure.caption.6}% 
+\contentsline {figure}{\numberline {5}{\ignorespaces Illustration of FD TR SISO OFDM system with added artificial noise\relax }}{5}{figure.caption.7}% 
+\contentsline {figure}{\numberline {6}{\ignorespaces Matched filtering decoding structure\relax }}{9}{figure.caption.8}% 
+\contentsline {figure}{\numberline {7}{\ignorespaces AN killer decoding structure\relax }}{10}{figure.caption.9}% 
+\contentsline {figure}{\numberline {8}{\ignorespaces BER as a function of the level of noise for different AN energy values, \gls {bor} = 4\relax }}{13}{figure.caption.10}% 
+\contentsline {figure}{\numberline {9}{\ignorespaces BER as a function of AN energy for different BOR values, $E_b/N_0 = 15$dB\relax }}{13}{figure.caption.11}% 
+\contentsline {figure}{\numberline {10}{\ignorespaces Secrecy Rate curves, analytic vs simulation, Bob and Eve with same capabilities, $E_b/N_0=20$ dB \relax }}{14}{figure.caption.12}% 
+\contentsline {figure}{\numberline {11}{\ignorespaces Optimal amount of AN to inject, Bob and Eve with same capabilities, $E_b/N_0=5$ dB \relax }}{14}{figure.caption.13}% 
+\contentsline {figure}{\numberline {12}{\ignorespaces Secrecy Rate curves for the different decoding structures at Eve, $E_b/N_0=20$ dB, BOR = 4 \relax }}{15}{figure.caption.14}% 
+\contentsline {figure}{\numberline {13}{\ignorespaces SR optimization via waterfilling, Bob and Eve with same capabilities, $E_b/N_0=20$ dB\relax }}{16}{figure.caption.15}% 
+\contentsline {figure}{\numberline {A.1}{\ignorespaces CDF of the inverse chi-square distribution of $\nu = 2$ degrees of freedom.\relax }}{22}{figure.caption.16}% 
