@@ -1,0 +1,108 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{lipsum}  %% Package to create dummy text (comment or erase before start)\\
+\usepackage{amsmath}
+%% ===============================================
+%% Setting the line spacing (3 options: only pick one)
+% \doublespacing
+% \singlespacing
+%\onehalfspacing
+%% ===============================================
+
+%\setlength{\droptitle}{-5em} %% Don't touch
+% TITLE:
+\title{Information Theory Notes}
+
+% AUTHORS:
+\author{Sidney Golstein}
+    
+% DATE:
+\date{\today}
+
+
+\begin{document}
+\maketitle
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Information Measures (ch2 p18)}
+Here, only for discrete random variables (RV).
+\subsection{Entropy}
+\subsubsection{General definition}
+Let \textbf{X} be a discrete RV with pmf $p(x)$. The entropy of \textbf{X} is the uncertainty about its outcome:
+\begin{equation}
+    H(\textbf{X}) = -\sum_{x \in \chi } p(x) \log{p(x)} = -E_{\textbf{X}}\left(\log{p(\textbf{X})}\right)
+\end{equation}
+where $\chi$ is the set of possible values of $x$, i.e., the alphabet.
+
+\subsubsection{Conditional entropy}
+Measure of the remaining uncertainty about the outcome of \textbf{Y} given the observation \textbf{X}. Denoted $H(X|Y)$
+\begin{equation}
+    H(\textbf{X}|\textbf{Y})  = - E_{\textbf{X},\textbf{Y}} \left( \log{p(\textbf{Y}|\textbf{X})} \right)
+\end{equation}
+
+\subsubsection{Joint entropy}
+Let (\textbf{X},\textbf{Y}) be a pair of discrete RV:
+\begin{equation}
+    H(\textbf{X},\textbf{Y}) = - E\left( \log{p(\textbf{X},\textbf{Y})} \right)
+\end{equation}
+
+\subsubsection{Properties}
+\begin{align}
+    H(\textbf{Y}|\textbf{X}) &\leq H(\textbf{Y}) \\
+    H(\textbf{X},\textbf{Y}) &= H(\textbf{X}) + H(\textbf{Y}|\textbf{X}) =H(\textbf{Y}) + H(\textbf{X}|\textbf{Y}) \\
+    H(\textbf{X},\textbf{Y}) &\leq H(\textbf{X}) + H(\textbf{Y})
+\end{align}
+
+
+\label{key}
+\subsection{Mutual Information}
+\subsubsection{General definition}
+Let (\textbf{X},\textbf{Y}) be a pair of discrete RV. The information about \textbf{X} obtained from the observation \textbf{Y}is the mutual information between \textbf{X} and \textbf{Y}.
+\begin{equation}
+    I(\textbf{X} ; \textbf{Y}) = \sum_{(x,y) \in (\chi,\Upsilon)} p(x,y)\log{\frac{p(x,y)}{p(x)p(y)}} = H(\textbf{X)} + H(\textbf{Y}) - H(\textbf{X},\textbf{Y})
+ \end{equation}
+ $I(\textbf{X} ; \textbf{Y}) = 0$ i.i.f. \textbf{X} and \textbf{Y} are independent.
+ 
+ \subsubsection{Conditional mutual information}
+ The conditional mutual information etween \textbf{X} and \textbf{Y} given \textbf{Z} is:
+ \begin{equation}
+     I(\textbf{X};\textbf{Y}|\textbf{Z}) =  H(\textbf{X}|\textbf{Z}) +  H(\textbf{Y}|\textbf{Z}) -  H(\textbf{X}, \textbf{Y}|\textbf{Z})
+ \end{equation}
+ 
+ \paragraph{Properties}
+ \begin{itemize}
+ 	\item Independence: \\
+ 	 If \textbf{X} and \textbf{Z} are independent: 
+ 	 \begin{equation}
+ 	 		I(\textbf{X}; \textbf{Y}| \textbf{Z}) \geq I(\textbf{X};\textbf{Y})
+ 	\end{equation}
+ 	\item Conditional independence: \\
+ 	If $\textbf{Z} \rightarrow \textbf{X} \rightarrow \textbf{Y}$ for a Markov chain (prediction of the future state only depends on the present state and not on the previous ones): 
+ 	\begin{equation}
+ 			I(\textbf{X}; \textbf{Y}| \textbf{Z}) \leq I(\textbf{X};\textbf{Y})
+ 	\end{equation}
+ \end{itemize}
+
+
+ \subsection{Summary}
+ The entropy is a measure of information. The mutual entropy is a measure of information transfer.
+% --------------------
+
+% --------------------
+\section{Information Theoretic Secrecy (ch22 p549)}
+
+TEST ok 
+
+
+
+% --------------------
+
+
+% ==========================
+% ==========================
+% ==========================
+
+
+\end{document}
