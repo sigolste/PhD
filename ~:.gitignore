@@ -1,0 +1,10 @@
+# Latex compilation
+*.aux
+*.log
+*.synctex.gz
+
+
+# Python compilation
+*.pyc
+
+# Matlab Compilation
