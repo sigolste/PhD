@@ -1,0 +1,106 @@
+# Commandes Git:
+
+# 1. Initialisation de git
+
+# 1.1 Personal config
+$ git config --global user.name "Sidney Golstein"			# Name init
+$ git config --global user.email sigolste@ulb.ac.be			# e-mail init
+$ git config --list											# all possible config
+
+$ git config --global color.diff auto						# config example
+$ git config --global color.status auto
+$ git config --global color.branch auto
+
+# 1.2 Repo init
+
+# 1.2.1 In the wanted folder (local):
+$ git init
+
+# 1.2.2 Acces to github repo (distant):
+$ git remote add OC <url>
+
+# 1.2.3 Clone distant repo to local repo:
+$ git clone <url>
+
+
+# 2. Branch
+$ git Branch 												# Show the branches and show on which branch we are working
+$ git add <my_file>											# Add a file to the current branch. If 1st time, add a file and then commit (it create master branch)
+$ git branch new_branch										# Create new branch "new_branch"
+$ git checkout new_branch									# Switch to "new_branch"
+
+
+
+# 3. Commit
+$ git commit -m “message”									# Save at time T my work on the current branch (local)
+
+# 4. Push/pull
+$ git Push 													# Push local modification to distant repo (to GitHub)
+$ git pull   												# Get distant project to local repo
+
+
+# 4. Error management on local repo:
+
+# 4.1 Delete a branch
+$ git branch -d branch_to_delete							# Delete branch "branch_to_delete"
+# Note 1: If we already modified branch_to_delete and we want to delete it, we need to commit our modifications, our force the suppression:
+$ git branch -D branch_to_delete							# Force the suppression of "branch_to_delete"
+# Note 2: -D forces the suppression of a branch and delete ALL the modifications that we did not commit on the branch.
+
+# 4.2 Modification of master branch by mistake
+
+# 4.2.1 We modify our master branch before creating a second branch and we did not commit our modification 
+# Solution: create a stash that will temporarily get our modification aside, create our new branch and then apply the stash on our new branch
+
+$ git status 												# Ceck which modifications are not yet commited
+$ git stash													# Create the stash
+$ git branch new_branch
+$ git checkout new_branch
+$ git stash appply											# Apply the LAST stash on "new_branch"	
+
+# Note: if we did multiple stashes and we want to apply a particular one:
+$ git stash list											# Return a list of the stashes we did (each stash has an ID)
+$ git stash apply@{ID}										# Apply stash "ID" on "new_branch"
+
+# 4.2.2 We modify our master branch, we did commit our modifications but wanted to do it on "new_branch"
+# Solution: On our master banch, get a list of the different commits, reset the commit we want on "new_branch" and apply it on "new_branch"
+
+$ git log													# Return chronological list of the commits we did on the current branch
+$ git reset --hard HEAD^									# Delete the LAST commit (via HEAD^) on the current branch
+$ git branch new_branch
+$ git checkout new_branch
+$ git reset --hard <8 first ID character of last commit>	# Apply last commit of master to new_branch
+
+# 4.3 Change commit message
+$ git commit --amend -m "new message"						# Apply "new_message" on LAST commit of current branch
+
+# Note: git --amend allows to modify last commit				
+
+# 4.4 We forgot to add a file on our last commit
+# Solution: Add the file on the current branch, then amend the last commit
+
+$ git add file_to_add
+$ git --amend --no-edit										# Add "file_to_add" to last commit (tanks to --no-edit) without modification of commit message 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
