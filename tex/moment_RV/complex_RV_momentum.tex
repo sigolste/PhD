@@ -1,0 +1,103 @@
+\documentclass[12pt]{article}
+\input{preambule.tex}
+
+
+%\newcommand{\bibfont}{\footnotesize}
+
+\linespread{1.5}
+
+
+\newcommand{\vect}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+%\newcommand{\vect}[1]{\underline{\mathrm{#1}}}
+%\newcommand{\mat}[1]{\underline{\underline{\mathrm{#1}}}}
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\vecop}{\text{vec}}
+
+\newcommand{\CP}{L}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin[document]
+\begin{document}
+\title{Momentum of complex normal  random variables}
+\author{Sidney Golstein}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% abstract
+
+
+\section{Real normal random variables}
+For real-valued random variable, the moment-generating function is an alternative specification of its probability distribution. In particular, it allows to compute the moments of the probability distribution as:
+\begin{equation}
+	m_n = \EX{X^n} = M_X^{(n)}(0) = \left. \frac{d^n M_X}{dt^n}\right|_{t=0}
+\end{equation}
+For a real normal random variable $\mathcal{N}(\mu,\sigma^2) $, the moment-generating function is given by:
+\begin{equation}
+	M_X = e^{t \mu + \frac{1}{2} \sigma^2 t^2 }
+\end{equation}
+From that, we have:
+\begin{equation}
+	\begin{split}
+		&\EX{|X|^2} = \sigma^2 + \mu^2\\
+		&\EX{|X|^4} = 3(\sigma^2)^2 + 6 \sigma^2 \mu^2 + \mu^4
+	\end{split}
+\label{eq:moments_x}
+\end{equation}
+
+\paragraph*{Example}
+If we generate $X \sim \mathcal{N}(2,1/2)$, i.e. $\mu = 2$ and $\sigma^2 = 1/2$, we should obtain (cf. fig.\ref{fig:ex_rv_x}):
+\begin{equation}
+\begin{split}
+&\EX{|X|^2} = 9/2 = 4.5\\
+&\EX{|X|^4} = 115/4 = 28.75
+\end{split}
+\label{eq:ex_x}
+\end{equation}
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.3\linewidth]{img/example_rv_x.png}
+	\caption{Real-valued random normal variable}
+	\label{fig:ex_rv_x}
+\end{figure}
+
+\section{Complex normal random variable}
+A complex normal random variable is defined as $Z = X + iY$ where $X \sim \mathcal{N}(\mu_x,\sigma^2_x)$ and $Y \sim \mathcal{N}(\mu_y,\sigma^2_y)$. We also have:
+\begin{equation}
+\begin{split}
+	&|Z|^2 = X^2 + Y^2\\
+	&|Z|^4 = X^4  + 2 X^2 Y^2 + Y^4
+\end{split}
+\label{eq:deriv_z}
+\end{equation}
+Since $X$ and $Y$ are independent and taking into account eq.\ref{eq:moments_x}, the moments of $Z$ are easy to compute:
+\begin{equation}
+\begin{split}
+&\EX{|Z|^2} = \sigma_x^2 + \mu_x^2 + \sigma_y^2 + \mu_y^2\\
+&\EX{|Z|^4} = 3(\sigma_x^2)^2 + 6 \sigma_x^2 \mu_x^2 + \mu_x^4 + 2\left[ ( \sigma_x^2 + \mu_x^2 )(\sigma_y^2 + \mu_y^2)\right] + 3(\sigma_y^2)^2 + 6 \sigma_y^2 \mu_y^2 + \mu_y^4
+\end{split}
+\label{eq:moments_z}
+\end{equation}
+
+
+\paragraph*{Example}
+If we generate $X \sim \mathcal{N}(1,1/2)$, $Y \sim \mathcal{N}(0,1)$, i.e., $\mu_x = 1$, $\sigma_x^2 = 1/2$, $\mu_y = 0$ and $\sigma_y^2 = 1$, we should obtain (cf. fig.\ref{fig:ex_rv_z}):
+\begin{equation}
+\begin{split}
+&\EX{|Z|^2} = 5/2 = 2.5\\
+&\EX{|Z|^4} = 43/4 = 10.75
+\end{split}
+\label{eq:ex_y}
+\end{equation}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=.3\linewidth]{img/ex_rv_z.png}
+	\caption{Complex-valued random normal variable}
+	\label{fig:ex_rv_z}
+\end{figure} \\
+
+\textit{\textbf{Note for Julien:}\\
+On retrouve bien $\EX{|H_e|^4} = 2$ car $H_e = H_{ex} + iH_{ey}$ avec $\mu_{H_{ex}} = \mu_{H_{ey}} = 0$ et  $\sigma^2_{H_{ex}} = \sigma^2_{H_{ey}} = 1/2$.\\
+ Pour ton exemple, on retrouve bien 8 car tu avais $\mu_{x} = \mu_{y} = 0$ et  $\sigma^2_{x} = \sigma^2_{y} = 1$}
+
+
+\end{document}

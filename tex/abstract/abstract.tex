@@ -1,0 +1,37 @@
+\documentclass[]{article}
+
+%opening
+\title{Physical Layer Security in Frequency-Domain Time-Reversal SISO OFDM Communication}
+\author{Sidney Golstein}
+
+
+
+
+
+
+
+
+\begin{document}
+
+\maketitle
+
+\section*{Abstract}
+
+
+As networks flourish worldwide, data security is an important issue that must be implemented in a cost-effective manneer 
+at all layers. The objective of secure communication is twofold and was expressed  by Shannon in 1949,\cite{shannon1949communication} . The intended receiver should recover the message without errors while nobody else should acquire any information. \\
+
+Surpisingly, the physical layer has long been overlooked to secure the communications. Classical security techniques are the use of cryptography and encryption where the algorithms are based on mathematical operations assumed hard to compute. However, since the computing power increases at a fast pace, these mathematical operations, that were assumed to be unfeasible, are now within reach.  Furthermore, a key element of secrecy systems is randomness which is abundantly available in the physical nature of communication channel. \\
+
+ In addition, due to their broadcast nature, wireless communications are naturally unsecured. With the  deployment of 5G as an heterogeneous network possibly involving different radio access technologies, phyical layer security (PLS) has gained recent interests in order to secure wireless communications, \cite{alves2012performance},\cite{yang2012physical},\cite{tran2015secrecy}. PLS classically takes benefit of the characteristics of wireless channels, such as multipath fading, to improve security of communications against potential eavesdroppers. A secure communication can exist as soon as the eavesdropper channel is degraded with respect to the legitimate user one, \cite{wyner1975wire}. This can be achieved by increasing the signal to interference plus noise ratio (SINR) at the intended position and decreasing the SINR at the unintended position if its channel state information (CSI) is known, and/or, by adding an artificial noise (AN) signal that lies in the null space of the legitimate receiver's channel. While many works implement these schemes using multiple antennas at the transmitter, only few ones intend to do so with single-input single-output  (SISO) systems \cite{li2013waveform},\cite{nguyen2019frequency},\cite{xu2018security},\cite{li2017artificial},\cite{li2018artificial}.\\
+
+In \cite{li2013waveform}, a technique is proposed that combines a symbol waveform optimisation in time domain (TD) to reach a desired SINR at the legitimate receiver and an AN injection using the remaining available power at the transmitter when eavesdropper's CSI is not known. Another approach to increase the SINR in SISO systems is time reversal (TR). This has the advantage to be implemented with a simple precoder at the transmitter. TR achieves a gain at the intended receiver position only, thereby naturally offering a possibility of secure communication, \cite{oestges2005characterization}. TR is achieved by up/downsampling the signal in the TD. It as been shown in  \cite{nguyen2019frequency} that TR can be equivalently achieved in frequency domain (FD) by replicating and shifting the signal spectrum. FD implementation has the advantage to be easily performed using orthogonal frequency division multiplexing (OFDM). To further enhance the secrecy, few works combine TD TR precoding with AN injection \cite{xu2018security},\cite{li2017artificial},\cite{li2018artificial}. In these works, the AN is added either on all the channel taps or on a set of selected taps. While the condition for AN generation is given, its derivation is however not detailed. Furthermore, the impact of back-off rate (BOR), defined as the up/downsampling rate \cite{dubois2010use}, has not been yet studied in the literature. \\
+
+An approach to establish secure communication using a FD TR precoder in SISO OFDM systems is proposed. An AN signal is designed to maximize the secrecy rate (SR) of the communication in presence of a passive eavesdropper whose CSI is supposed unknown. The proposed scheme uses only frequency diversity inherently present in multipath environments to achieve security. It can therefore be used in SISO systems and is then well-suited for resource-limited nodes such as encountered in IOT for instance.  Indeed, MIMO capabilities require several antennas and as many transceivers and ADC/DAC, which might not fit into small-size sensors and could  be too power-consuming for such IoT scenarios. Furthermore, the OFDM implementation makes this approach compatible with LTE and 5G systems. \\
+
+
+
+\bibliographystyle{ieeetr}
+\bibliography{bibliography}
+ 
+\end{document}

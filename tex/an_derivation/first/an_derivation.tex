@@ -1,0 +1,111 @@
+\documentclass[12pt]{article}
+\usepackage{latexsym}
+\usepackage[margin=2.54cm, lmargin=2.54cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage{calrsfs}
+\usepackage{color}
+\usepackage{cancel}
+\usepackage{amssymb}
+
+%\newcommand{\bibfont}{\footnotesize}
+
+\linespread{1.5}
+
+
+\newcommand{\vect}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+%\newcommand{\vect}[1]{\underline{\mathrm{#1}}}
+%\newcommand{\mat}[1]{\underline{\underline{\mathrm{#1}}}}
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\vecop}{\text{vec}}
+
+\newcommand{\CP}{L}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin[document]
+\begin{document}
+\title{Comments conference paper}
+\author{Fran\c cois Rottenberg}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% abstract
+\large
+\textcolor{red}{In my simulation, I consider that: $\mathbb{E}\left(\vect{w}\vect{w}^H\right) = \sigma^2_{an} \mat{I}_Q$, where $\sigma^2_{an} = 1/U$ is the AN autocorrelation.  \textcolor{blue}{Could you simulate for $\mathbb{E}\left({\vect{w}}'({\vect{w}}')^H\right)=\mat{I}$ please? so that it is in accordance with my derivations}\\
+Then, I simulate the energy of the AN at Eve for a particular symbol $n$, i.e., one of the component of the signal $\vect{v}$. Each component of $\vect{v}$ is made from a summation of $U$ subcarriers thanks to the despreading matrix $\mat{S}^H$}\\
+
+The AN at Eve is
+\begin{align*}
+	\vect{v}&=	\mat{S}^H \mat{H}_B |\mat{H}_E|^2 \vect{w}\\
+	&=\mat{A} |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\\
+	&= \mat{U} \begin{pmatrix}
+	\mat{\Sigma} & \mat{0}_{N-Q\times N}
+	\end{pmatrix}  \begin{pmatrix}
+	\mat{V}_1^H\\
+	\mat{V}_2^H
+	\end{pmatrix} |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\\
+	&=\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'
+\end{align*}
+\textcolor{red}{Therefore, since $\vect{w} = \mat{V}_2 \vect{w}'$, we have: $\mathbb{E}\left(\vect{w}\vect{w}^H\right) = \mat{V}_2 \mat{V}_2^H =  \sigma^2_{an} \mat{I}_Q$ } \textcolor{blue}{this is wrong! $\mat{V}_2 \mat{V}_2^H \neq   \sigma^2_{an} \mat{I}_Q$ because $\mat{V}_2$ is tall} \\
+Let us now look at the covariance matrix
+\begin{align*}
+	\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\right)^H\right)\\
+	&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\vect{w}'^H\mat{V}_2^H|\mat{H}_E|^2\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align*}
+Note that $\vect{w}'$ is independent of other random variable and has a unit covariance matrix. We can thus put the expectation inside to get
+\begin{align*}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \mat{V}_2^H|\mat{H}_E|^2\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align*}
+We rewrite $|\mat{H}_E|^2=\sum_{q=1}^Q|H_{E,q}|^2 \vect{e}_q \vect{e}_q^T $ where $\vect{e}_q$ is an all zero vector except a $1$ at row $q$ to isolate the independent random variable $H_E$
+\begin{align*}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\sum_{q=1}^Q\sum_{q'=1}^Q\mathbb{E}(|H_{E,q}|^2|H_{E,q'}|^2)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}(|H_{E,q}|^4)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\sum_{q=1}^Q\sum_{q'\neq q}^Q\mathbb{E}(|H_{E,q}|^2|H_{E,q'}|^2)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=2\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\sum_{q=1}^Q\sum_{q'\neq q}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H \sum_{q=1}^Q \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \sum_{q'=1}^Q\vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)+\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \mat{V}_2 \mat{V}_2^H \mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align*}
+Using the fact that $\mat{V}_2^H \mat{V}_1=\mat{0}$, the second term cancels and
+\begin{align*}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \sum_{q=1}^Q\left(\vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\right)\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align*}
+
+If we assume (to be proven) that all elements of $\vect{v}$ have same variance, we can compute it as
+\begin{align*}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\mathbb{E}\ \tr\left(\vect{v}\vect{v}^H\right)\\
+&=\frac{1}{N}\mathbb{E} \ \tr\left( \mat{\Sigma}^2\mat{V}_1^H  \sum_{q=1}^Q\left(\vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\right)\mat{V}_1 \right)
+\end{align*}
+Let us rewrite $\mat{V}_1=\sum_{l}\vect{e}_{l}\vect{v}_{1,l}^H$ where $\vect{v}_{1,l}^H$ is the $l$-th row of $\mat{V}_1$ (of dimension $N\times 1$)
+\begin{align*}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\sum_{q=1}^Q\sum_{l}\sum_{l'}\mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,l}\vect{e}_{l'}^T  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\vect{e}_{l}\vect{v}_{1,l}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q\sum_{l}\sum_{l'}\delta_{l'-q}\delta_{l-q} \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,l}\vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{v}_{1,l}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{v}_{1,q}^H \right)
+\end{align*}
+Let us rewrite $\mat{V}_2=\sum_{l}\vect{e}_{l}\vect{v}_{2,l}^H$ where $\vect{v}_{2,l}^H$ is the $l$-th row of $\mat{V}_2$ (of dimension $Q-N\times 1$)
+\begin{align*}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\sum_{q=1}^Q\sum_l\sum_{l'} \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{e}_q^T \vect{e}_{l}\vect{v}_{2,l}^H \vect{v}_{2,l'} \vect{e}_{l'}^T \vect{e}_{q} \vect{v}_{1,q}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{v}_{2,q}^H \vect{v}_{2,q} \vect{v}_{1,q}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \left( \| \vect{v}_{2,q}\|^2\vect{v}_{1,q}^H\mat{\Sigma}^2\vect{v}_{1,q}  \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \left( \| \vect{v}_{2,q}\|^2 \| \vect{v}_{1,q}\|^2 \sum_n \sigma_n^2  \right)\\
+\end{align*}
+What I am not sure of (to be proven) is that $\sum_n \sigma_n^2$ will go to $N$, $\| \vect{v}_{1,q}\|^2$ will go to $ \frac{N}{Q} $ and $\| \vect{v}_{2,q}\|^2$ will go to $ \frac{Q-N}{Q}$ so that
+\begin{align*}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N} Q   \frac{Q-N}{Q} \frac{N}{Q} N  \\
+&=   \frac{Q-N}{Q} N   \\
+\end{align*}
+
+\textcolor{red}{Here, we should obtain, i.e., it converges to my simulation results:
+\begin{align*}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&= \frac{1}{Q} \left[ \frac{1}{N} Q   \frac{Q-N}{Q} \frac{N}{Q} N \right] \\
+&=   \frac{Q-N}{Q^2} N   \\
+&= \frac{U-1}{U^2} \\
+\end{align*}
+However, this is not equal to $\frac{1}{U+1}$, which is the real expression where my simulation converges. But, for high values of $U$, we have that $\frac{U-1}{U^2} \to \frac{1}{U+1}$. Typically, for $U=4$, we already observe a good match between the expressions.}
+%However, this is not equal to $1/(U+1)=1/(N/Q+1)=Q/(N+Q)$!? (following what Sidney said)
+
+
+\end{document}
