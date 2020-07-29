@@ -1,0 +1,6 @@
+function z4 = fourthMoment(mu_x,mu_y,sigmacarre_x,sigmacarre_y)
+
+z4 = 3*(sigmacarre_x)^2 + 6*sigmacarre_x*mu_x^2 + mu_x^4 + ...
+    2*( (sigmacarre_x+mu_x^2) * (sigmacarre_y+mu_y^2) ) + ...
+    3*(sigmacarre_y)^2 + 6*sigmacarre_y*mu_y^2 + mu_y^4;
+

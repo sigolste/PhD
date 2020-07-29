@@ -1,0 +1,361 @@
+clear all;
+close all; 
+set(0,'defaulttextinterpreter','latex')
+set(0,'defaultAxesFontSize',12)
+set(0,'defaultLineLineWidth',2)
+set(0,'defaultAxesTickLabelInterpreter','latex')
+set(0,'defaultLegendInterpreter','latex')
+set(0,'DefaultLineMarkerSize',15);
+set(0, 'defaultFigurePosition',  [-1267  44   1256    872])
+
+
+sc = "secrecy_alpha_bor_ebno_match_filt1";
+
+for scenar=1:length(sc)
+    close all;
+    clearvars -except sc scenar
+    scenario = sc{scenar};
+    
+
+
+%% 1. transmitted symbol sequence. 
+total_subcar = 8;
+for ss = 1:total_subcar
+    
+get_parameters
+
+for cc = 1:nb_channels
+    
+for nb_bor = 1:length(BOR)
+N = nb_subcar/BOR(nb_bor);
+msg_TX      = randi( [0 1] , nb_bit(nb_bor) , 1 ) ;                                 % Random bit data stream
+sym_TX      = qammod(msg_TX,M,'gray','UnitAveragePower',true, 'InputType', 'bit');  % QAM modulation, can be changed to different modulation types
+
+sym_TX      = reshape(sym_TX, [], nb_block) ;                                       % OFDM block per OFDM block
+
+
+%% 2. Spreading matrix of dimension [ nb_subcar x nb_symb_per_block ]. 
+% Matrix composed of BOR diagonal matrices of dimensions [nb_symb_per_block x nb_symb_per_block]
+
+spread_matrix   = zeros( nb_subcar , nb_symb_per_block(nb_bor) );
+spread_code     = reshape( 2.*randi([0 1], 1, nb_subcar).' - 1 , [] , BOR(nb_bor) )/sqrt(BOR(nb_bor));   % Diagonal elements of the spreading matrix. BPSK spreading code
+
+for i = 1:size(spread_code,2)
+    spread_matrix(i*nb_symb_per_block(nb_bor)-nb_symb_per_block(nb_bor)+1:i*end/BOR(nb_bor),:) = diag(spread_code(:,i));
+end
+despread_matrix = ctranspose(spread_matrix); 
+
+%% 3. Symbol stream after spreading
+sym_spread = spread_matrix*sym_TX;
+
+
+%% 4. Channel generation : 
+% 4.1) Legitimate receiver (bob)
+H_bob = TR_security_generate_rayleigh_channel(delta_t,nb_taps,nb_subcar,"decorrelated");
+
+% 4.2) Eavesdropper (Eve)
+H_eve = TR_security_generate_rayleigh_channel(delta_t,nb_taps,nb_subcar,"decorrelated");
+
+H_bob_TX    = ctranspose(H_bob).';
+H_eve_TX    = ctranspose(H_eve).';
+H_bob_RX    = H_bob;
+H_eve_RX    = H_eve;
+
+energy_H_bob(cc,ss) = mean(abs(H_bob_RX).^2);
+energy_H_eve(cc,ss) = mean(abs(H_eve_RX).^2);
+
+energy_H_eve_eve(cc,ss) = mean(abs(H_eve_RX.*H_eve_TX).^2);
+energy_H_bob_bob(cc,ss) = mean(abs(H_bob_RX.*H_bob_TX).^2);
+
+energy_H_bob_eve(cc,ss) = mean(abs(H_bob_RX.*H_eve_TX).^2);
+energy_H_bob_eve_eve(cc,ss) = mean(abs(H_bob_RX.*H_eve_TX.*H_eve_RX).^2);
+energy_H_eve_bob_bob(cc,ss) = mean(abs(H_eve_RX.*H_bob_TX.*H_bob_RX).^2);
+
+%% 5.  ARTIFICIAL NOISE INJECTION 
+W = TR_security_generate_AN(H_bob,nb_subcar,BOR(nb_bor),despread_matrix,"svd"); % Resolution of the underdetermined system
+test_sid(ss,cc) = mean(abs(W).^2);
+energy_W_test(ss,cc) = mean(abs(W(nb_subcar-nb_subcar/BOR+1:end)).^2);
+energy_W_test2(ss,cc) = mean(abs(W(1:nb_subcar-nb_subcar/BOR)).^2);
+
+% Normalization of W
+tmp = sum(abs(W).^2)/nb_subcar;
+energy_sym_useful_TX = mean(sum(abs(H_bob_TX.*sym_spread).^2))/nb_subcar;
+W = W/sqrt(tmp)*sqrt(energy_sym_useful_TX);
+energy_W(ss,cc) = mean(abs(W).^2);
+
+
+
+%% 6. Symbol stream generation
+for aa = 1:length(alpha)
+
+% Precoding
+sym_useful =sqrt(alpha(aa))*H_bob_TX.*sym_spread;       % Energy --> sqrt needed
+AN = sqrt(1 - alpha(aa))*W;
+
+sym_raditated_noiseless = sym_useful + AN;
+energy_radiated(cc,ss,nb_bor,aa) = mean(abs(sym_raditated_noiseless).^2); %sum(mean(abs(sym_raditated_noiseless),2).^2)/nb_subcar;
+
+
+for nn = 1:length(EbN0)
+
+
+
+
+%% PART 3. RECEIVER SIDE
+
+%% 1) OFDM 
+
+
+sym_useful_RX_eve = sym_useful.*H_eve_RX;
+
+
+% 1.2) AN symbols (only @ Eve)
+sym_AN_RX_eve = AN.*H_eve_RX;            % Noiseless AN symbols received @ eve
+
+% 1.3) useful symbols + AN
+sym_RX_eve = sym_raditated_noiseless.*H_eve_RX;
+energy_sym_RX_eve(cc,ss,nb_bor,aa) = mean(abs(sym_RX_eve).^2);
+energy_sym_AN_RX_eve(cc,ss,nb_bor,aa) = mean(abs(sym_AN_RX_eve).^2);
+
+%% 2) Noise addition on useful symbols + AN
+
+%[sym_RX_noisy_eve,energy_noise_eve] = TR_security_addNoise(sym_RX_eve, EbN0(nn), M, var(sym_raditated_noiseless));   % Noisy received symbols (useful + AN) @ Eve
+
+
+%% Eve matched filter before despreading: 
+
+% 1) Matched filtering (filt1)
+filt1 = despread_matrix*diag(H_bob_RX.*H_eve_TX) ;
+% filt1 = filt1./sqrt(N);
+energy_filt1(cc,ss) = mean(diag(filt1*ctranspose(filt1)));
+
+% Filt1
+sym_RX_eve_filt1 =  filt1*sym_RX_eve;
+
+energy_sym_RX_filt1(cc,ss,nb_bor,aa) = mean(abs(sym_RX_eve_filt1).^2);
+
+
+sym_useful_RX_eve_filt1  = filt1*sym_useful_RX_eve;
+energy_sym_useful_RX_filt1(cc,ss,nb_bor,aa) = mean(abs(sym_useful_RX_eve_filt1).^2);
+
+
+sym_AN_RX_eve_filt1 = filt1*sym_AN_RX_eve; %(H_bob_RX.*abs(H_eve_RX).^2.*AN);
+
+% sym_AN_RX_eve_generated = sym_AN_RX_eve_filt1(nb_subcar-nb_subcar/BOR+1:end);
+% sym_AN_RX_eve_random = sym_AN_RX_eve_filt1(1:nb_subcar-nb_subcar/BOR);
+
+% energy_sym_AN_RX_eve_generated(cc,ss)  = mean(abs(sym_AN_RX_eve_generated).^2);
+% energy_sym_AN_RX_eve_random(cc,ss)  = mean(abs(sym_AN_RX_eve_random).^2);
+energy_sym_AN_RX_eve_filt1(cc,ss,nb_bor,aa) = mean(abs(sym_AN_RX_eve_filt1).^2);
+
+
+
+
+%% 5. Metrics
+
+
+energy_sym_useful_RX_eve_filt1 = mean(abs(sym_useful_RX_eve_filt1).^2);        %mean(var(sym_useful_RX_despread_eve)) ; %mean(1/nb_subcar*sum(abs(sym_useful_RX_despread_eve).^2));
+energy_an(cc,nn,nb_bor,aa) = energy_W(ss,cc);
+
+
+end
+end
+end
+clc;
+% fprintf(progress_bar(nn,length(EbN0),'Noise level'))
+% fprintf(progress_bar(aa,length(alpha),'AN'))
+% fprintf(progress_bar(nb_bor,length(BOR),'Back Of Rate'))
+% fprintf(progress_bar(ss,8,'Channel Status'))
+% fprintf(progress_bar(cc,nb_channels,'Channel Status'))
+end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%              RESULTS                 %%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+for ii = 1:nb_channels
+    for jj = 1:total_subcar
+        mean_energy_W(ii,jj) = mean(energy_W(jj,1:ii));
+        mean_energy_W_test(ii,jj) = mean(energy_W_test(jj,1:ii));
+        mean_energy_W_test2(ii,jj) = mean(energy_W_test2(jj,1:ii));
+%         mean_energy_sym_AN_RX_eve_random(ii,jj) = mean(energy_sym_AN_RX_eve_random(1:ii,jj));
+%         mean_energy_sym_AN_RX_eve_generated(ii,jj) = mean(energy_sym_AN_RX_eve_generated(1:ii,jj));
+        mean_energy_sym_AN_RX_eve(ii,jj) = mean(energy_sym_AN_RX_eve(1:ii,jj));
+        mean_energy_filt1(ii,jj) = mean(energy_filt1(1:ii,jj));
+        mean_an(ii,jj) = mean(energy_sym_AN_RX_eve_filt1(1:ii,jj));
+        mean_H_bob(ii,jj) = mean(energy_H_bob(1:ii,jj));
+        mean_H_bob_bob(ii,jj) = mean(energy_H_bob_bob(1:ii,jj));
+        mean_H_eve(ii,jj) = mean(energy_H_eve(1:ii,jj));
+        mean_H_eve_eve(ii,jj) = mean(energy_H_eve_eve(1:ii,jj));
+        mean_H_bob_eve(ii,jj) = mean(energy_H_bob_eve(1:ii,jj));
+        mean_H_bob_eve_eve(ii,jj) = mean(energy_H_bob_eve_eve(1:ii,jj));
+        mean_H_eve_bob_bob(ii,jj) = mean(energy_H_eve_bob_bob(1:ii,jj));
+        mean_test_sid(ii,jj) = mean(test_sid(jj,1:ii));
+    end
+end
+
+figure;
+subplot(2,4,1)
+plot(mean_H_bob)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|H_B|^2]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+subplot(2,4,2)
+plot(mean_H_bob_bob)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|H_B|^4]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+subplot(2,4,3)
+plot(mean_H_eve)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|H_E|^2]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+
+subplot(2,4,4)
+plot(mean_H_eve_eve)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|H_E|^4]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+
+subplot(2,4,5)
+plot(mean_energy_W)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|W|^2]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+% 
+% 
+% subplot(2,4,6)
+% plot(mean_energy_sym_AN_RX_eve_generated)
+% % legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+% xlabel('Number of realizations')
+% ylabel('computed')
+% % legend(legendCell,'Location','best')
+% legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+% title(['BOR  = ', num2str(BOR)])
+% box on;
+% grid on;
+
+
+% subplot(2,4,7)
+% plot(mean_energy_sym_AN_RX_eve)
+% % legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+% xlabel('Number of realizations')
+% ylabel('$E[|H_E W|^2]$')
+% % legend(legendCell,'Location','best')
+% legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+% title(['BOR  = ', num2str(BOR)])
+% box on;
+% grid on;
+
+subplot(2,4,7)
+plot(mean_energy_filt1)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[|filt|^2]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+subplot(2,4,8)
+plot(mean_an)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+xlabel('Number of realizations')
+ylabel('$E[| filt * He W|^2]$')
+% legend(legendCell,'Location','best')
+legend('2 subcar','4 subcar','8 subcar','16 subcar','32 subcar','64 subcar','128 subcar','256 subcar')
+title(['BOR  = ', num2str(BOR)])
+box on;
+grid on;
+
+
+
+
+energy_W_per_BOR = mean(energy_W,2);
+% 
+% 
+% for ii = 1:nb_channels
+%     for jj = 1:nb_bor
+%         mean_an(ii,jj) = mean(term_an(1:ii,jj));
+%     end
+% end
+% 
+% figure;
+% plot(mean_an)
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+% xlabel('Number of realizations')
+% ylabel('Moving mean of AN term')
+% legend(legendCell,'Location','best')
+% title([num2str(nb_subcar), ' subcarriers'])
+% box on;
+% grid on;
+% 
+% 
+% % TEST
+% BOR2    = [0.4753 0.3836 0.3519 0.274 0.2394 0.2014 0.1792 0.1617 0.1382];
+% BOR4    = [NaN 0.2271 0.1993 0.1647 0.1363 0.1167 0.09806 0.08958 0.07749];
+% BOR8    = [NaN NaN 0.1088 0.09492 0.07802 0.0685 0.05679 0.04864 0.04216];
+% BOR16   = [NaN NaN NaN 0.05355 0.04504 0.03945 0.03358 0.02818 0.02424];
+% BOR32   = [NaN NaN NaN NaN 0.02689 0.02335 0.01943 0.01615 0.01419];
+% BOR64   = [NaN NaN NaN NaN NaN 0.01335 0.01152 0.01009 0.008545];
+% BOR128  = [NaN NaN NaN NaN NaN NaN 0.006498 0.005999 0.004683];
+% BOR256  = [NaN NaN NaN NaN NaN NaN NaN 0.003199 0.002911];
+% BOR512  = [NaN NaN NaN NaN NaN NaN NaN NaN 0.001625];
+% 
+% subcar = [2 4 8 16 32 64 128 256 512];
+% figure;
+% semilogy(subcar, BOR2); hold on;
+% semilogy(subcar, BOR4); hold on;
+% semilogy(subcar, BOR8); hold on;
+% semilogy(subcar, BOR16); hold on;
+% semilogy(subcar, BOR32); hold on;
+% semilogy(subcar, BOR64); hold on;
+% semilogy(subcar, BOR128); hold on;
+% semilogy(subcar, BOR256); hold on;
+% semilogy(subcar, BOR512); hold on;
+% legendCell = cellstr(num2str(BOR', 'BOR = %-d'));
+% legend(legendCell,'Location','best')
+% xlabel('Number of subcarriers')
+% ylabel('Eve matched filter, convergence value of AN term')
+% box on; grid on;
+% title('EbN0')
+end 
+
+
+
+
+
+
+
+
