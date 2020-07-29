@@ -170,7 +170,6 @@
 
 
 
-
 %%% Graphiques %%%
 \usepackage{tikz}
 \usepackage{pgfplots}
@@ -201,6 +200,7 @@
 %%% Math %%%
 \usepackage{delarray} % Belles matrices
 \usepackage{siunitx}
+\setcounter{MaxMatrixCols}{20} % Permet d'avor des matrices avec 20 colonnes max
 %\sisetup{locale = FR,detect-all}
 % Pour mettre siunitx en mode français (virgule plutôt que point etc.)
 
@@ -236,6 +236,9 @@
 \newcommand{\w}{\textbf{w}}
 
 %%% Math %%%
+
+\newcommand{\vect}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
 \newcommand{\oiint}{\int\!\!\!\!\!\!\! \:\!\subset\!\!\supset\!\!\!\!\!\!\!\int}
 \newcommand{\rot}{\text{rot}\,}
 \newcommand{\divv}{\text{div}\,}
@@ -303,14 +306,20 @@
 %% ----------------------------------------------------------------
 % package biblio
 %% ----------------------------------------------------------------
-\usepackage[
-    %backend=biber, 
-    natbib=true,
-    style=numeric,
-    sorting=none
-]{biblatex}
 
-\addbibresource{Bibliography.bib}
+%\bibliographystyle{ieeetr}
+%\bibliography{biblio}
+
+
+%\usepackage[
+    %backend=biber, 
+    %natbib=true,
+    %style=numeric,
+    %sorting=none
+%]{bibtex}
+
+
+%\addbibresource{Bibliography.bib}
 
 
 

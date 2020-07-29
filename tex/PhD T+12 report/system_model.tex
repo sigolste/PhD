@@ -10,8 +10,6 @@ A scheme of the secure \gls{fd} \gls{tr} \gls{siso} \gls{ofdm} communication is 
 
 
 
-
-
 %% Subsection
 \subsection{Conventional FD TR SISO OFDM Communication}
 The \gls{fd} \gls{tr} precoding scheme is illustrated in Fig.\ref{fig:TR_FD_classical}.  The communication is designed such that the data focuses at the legitimate receiver's position. 
@@ -23,7 +21,7 @@ The \gls{fd} \gls{tr} precoding scheme is illustrated in Fig.\ref{fig:TR_FD_clas
 \end{figure} 
 
 
-The data is conveyed onto \gls{ofdm} symbols with $Q$ subcarriers. Without loss of generality, we consider that only one \gls{ofdm} block $\textbf{x}$ is sent over the \gls{fd} \gls{tr} precoding \gls{siso} \gls{ofdm} system. A data block $\textbf{x}$ is composed of $N$ symbols $x_n$ (for $n = 0,..., N-1$, with $N\leq Q$). The symbol $x_n$ is assumed to be a zero-mean \gls{rv} with variance $\EX{|x_n|^2} = \sigma_x^2 = 1$ (i.e., a normalized constellation is considered). The data block $\textbf{x}$ is then spread with a factor $U = Q/N$, called \gls{bor}, via the matrix $\spread$ of size $Q\times N$. The matrix $\spread$ is called the spreading matrix and stacks $U$ times $N\times N$ diagonal matrices, with diagonal elements taken from the set $\{\pm1\}$ and being \gls{iid} in order not to increase the \gls{papr} as suggested in \cite{papr}. 
+The data is conveyed onto \gls{ofdm} symbols with $Q$ subcarriers. Without loss of generality, we consider that only one \gls{ofdm} block $\textbf{x}$ is sent over the \gls{fd} \gls{tr} precoding \gls{siso} \gls{ofdm} system. A data block $\textbf{x}$ is composed of $N$ symbols $x_n$ (for $n = 0,..., N-1$, with $N\leq Q$). The symbol $x_n$ is assumed to be a zero-mean \gls{rv} with variance $\EX{|x_n|^2} = \sigma_x^2 = 1$ (i.e., a normalized constellation is considered). The data block $\textbf{x}$ is then spread with a factor $U = Q/N$, called \gls{bor}, via the matrix $\spread$ of size $Q\times N$. The matrix $\spread$ is called the spreading matrix and stacks $U$ times $N\times N$ diagonal matrices, with diagonal elements taken from the set $\{\pm1\}$ and being \gls{iid} in order not to increase the \gls{papr} as suggested in \cite{4394231}. 
 This matrix is normalized by a factor $\sqrt{U}$ in order to have $\spread^H \spread = \textbf{I}_N$:
 \begin{equation}
 \spread= \frac{1}{\sqrt{U}} \; . \;
@@ -41,7 +39,7 @@ This matrix is normalized by a factor $\sqrt{U}$ in order to have $\spread^H \sp
   \hspace{.2in} ; \hspace{.2in} [Q \times N]
  \label{eq:spread_mat}
 \end{equation}
-As stated in \cite{TR_FD_TD}, the idea behind the spreading is that up-sampling a signal in the \gls{td} is equivalent to the repetition and shifting of its spectrum in the \gls{fd}. In doing so, each data symbol will be transmitted onto $U$ different subcarriers with a spacing of $N$ subcarriers, introducing frequency diversity. The spread sequence is then precoded before being transmitted. This requires the knowledge of Bob \gls{cfr} at Alice. We consider that Alice can perfectly estimate Bob \gls{cfr}. The channels between Alice and Bob ($\HB$) and between Alice and Eve ($\HE$) are assumed to be static during the transmission of one \gls{ofdm} symbol. $\HB$ and $\HE$ are $Q\times Q$ diagonal matrices whose elements are $h_{\text{B},q}$ and $h_{\text{E},q}$ (for $q = 0,...,Q-1$) and follow a zero-mean unit-variance complex normal distribution, i.e., their modulus follow a Rayleigh distribution. We also consider that the overall channel energies are normalized to unity for each channel realization. The precoding matrix $\HB^*$ is also a diagonal matrix with elements $h_{\text{B},q}^*$. At the receiver, a despreading operation is performed by applying $\spread^H$. We consider that Bob knows the spreading sequence and apply a \gls{zf} equalization.  In the following, different decoding structures $\textbf{G}$ will be investigated at Eve. These different schemes will lead to different level of security performances. A perfect synchronization is also assumed at Bob and Eve positions.\\
+As stated in \cite{nguyen2019frequency}, the idea behind the spreading is that up-sampling a signal in the \gls{td} is equivalent to the repetition and shifting of its spectrum in the \gls{fd}. In doing so, each data symbol will be transmitted onto $U$ different subcarriers with a spacing of $N$ subcarriers, introducing frequency diversity. The spread sequence is then precoded before being transmitted. This requires the knowledge of Bob \gls{cfr} at Alice. We consider that Alice can perfectly estimate Bob \gls{cfr}. The channels between Alice and Bob ($\HB$) and between Alice and Eve ($\HE$) are assumed to be static during the transmission of one \gls{ofdm} symbol. $\HB$ and $\HE$ are $Q\times Q$ diagonal matrices whose elements are $h_{\text{B},q}$ and $h_{\text{E},q}$ (for $q = 0,...,Q-1$) and follow a zero-mean unit-variance complex normal distribution, i.e., their modulus follow a Rayleigh distribution. We also consider that the overall channel energies are normalized to unity for each channel realization. The precoding matrix $\HB^*$ is also a diagonal matrix with elements $h_{\text{B},q}^*$. At the receiver, a despreading operation is performed by applying $\spread^H$. We consider that Bob knows the spreading sequence and apply a \gls{zf} equalization.  In the following, different decoding structures $\textbf{G}$ will be investigated at Eve. These different schemes will lead to different level of security performances. A perfect synchronization is also assumed at Bob and Eve positions.\\
 
 An illustration of such a communication is presented in Fig.\ref{fig:no_AN_illustration} where a block of $N=4$ symbols is spread by a factor $U=4$ and then sent via $Q=16$ subcarriers. We observe that, at Bob, the received sequence is perfectly recovered which is not the case at Eve's position. 
 \begin{figure}[h!]
@@ -99,7 +97,7 @@ In order to secure the communication between Alice and Bob, an \gls{an} signal $
     \textbf{x}_{\text{TR}} = \sqrt{\alpha} \;\HB^*  \spread\; \textbf{x} +  \sqrt{1-\alpha} \; \w
     \label{eq:sym_rad_AN}
 \end{equation} 
-where $\alpha \in [0,1]$ defines the ratio of the total power dedicated to the useful signal, knowing that $\EX{\module{\HB^*\spread\textbf{x}}^2} = \EX{\module{\w}^2}$. Whatever the value of $\alpha$, the total transmitted power remains constant.\\
+where $\alpha \in [0,1]$ defines the ratio of the total power dedicated to the useful signal, knowing that $\EX{\module{\HB^*\spread\textbf{x}}^2} = \EX{\module{\w}^2} = 1/U$. Whatever the value of $\alpha$, the total transmitted power remains constant.\\
 
 Fig.\ref{fig:AN_illustration} illustrates a scheme with additive \gls{an}. We sent a block of $N=4$ symbols which is spread by a factor $U=4$, i.e., the data is conveyed onto $Q=16$ subcarriers. A block of 16 \gls{an} symbols is added (in pink). At bob's position, there is no influence of these \gls{an} symbols and the data is perfectly recovered. At Eve, the received symbols are corrupted by the \gls{an} signal and by the data precoding.
 \begin{figure}[h!]
@@ -132,10 +130,10 @@ where $\textbf{A} = \spread^H\HB\; \in \R^{N\times Q}$. Condition (\ref{eq:an_co
 \end{equation}
 where $\textbf{U} \in \C^{N \times N}$ contains left singular vectors, $\Sigma \in \C^{N \times N}$ is a diagonal matrix containing singular values, $\textbf{V}_1 \in \C^{Q \times N}$ contains right singular vectors associated to non-zero singular values, and $\textbf{V}_2 \in \C^{Q \times Q-N}$ contains right singular vectors that span the right null space of $\textbf{A}$. Therefore, the \gls{an} signal can be expressed as:
 \begin{equation}
-    \w = \textbf{V}_2 \tilde{\w}
+    \w = \beta \textbf{V}_2 \tilde{\w}
     \label{eq:an_w}
 \end{equation}
-which ensures that (\ref{eq:an_cond}) is satisfied for any arbitrary vector $\tilde{\w} \in \C^{Q-N \times 1}$. Since $Q = NU$, as soon as $U\geq 2$, there is a set of infinite possibilities to generate $\tilde{\w}$ and therefore the \gls{an} signal. In the following, we assume that $\tilde{\w}$ is a zero-mean circularly symmetric white complex Gaussian noise with covariance matrix $\EX{\tilde{\w}(\tilde{\w})^H} = \textbf{I}_{Q-N \times 1}$, which implies that $\EX{\textbf{ww}^H} = \textbf{V}_2 \textbf{V}_2^H = \sigma^2_{\text{AN}} \textbf{I}_N$, where $\sigma^2_{\text{AN}}$ is the \gls{an} autocorrelation.
+which ensures that (\ref{eq:an_cond}) is satisfied for any arbitrary vector $\tilde{\w} \in \C^{Q-N \times 1}$. Since $Q = NU$, as soon as $U\geq 2$, there is a set of infinite possibilities to generate $\tilde{\w}$ and therefore the \gls{an} signal. In the following, we assume that $\tilde{\w}$ is a zero-mean circularly symmetric white complex Gaussian noise with covariance matrix $\EX{\tilde{\w}(\tilde{\w})^H} = \textbf{I}_{Q-N \times 1}$. The \gls{an} signal is then generated thanks to (\ref{eq:an_w}) and finally weighted by $\beta$ to have an energy of 1/U.
 
 
 \subsubsection{Received sequence at the intended position}
@@ -144,7 +142,7 @@ After despreading, the received sequence at Bob is:
     \textbf{y}_{\text{B}}^H = \sqrt{\alpha} \; \spread^H \module{\HB}^2 \spread \textbf{x} \;  +  \;  \spread^H \textbf{v}_\text{B} 
     \label{eq:rx_bob_AN}
 \end{equation}
-Again, each transmitted symbol is affected by a real gain depending on the BOR value and weighted by $\sqrt{\alpha}$. One can observe that no \gls{an} contribution is present in (\ref{eq:rx_bob_AN}) since (\ref{eq:an_cond}) is respected. A \gls{zf} equalization is performed at the receiver leading to:
+Again, each transmitted symbol is affected by a real gain depending on the BOR value and weighted by $\sqrt{\alpha}$. One can observe that no \gls{an} contribution is present in (\ref{eq:rx_bob_AN}) since (\ref{eq:an_cond}) are respected. A \gls{zf} equalization is performed at the receiver leading to:
 \begin{equation}
     \hat{\textbf{x}}_{\text{B}} = \left( \sqrt{\alpha} \spread^H \module{\HB}^2 \spread \right)^{-1}  \left(\sqrt{\alpha}  \spread^H\module{\HB}^2 \spread \textbf{x}   +    \spread^H \textbf{v}_\text{B}\right)= \textbf{x} + \left( \sqrt{\alpha} \spread^H \module{\HB}^2 \spread \right)^{-1} \spread^H \textbf{v}_\text{B}
     \label{eq:rx_bob_AN_eq}
@@ -167,6 +165,6 @@ In (\ref{eq:rx_eve_an}), a term depending on the \gls{an} signal appears since $
     \end{split}
     \label{eq:rx_an_eve_eq}
 \end{equation}
-Equation (\ref{eq:rx_an_eve_eq}) shows that the addition of \gls{an} in the \gls{fd} \gls{tr} \gls{siso} \gls{ofdm} communication can secure the data transmission. It is to be noted that, since $\w$ is generated from an infinite set of possibilities, even if Eve knows its equivalent channel $\HE\HB^*$ and the spreading sequence, she cannot estimate the \gls{an} signal  to try retrieving the data.  The degree of security will depend on the amount of \gls{an} energy that is injected into the communication and the decoding capabilities of Eve, as shown in Section \ref{sec:perf}.
+Equation (\ref{eq:rx_an_eve_eq}) shows that the addition of \gls{an} in the \gls{fd} \gls{tr} \gls{siso} \gls{ofdm} communication can secure the data transmission. It is to be noted that, since $\w$ is generated from an infinite set of possibilities, even if Eve knows its equivalent channel $\HE\HB^*$ and the spreading sequence, she cannot estimate the \gls{an} signal  to try retrieving the data.  The degree of security will depend on the amount of \gls{an} energy that is injected into the communication and on the decoding capabilities of Eve, as shown in Section \ref{sec:perf}.
 
 

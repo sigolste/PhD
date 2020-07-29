@@ -1,0 +1,39 @@
+\renewcommand{\theparagraph}{C}
+
+\section{Momentum computation of complex-valued random normal variables}
+\label{appC}
+\subsection{Real-valued random normal variable}
+For real-valued random variable, the moment-generating function is an alternative specification of its probability distribution. In particular, it allows to compute the moments of the probability distribution as:
+\begin{equation}
+m_n = \EX{X^n} = M_X^{(n)}(0) = \left. \frac{d^n M_X}{dt^n}\right|_{t=0}
+\end{equation}
+For a real normal random variable $\mathcal{N}(\mu,\sigma^2) $, the moment-generating function is given by:
+\begin{equation}
+M_X = e^{t \mu + \frac{1}{2} \sigma^2 t^2 }
+\end{equation}
+From that, we have:
+\begin{equation}
+\begin{split}
+&\EX{|X|^2} = \sigma^2 + \mu^2\\
+&\EX{|X|^4} = 3(\sigma^2)^2 + 6 \sigma^2 \mu^2 + \mu^4
+\end{split}
+\label{eq:moments_x}
+\end{equation}
+
+\subsection{Complex-valued random normal variable}
+A complex normal random variable is defined as $Z = X + iY$ where $X \sim \mathcal{N}(\mu_x,\sigma^2_x)$ and $Y \sim \mathcal{N}(\mu_y,\sigma^2_y)$. We also have:
+\begin{equation}
+\begin{split}
+&|Z|^2 = X^2 + Y^2\\
+&|Z|^4 = X^4  + 2 X^2 Y^2 + Y^4
+\end{split}
+\label{eq:deriv_z}
+\end{equation}
+Since $X$ and $Y$ are independent and taking into account eq.\ref{eq:moments_x}, the moments of $Z$ are easy to compute:
+\begin{equation}
+\begin{split}
+&\EX{|Z|^2} = \sigma_x^2 + \mu_x^2 + \sigma_y^2 + \mu_y^2\\
+&\EX{|Z|^4} = 3(\sigma_x^2)^2 + 6 \sigma_x^2 \mu_x^2 + \mu_x^4 + 2\left[ ( \sigma_x^2 + \mu_x^2 )(\sigma_y^2 + \mu_y^2)\right] + 3(\sigma_y^2)^2 + 6 \sigma_y^2 \mu_y^2 + \mu_y^4
+\end{split}
+\label{eq:moments_z}
+\end{equation}

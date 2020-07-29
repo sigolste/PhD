@@ -63,7 +63,7 @@ $ git stash list											# Return a list of the stashes we did (each stash has
 $ git stash apply@{ID}											# Apply stash "ID" on "new_branch"
 
 # 4.2.2 We modify our master branch, we did commit our modifications but wanted to do it on "new_branch"
-# Solution: On our master banch, get a list of the different commits, reset the commit we want on "new_branch" and apply it on "new_branch"
+# Solution: On our master branch, get a list of the different commits, reset the commit we want on "new_branch" and apply it on "new_branch"
 
 $ git log												# Return chronological list of the commits we did on the current branch
 $ git reset --hard HEAD^										# Delete the LAST commit (via HEAD^) on the current branch

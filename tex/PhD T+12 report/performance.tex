@@ -1,6 +1,6 @@
 \section{Performance Assessment} 
 \label{sec:perf}
-The \gls{sr} is defined as the maximum transmission rate that can be supported by the legitimate receiver's channel while ensuring the impossibility for the eavesdropper to retrieve the data, \cite{TR_Tran_secrecy_capa}. In the ergodic sense, it can be expressed as:
+The \gls{sr} is defined as the maximum transmission rate that can be supported by the legitimate receiver's channel while ensuring the impossibility for the eavesdropper to retrieve the data, \cite{7348007}. In the ergodic sense, it can be expressed as:
 \begin{equation}
 \begin{split}
     C_S &=  \EX{\log_2{\left(1+\gamma_B\right)} - \log_2{\left(1+\gamma_E\right)}} \; \; \; , \; \; \;  \gamma_B > \gamma_E \\
@@ -13,8 +13,12 @@ with $\gamma_B$ and $\gamma_E$ being respectively the \gls{sinr} at Bob and Eve'
 
 In the following, we consider these assumptions:
 \begin{itemize}
-    \item Bob and Eve channels are independent: $h_{B,i} \independent h_{E,i},\; \forall i$
-    \item No frequency correlation between subcarriers\footnote{Thanks to the design of the spreading matrix, the $U$ subcarriers composing one symbol are spaced by $N = Q/U$ subcarriers. If this distance is larger than the coherence bandwidth of the channel, the assumption holds. This usually occurs in rich multipath environments and for sufficiently large bandwidths and moderate BOR values.}: $h_{B,i} \independent h_{B,j},\; \forall i\neq j$ ; $h_{E,i} \independent h_{E,j},\; \forall i\neq j$
+\item $Q$ subcarriers, back off rate $= U$, $N = Q/U$ symbols sent per OFDM block
+\item  $\mat{H}_B = \mat{H}_{B,x} + j\mat{H}_{B,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+\item  $\mat{H}_E = \mat{H}_{E,x} + j\mat{H}_{E,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+\item $h_{B,i} \indep h_{B,j}, \forall i \neq j$, i.e., no frequency correlation between Bob's channel subcarriers
+\item $h_{E,i} \indep h_{E,j}, \forall i \neq j$, i.e., no frequency correlation between Eve's channel subcarriers\footnote{Thanks to the design of the spreading matrix, the $U$ subcarriers composing one symbol are spaced by $N = Q/U$ subcarriers. If this distance is larger than the coherence bandwidth of the channel, the assumption holds. This usually occurs in rich multipath environments and for sufficiently large bandwidths and moderate BOR values.}.
+\item $h_{B,i} \indep h_{E,j}, \forall i,j$, i.e., Bob and Eve are sufficiently spaced inducing no spatial correlation between their channels.
 \end{itemize}
 
 
@@ -108,7 +112,7 @@ Eve can also perform a matched filtering to maximize its \gls{snr} before despre
     \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \module{\HE}^2 \module{\HB}^2 \spread\; \textbf{x} \; +  \; \sqrt{1-\alpha} \; \spread^H \HB\module{\HE}^2 \w  \; +  \; \spread^H  \textbf{H}^*_E \textbf{H}_B \;\ve
     \label{eq:rx_eve_filt1}
 \end{equation}
-If we compare the received signal at Bob (\ref{eq:rx_bob_AN}) with the received signal at Eve (\ref{eq:rx_eve_filt1}), we remark that the data component in (\ref{eq:rx_eve_filt1}) will be more amplified than in (\ref{eq:rx_bob_AN}). In fact, we amplify the data by a factor $\frac{U+3}{U}$ in (\ref{eq:rx_eve_filt1}), and only by a factor $\frac{U+1}{U}$ in (\ref{eq:rx_bob_AN})\footnote{see Appendix \ref{appA:SINR_deriv}}. However, we note that the \gls{an} component of the received signal will be amplified with teh matched filtering decoding strategy. With this structure, we have:
+If we compare the received signal at Bob (\ref{eq:rx_bob_AN}) with the received signal at Eve (\ref{eq:rx_eve_filt1}), we remark that the data component in (\ref{eq:rx_eve_filt1}) will be more amplified than in (\ref{eq:rx_bob_AN}). In fact, we amplify the data by a factor $\frac{U+3}{U}$ in (\ref{eq:rx_eve_filt1}), and only by a factor $\frac{U+1}{U}$ in (\ref{eq:rx_bob_AN})\footnote{see Appendix \ref{appA:SINR_deriv}}. However, we note that the \gls{an} component of the received signal will be amplified with the matched filtering decoding strategy. With this structure, we have:
 \begin{equation}
     \begin{split}
         A_{1,n} &= \sqrt{\alpha}\frac{1}{U}\sum_{i=0}^{U-1}  \left|h_{\text{E}, n + iN}\right|^2 \; \left|h_{\text{B}, n + iN}\right|^2 \\
@@ -121,13 +125,13 @@ After computations, the expected values are:
     \begin{split}
         &\EX{|A_{1,n}|^2} = \alpha \frac{U+3}{U} \\
         &\EX{|A_{2,n}|^2} = \sigma^2_{\text{V,E}}\\
-        &\EX{|A_{3,n}|^2} = 2(1-\alpha) \left( \sigma^2_{\text{AN}} + \text{cov}(\module{\w}^2,\module{\textbf{H}_\text{B}}^2) \right)
+        &\EX{|A_{3,n}|^2} = \frac{1-\alpha}{U+1}
     \end{split}
     \label{eq:expected_eve_filt1}
 \end{equation}
 The details can be found in Appendix  \ref{appA:SINR_deriv}. We then obtain an ergodic \gls{sinr} which takes the following form:
 \begin{equation}
-    \EX{\gamma_{E,n}} \gtrapprox \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + 2(1-\alpha) \left( \sigma^2_{\text{AN}} + \text{cov}(\module{\w}^2,\module{\textbf{H}_\text{B}}^2) \right)}
+    \EX{\gamma_{E,n}} \gtrapprox \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}
     \label{eq:sinr_eve_filt1}
 \end{equation}
 
@@ -179,34 +183,55 @@ So far, no analytic expression of the \gls{sinr} has been found for the \gls{lmm
 
 \subsection{Optimal amount of AN to inject}
 \label{subsec:best_alpha}
-\textit{This section is only dedicated for the scenario where Eve has the same capabilities as Bob. This is subject to further completion where the different decoding structures will be included.}\\
+\textit{This section is only dedicated for the scenarios where Eve implements the same decoding sturcture as Bob and a matched filtering decoder.}
 
-With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt0}), it is possible to obtain a closed-form approximation of the SR upper bound and therefore to determine the amount of AN energy to inject that maximizes the SR. If we introduce: $T_1 = U(U+1)\sigma_{\text{AN}}^2$, $T_2 = U(U+1)(\sigma_{\text{E}}^2+\sigma_{\text{AN}}^2) - U^2 \sigma_{\text{B}}^2\sigma_{\text{AN}}^2$, $T_3 = U(\sigma_{\text{B}}^2+\sigma_{\text{E}}^2+\sigma_{\text{AN}}^2)$, and $T_4= U\sigma_{\text{B}}^2(1-U\sigma_{\text{AN}}^2)$, we obtain\footnote{see Appendix \ref{appB:alpha}}:
+\subsubsection{Eve's estimator: same structure as Bob}
+With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt0}), it is possible to obtain a closed-form approximation of the SR upper bound and therefore to determine the amount of AN energy to inject that maximizes the SR. If we introduce $T_1=-(U+1)$,  $T_2 = (U+1)U\sigma_{\text{V,E}}^2^ + (U+1) - U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+1)$, we obtain\footnote{see Appendix \ref{appB:alpha_decod0}}:
 \begin{equation}
-    C_s \lessapprox \log_2 \left( \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \right)
-    \label{eq:SR_anal2}
+C_s \lessapprox \log_2 \left( \frac{\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{T_3} \right)
+\label{eq:SR_anal2_decod_0}
+\end{equation}
+Since $T_3$ is always strictly positive, the \gls{sr} is maximized for:
+\begin{equation}
+	\alpha_{\text{opt}} = \frac{-T_2}{2T_1}
+	\label{eq:optimal_alpha_decod_0}
+\end{equation}
+
+
+
+\subsubsection{Eve's estimator: matched filtering}
+With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt1}), it is possible to obtain a closed-form approximation of the SR upper bound and therefore to determine the amount of AN energy to inject that maximizes the SR.
+If we introduce: $T_1 = U+1$, $T_2 = (U+1)^2\sigma_{\text{E}}^2 + (U+1) - U\sigma_{\text{B}}^2$, $T_3 = U(U+1)\sigma_{\text{B}}^2\sigma_{\text{E}}^2 + U \sigma_{\text{B}}^2$, and $T_4=(U+1)(U+3)\sigma_{\text{B}}^2-U\sigma_{\text{B}}^2$, we obtain\footnote{see Appendix \ref{appB:alpha_decod1}}:
+\begin{equation}
+C_s \lessapprox \log_2 \left( \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \right)
+\label{eq:SR_anal2_decod1}
 \end{equation}
 To  maximize the secrecy rate as a function of the parameter $\alpha$, we find the zeroes of:
 \begin{equation}
 \begin{split}
-    \frac{\partial C_s}{\partial \alpha} &= \frac{ \frac{-\alpha^2 T_1 T_4 \; - \; 2 \alpha T_1 T_3 \; + \; \left( T_2 T_3 \; - \; T_3 T_4 \right) }{\left( \alpha T_4 \; + \; T_3\right)^2} }{ \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \; . \; \ln{2}} 
-    \label{eq:SR_derivative}
+\frac{\partial C_s}{\partial \alpha} &= \frac{ \frac{-\alpha^2 T_1 T_4 \; - \; 2 \alpha T_1 T_3 \; + \; \left( T_2 T_3 \; - \; T_3 T_4 \right) }{\left( \alpha T_4 \; + \; T_3\right)^2} }{ \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \; . \; \ln{2}} 
+\label{eq:SR_derivative}
 \end{split}
 \end{equation}
 After some algebraic manipulations, one obtains: 
 \begin{equation}
-         \frac{\partial C_s}{\partial \alpha} = 0
-         \; \Leftrightarrow \; \alpha_{opt} = \frac{\pm\sqrt{T_1^2 T_3^2 \; + \; T_1 T_2 T_3 T_4 \; - \; T_1 T_3 T_4^2} \; - \; T_1 T_3}{T_1 T_4}
-         \label{eq:best_alpha}
+\frac{\partial C_s}{\partial \alpha} = 0
+\; \Leftrightarrow \; \alpha_{\text{opt}} = \frac{\pm\sqrt{T_1^2 T_3^2 \; + \; T_1 T_2 T_3 T_4 \; - \; T_1 T_3 T_4^2} \; - \; T_1 T_3}{T_1 T_4}
+\label{eq:optimal_alpha_decod_1}
 \end{equation}
 where only the positive roots are solutions since $\alpha \in [0,1]$.
 
 
 
 
+
 \subsection{Secrecy rate optimization via waterfilling}
 \label{subsec:perf_waterf}
-From section \ref{subsec:best_alpha}, the optimal amount of radiated energy dedicated for the transmission of the data signal is derived. The analytic expression (\ref{eq:best_alpha}) lead to the coefficient $\alpha_{\text{opt}}$ that maximizes the ergodic \gls{sr} of the communication. As a reminder, this is only obtained for the scenario where Eve and Bob present the same decoding capabilities. Before despreading, the received signals at Bob and Eve are respectively given by:
+From section \ref{subsec:best_alpha}, the optimal amount of radiated energy dedicated for the transmission of the data signal is derived for the two models. The analytic expressions (\ref{eq:optimal_alpha_decod_0}) and (\ref{eq:optimal_alpha_decod_1}) lead to the coefficients $\alpha_{\text{opt}}$ that maximize the ergodic \gls{sr} of the communication for two different decoding capabilities at Eve.\\
+
+\textit{In the following, the optimization procedure will only be explained for the first decoding structure at Eve. The same discussion holds for the second one.}\\
+
+In this scenario, Eve only despread the received sequence. Before despreading, the signals at Bob and Eve are respectively given by:
 \begin{equation}
     \begin{split}
         \textbf{y}_{\text{B}} &= \sqrt{\alpha_{\text{opt}}} \; \module{\HB}^2 \spread\; \textbf{x} \; +  \;  \vb \\
@@ -214,10 +239,10 @@ From section \ref{subsec:best_alpha}, the optimal amount of radiated energy dedi
     \end{split}
     \label{eq:rx_signal_bob_eve}
 \end{equation}
-We observe from (\ref{eq:rx_signal_bob_eve}) that an unique coefficient $\alpha_{\text{opt}}$ weights the $Q$ components of the useful data. That is, each subcarrier will be affected by the same coefficient. However, we know that the channel capacity at one subcarrier is proportional to the subcarrier energy. Therefore, subcarriers with higher gains will contribute more to the total channel capacity than subcarriers with lower gains. We also consider throughout this paper that Alice can instantaneously estimate Bob's channel but does not have any information about Eve instantaneous \gls{csi} such that we can compute the instantaneous capacity at Bob but we only have access to the ergodic capacity at Eve. From this discussion, we can state that, if we could have access to Eve's instantaneous capacity, we could tune the weights at each subcarrier, i.e., applying a different weight at each subcarrier depending on its power, in such a way that it enhances the instantaneous capacity at Bob and it degrades the instantaneous capacity at the eavesdropper position. \\
+We observe from (\ref{eq:rx_signal_bob_eve}) that an unique coefficient $\alpha_{\text{opt}}$ weights the $Q$ components of the useful data. That is, each subcarrier will be affected by the same coefficient. However, we know that the channel capacity at one subcarrier is proportional to the subcarrier energy. Therefore, subcarriers with higher gains will contribute more to the total channel capacity than subcarriers with lower gains. We also consider throughout this paper that Alice can instantaneously estimate Bob's channel but does not have any information about Eve instantaneous \gls{csi}, such that we can compute the instantaneous capacity at Bob but we only have access to the ergodic capacity at Eve. From this discussion, we can state that, if we could have access to Eve's instantaneous capacity, we could tune the weights at each subcarrier, i.e., applying a different weight at each subcarrier depending on its power, in such a way that it enhances the instantaneous capacity at Bob and it degrades the instantaneous capacity at the eavesdropper position. \\
 
 Since we only have access to the ergodic capacity at Eve, we proceed as follows:\\
-Based on the statistics of Bob and Eve channels, we obtain a closed form expression of the ergodic \gls{sr} given by (\ref{eq:SR_anal2}). From that, we find via (\ref{eq:best_alpha}) the value of $\alpha_{\text{opt}}$ that, in the ergodic sense, will maximize the \gls{sr}. Then, at each channel realization, we determine a new set of coefficients, denoted by $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob while ensuring that:
+Based on the statistics of Bob and Eve channels, we obtain a closed form expression of the ergodic \gls{sr} given by (\ref{eq:SR_anal2_decod_0}). From that, we find via (\ref{eq:optimal_alpha_decod_0}) the value of $\alpha_{\text{opt}}$ that, in the ergodic sense, will maximize the \gls{sr}. Then, at each channel realization, we determine a new set of coefficients, denoted by $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob while ensuring that:
 \begin{itemize}
     \item[1.] The total radiated energy should remain constant:
     \begin{equation}
@@ -229,7 +254,7 @@ Based on the statistics of Bob and Eve channels, we obtain a closed form express
     \end{equation}
     \item[3.] The \gls{an} signal should still lie in the null space of Bob:
     \begin{equation}
-        \spread^H \HB \sqrt{1-\boldsymbol\alpha_{\text{w}}}\odot \w < \epsilon
+        \forall \epsilon > 0 \; , \; \exists \;  \boldsymbol\alpha_{\text{w}} \: : \; \spread^H \HB \sqrt{1-\boldsymbol\alpha_{\text{w}}}\odot \w < \epsilon
     \end{equation}
 \end{itemize}
-Since we consider that Bob and Eve channels are independent, optimizing the coefficients that weight each subcarrier to enhance the capacity at Bob will not modify the capacity at Eve. In doing so, with the waterfilling optimization procedure, the \gls{sr} will increase as it will be shown in section \ref{subsub:simu_waterfilling}. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization
+Since we consider that Bob and Eve channels are independent, optimizing the coefficients that weight each subcarrier to enhance the capacity at Bob will not modify the capacity at Eve. In doing so, with the waterfilling optimization procedure, the \gls{sr} will increase as it will be shown in section \ref{subsub:simu_waterfilling}. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization.

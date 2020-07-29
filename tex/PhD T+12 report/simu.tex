@@ -32,22 +32,24 @@ Fig. \ref{fig:ber_ebno} and \ref{fig:ber_alpha} show the system performance in t
 
 \subsection{Secrecy results}
 \label{subsec:sec_result}
-\subsubsection{Eve and Bob with identical capacities}
+\subsubsection{Comparaison between models and simulations}
 \label{subsubsec:sec_result_despreading}
 \begin{figure}[ht!]
     \centering
-    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_simu_anal_filt0.eps}}
-    \caption{Secrecy Rate curves, analytic vs simulation, Bob and Eve with same capabilities, $E_b/N_0=20$ dB }
+    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_simu_anal_comparaison.eps}}
+    \caption{Secrecy Rate curves, analytic vs simulation for the 2 models, $E_b/N_0=25$ dB, BOR = 4 }
     \label{fig:secrecy_alpha_bor}
 \end{figure}
 \begin{figure}[ht!]
     \centering
-    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_max.eps}}
-    \caption{Optimal amount of AN to inject, Bob and Eve with same capabilities, $E_b/N_0=5$ dB }
+    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_max2.eps}}
+    \caption{Optimal amount of AN to inject, Bob and Eve with the same decodinf structure, $E_b/N_0=5$ dB }
     \label{fig:secrecy_alpha_bor_optimal}
 \end{figure}
-Fig. \ref{fig:secrecy_alpha_bor} shows the \gls{sr} evolution as a function of $\alpha$ for different \gls{bor} values. It is considered that Eve's receiver is equivalent to Bob's one. First, it can be seen that analytic curves, given by (\ref{eq:SR_anal2}), approximate well the simulation curves and remains a tight upper bound for all scenarios.  In addition, the \gls{sr} obtained with the classical \gls{fd} \gls{tr} \gls{siso} \gls{ofdm} system, i.e., no \gls{an} signal, is enhanced with the addition of \gls{an} except for very high percentages of \gls{an}. Furthermore, the \gls{sr} increases when the \gls{bor} becomes higher because the \gls{tr} gain becomes larger at Bob for higher \gls{bor} values but not at Eve. No more secrecy is obtained when $\alpha \to 0$, since the \gls{sinr}'s at Bob and Eve drop to zero.\\
-Fig. \ref{fig:secrecy_alpha_bor_optimal} illustrates the values of $\alpha_{opt}$ given by (\ref{eq:best_alpha}) that maximize the \gls{sr} determined from the closed-form approximation (\ref{eq:SR_anal2}), as well as obtained from the numerical simulations. The analytic estimation of the optimal amount of \gls{an} energy is not perfect but, the resulting simulated \gls{sr} is very close to the maximal \gls{sr}. The reason can be observed in Fig. \ref{fig:secrecy_alpha_bor} where the \gls{sr} varies very slowly about its maximum when $\alpha$ changes. So, for a given \gls{bor} value, Alice can make a rough determination of $\alpha_{opt}$ and therefore the available \gls{sr}, if $E_b/N_0$ is known.  
+
+Fig. \ref{fig:secrecy_alpha_bor} shows the \gls{sr} evolution as a function of $\alpha$ for the two derived models, i.e., Eve implementing a simple despreading, and Eve implementing a matched filter. First, it can be seen that analytic curves, given by (\ref{eq:SR_anal2_decod_0}) and (\ref{eq:SR_anal2_decod1}), approximate well the simulation curves and remain tight upper bounds for both models.  In addition, the \gls{sr} obtained with the classical \gls{fd} \gls{tr} \gls{siso} \gls{ofdm} system, i.e., no \gls{an} signal, is enhanced with the addition of \gls{an} except for very high percentages of \gls{an}. Furthermore, for both models, no more secrecy is obtained when $\alpha \to 0$, since the \gls{sinr}'s at Bob and Eve drop to zero. When Eve implements a matched filtering decoder, we observe that, when $\alpha \to 1$, i.e., no \gls{an} energy is injected, the \gls{sr} becomes negative. It first shows that implementing a matched filter at the receiver side is more advantageous than implementing it at the transmitter, but above all, that the injection of \gls{an} is essential when Eve implements a matched filter to ensure a positive \gls{sr}.\\
+
+The left $y$-axis of Fig.\ref{fig:secrecy_alpha_bor_optimal} illustrates the values of $\alpha_{\text{opt}}$ given by (\ref{eq:optimal_alpha_decod_0}) and (\ref{eq:optimal_alpha_decod_1}) that maximize the \gls{sr} determined from the closed-form approximations (\ref{eq:SR_anal2_decod_0}) and (\ref{eq:SR_anal2_decod1}), as well as obtained from the numerical simulations. The analytic estimations of the optimal amount of \gls{an} energy are not perfect but, the resulting simulated \gls{sr} are very close to the maximal \gls{sr} obtained numerically, as it can be observed on the right $y$-axis of Fig.\ref{fig:secrecy_alpha_bor_optimal}. The reason can be observed in Fig. \ref{fig:secrecy_alpha_bor} where the \gls{sr} vary very slowly about their maxima when $\alpha$ changes, for both models. So, for a given \gls{bor} value, Alice can make a rough determination of $\alpha_{\text{opt}}$ depending on Eve decoding structure, and therefore the available \gls{sr}, if $E_b/N_0$ is known. One can also note that much lower values of $\alpha_{\text{opt}}}$, i.e. higher \gls{an} energy, should be injected to maximize the \gls{sr} when Eve matched filters the received signal compared to the scenario where Eve implements the same decoder as Bob.
 
 
 
@@ -58,15 +60,15 @@ Fig. \ref{fig:secrecy_alpha_bor_optimal} illustrates the values of $\alpha_{opt}
 \subsubsection{Comparison between the different decoding structures}
 \begin{figure}[htb!]
     \centering
-    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_filter_comparaison.eps}}
-    \caption{Secrecy Rate curves for the different decoding structures at Eve, $E_b/N_0=20$ dB, BOR = 4 }
+    \centerline{\includegraphics[width = .65\textwidth]{graphs/SR_filter_comparaison_new.eps}}
+    \caption{Secrecy Rate curves for the different decoding structures at Eve, $E_b/N_0=25$ dB, BOR = 4 }
     \label{fig:secrecy_filt_comparaison}
 \end{figure}
-Fig.\ref{fig:secrecy_filt_comparaison} shows the secrecy performances for the 4 different structures implemented at the eavesdropper position, each of them assuming more computational resources and/or more knowledges at Eve as compared to Bob. It can be seen that when Eve implements the same receiving structure as Bob, the \gls{sr} is very high compared to the other curves, as anticipated from Section \ref{par:eve_same_bob}. When the \gls{an} killer algorithm is implemented, we observe that the curve remains flat, except for the situation where all the radiated energy is dedicated for the \gls{an} signal. The reason is that Eve's noise is amplify whatever the value of $\alpha$ since the \gls{an} signal is suppressed. The \gls{lmmse} curves exhibit the lower \gls{sr} sice it performs a decoding tradeoff between suppressing the \gls{an} and amplifying its noise, except for very high percentages of energy dedicated to the useful signal. Finally, we note that the \gls{sr} when Eve implements a matched filter is relatively low. Furthermore, it becomes negative when the transmitted signal only contains data. In fact, if Eve and Bob noise levels are identical, which is assumed throughout this report , the \gls{sinr} ratio when no \gls{an} is radiated becomes:
+Fig.\ref{fig:secrecy_filt_comparaison} shows the secrecy performances for the 4 different structures implemented at the eavesdropper position, each of them assuming more computational resources and/or more knowledges at Eve as compared to Bob. It can be seen that when Eve implements the same receiving structure as Bob, the \gls{sr} is very high compared to the other curves, as anticipated from Section \ref{par:eve_same_bob}. When the \gls{an} killer algorithm is implemented, we observe that the curve remains flat, except for the situation where all the radiated energy is dedicated for the \gls{an} signal. The reason is that Eve's noise is amplify whatever the value of $\alpha$ since the \gls{an} signal is suppressed. The \gls{lmmse} curves exhibit the lower \gls{sr} since it performs a decoding tradeoff between suppressing the \gls{an} and amplifying the noise, except for very high percentages of energy dedicated to the useful signal. Finally, we note that the \gls{sr} when Eve implements a matched filter is relatively low. Furthermore, it becomes negative when the transmitted signal only contains data. In fact, if we assume that the additive noise at Bob and Eve have the same relative energy, the \gls{sinr} ratio when no \gls{an} is radiated becomes:
 \begin{equation}
-    \kappa \approx \frac{\EX{\gamma_{B,n}}}{\EX{\gamma_{E,n}}}\Big|_{\alpha \to 1} \approx \frac{\frac{U+1}{U}}{\left(\frac{U+1}{U}\right)^2} = \frac{U}{U+1}< 1
+    \frac{\EX{\gamma_{B,n}}}{\EX{\gamma_{E,n}}}\Big|_{\alpha \to 1} \approx \frac{\frac{U+1}{U}}{\frac{U+3}{U}}= \frac{U+1}{U+3}< 1
 \end{equation}
-giving rise to a negative \gls{sr}. The reason why the \gls{lmmse} decoding structure does not exhibit better decoding performances at Eve, i.e., lower \gls{sr} values, compared to the matched filter receiver for all values of $\alpha$ has not been explained yet.
+leading to a negative \gls{sr}. From that we conclude that performing a matched filter at the receiving side gives to Eve an advantage compared to Bob.
 
 
 
@@ -81,4 +83,4 @@ giving rise to a negative \gls{sr}. The reason why the \gls{lmmse} decoding stru
     \caption{SR optimization via waterfilling, Bob and Eve with same capabilities, $E_b/N_0=20$ dB}
     \label{fig:waterfilling_opt_alpha}
 \end{figure} 
-Fig. \ref{fig:waterfilling_opt_alpha} presents the maximal values of the \gls{sr} obtained when Eve implements the despreading only receiving structure, i.e. the same structure as Bob, before and after waterfilling optimization. As a reminder, before and after optimization, the mean energy radiated dedicated to the useful data remains unchanged. This amount of energy is computed thanks to (\ref{eq:best_alpha}) in order to ensure a maximal \gls{sr}. This \gls{sr} is then further increased via the waterfilling optimization procedure, as described in section \ref{subsec:perf_waterf}. As we can see, there is an increase of the \gls{sr} for all \gls{bor} values thanks to the optimization. However, this increase decreases with an increase of the \gls{bor}. This can be explained since, when the \gls{bor} increases, the channel frequency diversity is better exploited by the \gls{tr} scheme. Therefore, it becomes more difficult to gain from the coefficient optimization procedure and the \gls{sr} is then less enhanced. 
+Fig. \ref{fig:waterfilling_opt_alpha} presents the maximal values of the \gls{sr} obtained when Eve implements the despreading only receiving structure, i.e. the same structure as Bob, before and after waterfilling optimization. As a reminder, before and after optimization, the mean energy radiated dedicated to the useful data remains unchanged. This amount of energy is computed thanks to (\ref{eq:optimal_alpha_decod_0}) in order to ensure a maximal \gls{sr}. This \gls{sr} is then further increased via the waterfilling optimization procedure, as described in section \ref{subsec:perf_waterf}. As we can see, there is an increase of the \gls{sr} for all \gls{bor} values thanks to the optimization. However, this increase decreases with an increase of the \gls{bor}. This can be explained since, when the \gls{bor} increases, the channel frequency diversity is better exploited by the \gls{tr} scheme. Therefore, it becomes more difficult to gain from the coefficient optimization procedure and the \gls{sr} is then less enhanced. 

@@ -1,6 +1,8 @@
 \renewcommand{\theparagraph}{B}
 
-\section{Optimal amount of AN to inject derivation}\label{appB:alpha}
+\section{Optimal amount of AN to inject derivation}
+\subsection{Despreading at Eve}
+\label{appB:alpha_decod0}
 As a recall, the \gls{sinr} at Bob and Eve are respectively given by:
 \begin{equation}
     \begin{split}
@@ -12,8 +14,55 @@ The \gls{sr} becomes:
 \begin{subequations}
 \begin{align}
     C_s &= \log_2\left(1+ \frac{\alpha (U+1)}{U  \sigma_{\text{V,B}}^2}\right) - \log_2\left(1 + \frac{\alpha}{U(\sigma^2_{\text{V,E}}+(1-\alpha)\sigma^2_{\text{AN}})} \right)\\
-    \Leftrightarrow C_s &= \log_2\left( \frac{\alpha (U+1) + U  \sigma_{\text{V,B}}^2}{U  \sigma_{\text{V,B}}^2} \right) - \log_2\left(  \frac{\alpha + U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}{U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}  \right)\\
-    \Leftrightarrow C_s &= \log_2\left(  \frac{-\alpha^2(U+1)U\sigma^2_{\text{AN}} + \alpha\left[ U(U+1)(\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) - U^2\sigma^2_{\text{V,B}}\sigma^2_{\text{AN}}\right]  + U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}})}{\alpha U \sigma^2_{\text{V,B}}(1-U\sigma^2_{\text{AN}}) + U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) }   \right)
+    \Leftrightarrow C_s &= \log_2\left( \frac{\alpha (U+1) + U  \sigma_{\text{V,B}}^2}{U  \sigma_{\text{V,B}}^2} \right) - \log_2\left(  \frac{\alpha + U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}{U\sigma^2_{\text{V,E}}+(1-\alpha)U\sigma^2_{\text{AN}}}  \right)
+ \end{align}
+\end{subequations}
+Remembering that $U\sigma^2_{\text{AN}} = 1$, we obtain:    
+\begin{subequations}
+\begin{align}
+   C_s &= \log_2\left( \frac{U\sigma_{\text{V,B}}^2+\alpha(U+1)}{U\sigma_{\text{V,B}}^2} \; . \; \frac{U\sigma_{\text{V,E}}^2+1-\alpha}{U\sigma_{\text{V,E}}^2+1} \right) \\
+   \Leftrightarrow C_s &= \log_2\left(  \frac{-\alpha^2(U+1) + \alpha \left[(U+1) U\sigma_{\text{V,E}}^2 - U\sigma_{\text{V,B}}^2  + (U+1)\right]+  U\sigma_{\text{V,B}}^2 (U\sigma_{\text{V,E}}^2+1)}{ U\sigma_{\text{V,B}}^2 (U\sigma_{\text{V,E}}^2+1)}\right)
 \end{align}
 \end{subequations}
-If we introduce $T_1=(U+1)U\sigma^2_{\text{AN}}$, $T_2=U(U+1)(\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}}) - U^2\sigma^2_{\text{V,B}}\sigma^2_{\text{AN}}$, $T_3=U(\sigma^2_{\text{V,B}}+\sigma^2_{\text{V,E}}+\sigma^2_{\text{AN}})$, and $T_4=U \sigma^2_{\text{V,B}}(1-U\sigma^2_{\text{AN}})$, we come back to (\ref{eq:SR_anal2}).
+If we introduce $T_1=-(U+1)$, and $T_2 = (U+1) U\sigma_{\text{V,E}}^2 - U\sigma_{\text{V,B}}^2 + (U+1)$ we come back to (\ref{eq:SR_anal2_decod_0}).
+
+
+
+
+%%%%%%%%%%%
+\subsection{Matched filtering at Eve}
+\label{appB:alpha_decod1}
+As a recall, the \gls{sinr} at Bob and Eve are respectively given by:
+\begin{equation}
+\begin{split}
+\EX{\gamma_{B,n}} &= \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \\
+\EX{\gamma_{E,n}} &= \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U+1}} 
+\end{split}
+\end{equation}
+If we multiply the \gls{sinr} at Eve by $\frac{U+1}{U+3}$, the \gls{sr} becomes:
+\begin{subequations}
+	\begin{align}
+	C_s &= \log_2\left(1+ \frac{\alpha (U+1)}{U  \sigma_{\text{V,B}}^2}\right) - \log_2\left(1 + \frac{\alpha\frac{U+1}{U}}{\frac{U+1}{U+3}\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U+3}} \right)\\
+	\Leftrightarrow C_s &= \log2\left(   \frac{1+ \frac{\alpha (U+1)}{U  \sigma_{\text{V,B}}^2}}{1 + \frac{\alpha (U+1)(U+3)}{U \left[ (U+1) \sigma_{\text{V,E}}^2 + (1-\alpha)\right]}}   \right) \\
+	 \Leftrightarrow C_s &= \log_2\left(  \frac{U \sigma_{\text{V,B}}^2 + \alpha (U+1)}{\sigma_{\text{V,B}}^2} \; . \; \frac{(U+1) \sigma_{\text{V,E}}^2 + (1-\alpha)}{U(U+1) \sigma_{\text{V,E}}^2 + U(1-\alpha) + \alpha (U+1)(U+3)}   \right) \\
+	 \Leftrightarrow C_s &= \log_2\left(  \frac{  -\alpha^2(U+1) + \alpha \left[ (U+1)^2 \sigma_{\text{V,E}}^2  + (U+1) - U \sigma_{\text{V,B}}^2 \right]  + \left[ U(U+1)\sigma_{\text{V,B}}^1 \sigma_{\text{V,E}}^2 + U \sigma_{\text{V,B}}^2\right] }{\alpha\left[ (U+1)(U+3)\sigma_{\text{V,B}}^2 - U \sigma_{\text{V,B}}^2 \right] + \left[ U(U+1)\sigma_{\text{V,B}}^2 \sigma_{\text{V,E}}^2 + U \sigma_{\text{V,B}}^2\right]}  \right) 
+	\end{align}
+\end{subequations}
+If we introduce: $T_1 = U+1$, $T_2 = (U+1)^2\sigma_{\text{E}}^2 + (U+1) - U\sigma_{\text{B}}^2$, $T_3 = U(U+1)\sigma_{\text{B}}^2\sigma_{\text{E}}^2 + U \sigma_{\text{B}}^2$, and $T_4=(U+1)(U+3)\sigma_{\text{B}}^2-U\sigma_{\text{B}}^2$, we come back to (\ref{eq:SR_anal2_decod1}).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
