@@ -63,7 +63,7 @@ for ss = 1:length(sr_targetted)
     for nn = 1:length(snr_e)
         for uu = 1:length(U)
             for aa = 1:length(alpha)
-                snr_b_tmp(ss,nn,uu,aa) = 10*log10( (sr_lin * (U(uu) * sigma_e(nn,uu) + 2 ) - (U(uu) * sigma_e(nn,uu) + 2 - 2*alpha(aa) ) ) / (alpha(aa)*(U(uu)+1)*(U(uu) * sigma_e(nn,uu) + 2 - 2*alpha(aa)) ) );
+                snr_b_tmp(ss,nn,uu,aa) = 10*log10( (sr_lin * (U(uu) * sigma_e(nn,uu) + 1 ) - (U(uu) * sigma_e(nn,uu) + 1 - alpha(aa) ) ) / (alpha(aa)*(U(uu)+1)*(U(uu) * sigma_e(nn,uu) + 1 - alpha(aa)) ) );
             end 
         end
     end
@@ -79,21 +79,26 @@ alpha_calibrated = squeeze(idx).* alpha_step;
 
 figure;
 
-title(['Targetted secrecy capacity : ', num2str(sr_targetted), ' bit(s) per channel use'])
+sgtitle(['Targetted secrecy capacity : ', num2str(sr_targetted), ' bit(s) per channel use'])
 
 subplot(1,2,1)
-plot(snr_e,alpha_calibrated.'-1)
+surf(snr_e,U,alpha_calibrated.'-1)
 %zlim([0 100])
 xlabel('Eve SINR (dB)')
-ylabel('Required $\alpha$ to inject ($\%$)')
+ylabel('BOR')
+zlabel('$\alpha$ to inject ($\%$)')
 
 subplot(1,2,2)
-plot(snr_e,snr_b_calibrated.')
+surf(snr_e,U,snr_b_calibrated.')
 xlabel('Eve SINR (dB)')
-ylabel('Required Bob SINR (dB)')
+ylabel('BOR')
+zlabel('Bob SINR (dB)')
 %title(['Targetted secrecy capacity : ', num2str(sr_targetted), ' bit(s) per channel use'])
 
 
 %title(['Targetted secrecy capacity : ', num2str(sr_targetted), ' bit(s) per channel use'])
+
+
+test = 1;
 
 

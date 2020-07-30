@@ -5,7 +5,7 @@
 
 
 clear all;
-% close all;
+close all;
 
 set(0,'defaulttextinterpreter','latex')
 set(0,'defaultAxesFontSize',32)
@@ -25,7 +25,7 @@ alpha = 0:alpha_step/100:1;
 
 % Communication parameters
 Q = 32;
-U = [4];
+U = [2 4 8];
 N = Q./U;
 
 M = 4;
@@ -33,8 +33,8 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-EbN0_b = 0; % energy per bit over noise psd @Bob - dB
-EbN0_e = [0]; % energy per bit over noise psd @Eve - dB
+EbN0_b = 5; % energy per bit over noise psd @Bob - dB
+EbN0_e = [0:20]; % energy per bit over noise psd @Eve - dB
 snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
 snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
 
@@ -43,7 +43,7 @@ mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 
 
-
+if length(snr_)
 %% Matrices preallocation
 e_an_TX             = zeros(nb_run,length(alpha),length(U));
 
@@ -293,17 +293,24 @@ alpha1_model_opt = optimalAlpha(U,snr_b,snr_e,"model1");
 % Optimal alpha decod2
 alpha2_model_opt = optimalAlpha(U,snr_b,snr_e,"model2");
 
+% Optimal alpha decod2
+alpha5_model_opt = optimalAlpha(U,snr_b,snr_e,"model5");
+
 % Max theoretical value of sr derived from optimal alpha
 sr1_model_max = maxThSr(U,sr1_model,alpha1_model_opt,alpha_step);
 sr2_model_max = maxThSr(U,sr2_model,alpha2_model_opt,alpha_step);
+sr5_model_max = maxThSr(U,sr5_model,alpha5_model_opt,alpha_step);
+
 
 
 % Max simu value of sr and corresponding optimal alpha
 [sr1_simu_max , alpha1_simu_opt] = maxSimuSr(sr1_avg,alpha_step);
 [sr2_simu_max , alpha2_simu_opt] = maxSimuSr(sr2_avg,alpha_step);
+[sr5_simu_max , alpha5_simu_opt] = maxSimuSr(sr5_avg,alpha_step);
+
 
 %% Plot section
-
+if length(U) == 1
 % Comparaison simu vs models - SR curves
 figure;
 plot(100*alpha,sr1_avg,'Marker','o','color','b'); hold on;
@@ -315,35 +322,40 @@ plot(100*alpha,sr5_avg,'Marker','v','color','c'); hold on;
 box on; grid on;
 xlabel('Percentage of energy radiated dedicated for data (\%)')
 ylabel('Secrecy rate (bit/channel use)')
-legend('Same decoder - Simulation' , 'Matched filtering - Simulation' , 'AN killer - Simulation','LMMSE - Simulation', 'Own channel - Simulation')
+legend('Same decoder - Simulation' , 'Matched filtering - Simulation' , 'AN killer - Simulation','LMMSE - Simulation', 'Own channel - Simulation', 'location', 'best')
 
 
 % Comparaison simu vs models - maxima of SR
-% 
-% figure;
-% yyaxis left
-% plot(U,100*alpha1_simu_opt,'Marker','square') ; hold on;
-% plot(U,100*alpha1_model_opt,'Marker','square') ; hold on;
-% plot(U,100*alpha2_simu_opt,'Marker','v') ; hold on;
-% plot(U,100*alpha2_model_opt,'Marker','v') ; 
-% ylabel('Percentage of energy radiated dedicated for data (\%)')
-% ylim([10 65])
-% 
-% yyaxis right
-% plot(U,sr1_simu_max,'Marker','o') ; hold on;
-% plot(U,sr1_model_max,'Marker','o') ; hold on;
-% plot(U,sr2_simu_max,'Marker','<') ; hold on;
-% plot(U,sr2_model_max,'Marker','<') ;
-% ylabel('Secrecy rate (bit/channel use)')
-% ylim([0 6])
-% 
-% xlabel('BOR')
-% legend('Same decoder - Simulation','Same decoder - Modeling', ...
-%     'Matched filtering - Simulation', 'Matched filtering - Mdeling',...
-%     'Same decoder - Simulation','Same decoder - Modeling', ...
-%     'Matched filtering - Simulation' , 'Matched filtering - Mdeling')      
+figure;
+yyaxis left
+plot(U,100*alpha1_simu_opt,'Marker','square') ; hold on;
+plot(U,100*alpha1_model_opt,'Marker','square') ; hold on;
+plot(U,100*alpha2_simu_opt,'Marker','v') ; hold on;
+plot(U,100*alpha2_model_opt,'Marker','v') ; hold on;
+plot(U,100*alpha5_simu_opt,'Marker','>') ; hold on;
+plot(U,100*alpha5_model_opt,'Marker','>') ; 
+ylabel('Percentage of energy radiated dedicated for data (\%)')
+ylim([0 100])
+
+yyaxis right
+plot(U,sr1_simu_max,'Marker','o') ; hold on;
+plot(U,sr1_model_max,'Marker','o') ; hold on;
+plot(U,sr2_simu_max,'Marker','<') ; hold on;
+plot(U,sr2_model_max,'Marker','<') ; hold on;
+plot(U,sr5_simu_max,'Marker','diamond') ; hold on;
+plot(U,sr5_model_max,'Marker','diamond') 
+ylabel('Secrecy rate (bit/channel use)')
+ylim([0 max(sr1_simu_max)])
+
+xlabel('BOR')
+legend('Same decoder - Simulation','Same decoder - Modeling', ...
+    'Matched filtering - Simulation', 'Matched filtering - Modeling',...
+    'Own channel - Simulation', 'Own channel - Modeling',...
+    'Same decoder - Simulation','Same decoder - Modeling', ...
+    'Matched filtering - Simulation' , 'Matched filtering - Modeling',...
+    'Own channel - Simulation', 'Own channel - Modeling')      
         
-        
+end        
 
 % Comparaison models - SR curves
 figure;
@@ -356,9 +368,13 @@ plot(100*alpha,sr5_model,'Marker','diamond','color','y'); hold on;
 box on; grid on;
 xlabel('Percentage of energy radiated dedicated for data (\%)')
 ylabel('Secrecy rate (bit/channel use)')
-legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling')
+legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling', 'location', 'best')
 
 
+% SNR calibration @ Bob for a targetted SR and different SNR levels @ Eve
+if (length(U) > 1 && length(snr_e) > 1)
+[snr_b_calib_model1 , alpha_calib_model1] = snrBobCalibration(0.1,U,snr_e,alpha,alpha_step,"model1");
+end
 
 
 %% FAIRE DES SWITCH CASE POUR LES PARTIES DU CODE: 1 SIMU ; 2 MODELING & POST PROCESS
