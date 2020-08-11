@@ -86,11 +86,17 @@ plot(snr_e,alpha_calibrated.'-1)
 %zlim([0 100])
 xlabel('Eve SINR (dB)')
 ylabel('Required $\alpha$ to inject ($\%$)')
+legendCell_tmp = cellstr(num2str(U', 'BOR = %-d'));
+legendCell =[legendCell_tmp]; %legendCell_bob_no_AN;legendCell_eve_no_AN];
+legend(legendCell,'Location','best')
 
 subplot(1,2,2)
 plot(snr_e,snr_b_calibrated.')
 xlabel('Eve SINR (dB)')
 ylabel('Required Bob SINR (dB)')
+legendCell_tmp = cellstr(num2str(U', 'BOR = %-d'));
+legendCell =[legendCell_tmp]; %legendCell_bob_no_AN;legendCell_eve_no_AN];
+legend(legendCell,'Location','best')
 %title(['Targetted secrecy capacity : ', num2str(sr_targetted), ' bit(s) per channel use'])
 
 

@@ -75,7 +75,7 @@ e_noise_decod5_e    = zeros(nb_run,length(alpha),length(U));
 e_an_decod5_e       = zeros(nb_run,length(alpha),length(U));
 e_denom_decod5_e    = zeros(nb_run,length(alpha),length(U));
 
-% sinr_no_decod_e     = zeros(nb_run,length(alpha),N);
+
 %% Mainloop
 for iter = 1:nb_run
 for bb =1:length(U)

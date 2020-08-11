@@ -18,8 +18,8 @@ alpha_step = 5;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 16;
-U = [2];
+Q = 32;
+U = [2 4 8 16 32];
 N = Q./U;
 
 M = 4;
@@ -37,9 +37,6 @@ mu = 0;         % Mean channel
 sigma = 1;      % Variance of channel
 
 
-
-%% Matrices preallocation
-e_denom_decod4_e    = zeros(nb_run,length(alpha),length(U));
 
 
 %% Mainloop
@@ -84,31 +81,29 @@ sym_e = He_RX*sym_precoded_TX;
 [noise_e, e_noise_e ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
 %mu_p = Hb_TX/norm(Hb_TX);
 mu_p = Hb_TX;
-
+Qw = eye(Q)-mu_p*ctranspose(mu_p);
 a = sqrt(alpha(aa));
 b = sqrt(1-alpha(aa));
 
-term1(:,iter,aa,bb) = diag(log2(abs((a^2-b^2)*He_RX*mu_p*ctranspose(mu_p)*He_TX + b^2*He_TX*He_RX + e_noise_e*eye(Q))));
-term2(:,iter,aa,bb) = diag(log2(abs(b^2*(eye(Q) - mu_p*ctranspose(mu_p))*He_TX + e_noise_e*eye(Q))));
+term1(iter,aa,bb) = log2(det(a^2*He_RX*mu_p*ctranspose(mu_p)*He_TX + b^2*He_TX*Qw*He_RX + e_noise_e*eye(Q)));
+term2(iter,aa,bb) = log2(det(b^2*He_RX*Qw*He_TX + e_noise_e*eye(Q)));
 
 end
 waitbar(iter / nb_run)
 end
 end
 
-term1_mean = squeeze(mean(term1,2));
-term2_mean = squeeze(mean(term2,2));
-
-term1_mean_per_subcar = mean(term1_mean,1);
-term2_mean_per_subcar = mean(term2_mean,1);
+term1_mean = squeeze(mean(term1,1));
+term2_mean = squeeze(mean(term2,1));
 
 
-upper_bound_per_subcar = term1_mean_per_subcar-term2_mean_per_subcar;
 
-upper_bound_per_symb = U*upper_bound_per_subcar;
+upper_bound = term1_mean-term2_mean;
+
+% upper_bound_per_symb = U*upper_bound_per_subcar;
 close(h)
 
-plot(upper_bound_per_symb)
+plot(real(upper_bound))
 
 %% Post processing
 % Energy averaging over all realisations
