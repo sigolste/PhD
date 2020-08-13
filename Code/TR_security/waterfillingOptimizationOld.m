@@ -1,286 +1,3 @@
-clear all;
-%close all; 
-set(0,'defaulttextinterpreter','latex')
-set(0,'defaultAxesFontSize',32)
-set(0,'defaultLineLineWidth',2)
-set(0,'defaultAxesTickLabelInterpreter','latex')
-set(0,'defaultLegendInterpreter','latex')
-set(0,'DefaultLineMarkerSize',15);
-set(0, 'defaultFigurePosition',  [-1267  44   1256    872])
-
-% set(0,'defaultMarkerIndices',[1:2:end])
-%**************************************************************************
-%
-%   This script simulates an implementation of a secure Time Reversal
-%   scheme in the frequency domain using OFDM. 
-%
-%   Frequency domain secure TR in a MISO configuration    
-%   Complex Envelope (CE) simulations
-%
-%   OFDM to mitigate MPC effects
-%
-%   Artificial Noise added to secure the data transmission at Bob
-%
-%   Rayleigh channel model implemented
-%   
-%   Best global alpha found in order to maximize the secrecy capacity.
-%   After that, waterfilling in order to maximize the instantaneous
-%   capacity at Bob. It should not impact Eve's capacity s.t. the Secrecy
-%   Capacity should be increased.
-%
-%
-%   last update: 10 august 2020
-%
-%
-%   by Sidney Golstein
-%
-%**************************************************************************
-
-
-
-
-h = waitbar(0,'Simulation Progression...');
-
-%% Parameters
-% Simulation parameters
-nb_run = 100;              % number of experiments
-alpha_global = 0.33; 
-% Communication parameters
-Q = 8;
-U = [4];
-N = Q./U;
-
-M = 4;
-k = log2(M);
-nb_bit = k.*N;
-
-% AWGN parameters
-EbN0_b = 10; % energy per bit over noise psd @Bob - dB
-EbN0_e = [10]; % energy per bit over noise psd @Eve - dB
-snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
-
-% Channel parameters 
-mu = 0;         % Channel mean
-sigma = 1;      % Channel variance
-
-
-alpha_opt           = zeros(Q,nb_run,length(U));
-e_an_TX             = zeros(nb_run,length(U));
-e_an_opt_TX         = zeros(nb_run,length(U));
-
-e_sym_decod1_b      = zeros(nb_run,length(U));
-e_noise_decod1_b    = zeros(nb_run,length(U));
-
-e_sym_decod1_e      = zeros(nb_run,length(U));
-e_noise_decod1_e    = zeros(nb_run,length(U));
-e_an_decod1_e       = zeros(nb_run,length(U));
-e_denom_decod1_e    = zeros(nb_run,length(U));
-
-e_sym_decod2_e      = zeros(nb_run,length(U));
-e_noise_decod2_e    = zeros(nb_run,length(U));
-e_an_decod2_e       = zeros(nb_run,length(U));
-e_denom_decod2_e    = zeros(nb_run,length(U));
-
-e_sym_decod5_e      = zeros(nb_run,length(U));
-e_noise_decod5_e    = zeros(nb_run,length(U));
-e_an_decod5_e       = zeros(nb_run,length(U));
-e_denom_decod5_e    = zeros(nb_run,length(U));
-
-sinr1_b             = zeros(nb_run,length(U));
-sinr1_e             = zeros(nb_run,length(U));
-sinr2_e             = zeros(nb_run,length(U));
-sinr5_e             = zeros(nb_run,length(U));
-
-sr1             = zeros(nb_run,length(U));
-sr2             = zeros(nb_run,length(U));
-sr5             = zeros(nb_run,length(U));
-
-
-%% Mainloop
-for iter = 1:nb_run
-for bb =1:length(U)
-msg_TX = randi( [0 1] , nb_bit(bb) , 1 ) ;                                         % Random bit data stream
-sym_TX = qammod(msg_TX,M,'gray','UnitAveragePower',true, 'InputType', 'bit');  % QAM modulation, can be changed to different modulation types, Nxnb_run
-
-% Channel generation
-% Rayleigh channel - independant subcarrier fading - unit power per
-% subcarrier : CN(0,I_Q) - circulary complex random normal variable.
-Hb_TX = channelRayleigh(Q, mu , sigma);  
-He_TX = channelRayleigh(Q, mu , sigma);
-Hb_RX = ctranspose(Hb_TX.');
-He_RX = ctranspose(He_TX.');
-
-
-
-% (De)-Spreading matrix creation
-[matrix_spread,matrix_despread] = spreadingMatrix(Q,N(bb),U(bb));
-
-
-%% Encoder
-
-% Spreading + TR precoding
-sym_spread      = matrix_spread*sym_TX;  % Qx1
-sym_precoded    = Hb_TX*sym_spread; % Qx1, not weighted 
-
-% AN generation
-an = generateAN(Hb_RX,Q,U(bb),matrix_despread,energy(sym_precoded),"svd"); % Qx1, not weighted
-
-    
-alpha_to_opt = alpha_global(bb)*ones(Q,1);                      % Coef alpha to optimize
-
-
-
-
-%% Optimization problem
-
-% Problems creations
-prob = optimproblem('ObjectiveSense', 'max');                               % Objective is to maximize f --> minimization of -f
-
-% Variables to optimize
-x = optimvar('x', Q,'LowerBound',0,'UpperBound',1,'Type','continuous');
-
-
-   
-%  Objective function
-f   = @(x) sum(abs(decod1*(diag(Hb_RX).*(sqrt(x).*sym_precoded))).^2);      % Maximization of Bob SINR numerator (only SINR term depending on alpha) - sum oer [Nx1]
-fun = fcn2optimexpr(f,x,'OutputSize',[1,1]);
-prob.Objective = fun;
-
-% Nonlinear constraints
-%sum_alpha = mean(x);                                                       % Constant total radiated energy
-f2 = @(x) sum(abs(decod1*(diag(Hb_RX).*sqrt(ones(Q,1)-x).*an)).^2);         % W lies in null space of H_bob - sum over [Nx1]
-f3 = @(x) sum(abs(sqrt(x).*sym_precoded + sqrt(ones(Q,1) - x).*an).^2)/Q;   % Total radiated energy constant - sum over [Qx1]
-f4 = @(x) sum(abs(sqrt(ones(Q,1) - x).*an).^2)/Q;                           % AN energy constant - sum over [Qx1] 
-
-cstr_ortho  = fcn2optimexpr(f2,x,'OutputSize',[1,1]);                       % Orthogonality constraints
-cstr_e_tot  = fcn2optimexpr(f3,x,'OutputSize',[1,1]);                       % Total energy constraint
-cstr_e_an   = fcn2optimexpr(f4,x,'OutputSize',[1,1]);                       % AN energy constraint
-
-%prob.Constraints.cons_alpha = sum_alpha == alpha_global(nb_bor);
-prob.Constraints.cons_energy_AN     = cstr_e_an     == sum(abs(sqrt(ones(Q,1) - alpha_to_opt).*an).^2)/Q;
-prob.Constraints.cons_energy_total  = cstr_e_tot    == e_sym_transmitted;
-prob.Constraints.cons_orthog        = cstr_ortho    <= 1e-15;
-
-% Initial vector
-x0.x = alpha_to_opt;
-
-
-% Problem options
-options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',1300,'MaxFunctionEvaluations',300000);
-%options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
-options.StepTolerance       = 1e-7;
-options.FunctionTolerance   = 1e-8;
-options.ConstraintTolerance = 1e-8;
-% show(prob)                                                                % Show the problem, i.e., function to optimization, constraints, initial point
-% Solve the problem
-[sol] = solve(prob,x0,'Options',options);
-% disp(sol.x)                                                               % Display the solution
-alpha_opt(:,iter,bb) = sol.x;                                               % Optimal coef alpha for a given data block, channel and BOR value
-%% END of optimizaton 
-
-% Non optimized
-sym_precoded_TX     = sqrt(alpha_to_opt).*sym_precoded;     % weighted
-an_TX               = sqrt(1-alpha_to_opt).*an;                       % weighted
-e_an_TX(iter,bb)    = energy(an_TX);
-sym_transmitted     = sym_precoded_TX + an_TX;
-
-% Optimized 
-sym_precoded_opt_TX     = sqrt(alpha_opt(:,iter,bb)).*sym_precoded;     % weighted
-an_opt_TX               = sqrt(1-alpha_opt(:,iter,bb)).*an;                       % weighted
-e_an_opt_TX(iter,bb)    = energy(an_opt_TX);
-sym_opt_transmitted     = sym_precoded_opt_TX + an_opt_TX;
-
-
-%% Receiver
-% Whole stream - non optimized 
-sym_RX_b = Hb_RX*sym_transmitted;
-sym_RX_e = He_RX*sym_transmitted;
-
-% Whole stream - optimized 
-sym_opt_RX_b = Hb_RX*sym_opt_transmitted;
-sym_opt_RX_e = He_RX*sym_opt_transmitted;
-
-
-% Useful symbol - non optimized
-sym_b = Hb_RX*sym_precoded_TX; % Qx1
-sym_e = He_RX*sym_precoded_TX;
-
-% Useful symbol - optimized
-sym_opt_b = Hb_RX*sym_precoded_opt_TX; % Qx1
-sym_opt_e = He_RX*sym_precoded_opt_TX;
-
-
-% Noise symbol
-[noise_b, ~ ] = addNoise(sym_b , snr_b, energy(sym_precoded_TX+an_TX));     %addNoise(sym_b , snr_b, energy(sym_RX_b)); 
-[noise_e, e_noise_e ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
-
-% AN symbol
-an_e = He_RX*an_TX; % Only @Eve since no AN effect after decod1 @Bob
-
-%% Decoder
-decod1 = matrix_despread;                                   % despreading
-decod2 = matrix_despread*Hb_RX*He_TX;                       % matched filter
-decod5 = matrix_despread*He_TX;                             % Only He known by Eve
- 
-sym_decod1_b = decod1*sym_b;
-sym_decod1_e = decod1*sym_e;
-sym_decod2_e = decod2*sym_e;
-sym_decod5_e = decod5*sym_e;
-
-noise_decod1_b = decod1*noise_b;
-noise_decod1_e = decod1*noise_e;
-noise_decod2_e = decod2*noise_e;
-noise_decod5_e = decod5*noise_e;
-
-an_decod1_e = decod1*an_e;
-an_decod2_e = decod2*an_e;
-an_decod5_e = decod5*an_e;
-
-%% Energy of the different RX components 
-% @ Bob
-e_sym_decod1_b(iter,bb)     = energy(sym_decod1_b);
-e_noise_decod1_b(iter,bb)   = energy(noise_decod1_b);
-
-% @ Eve : decod 1
-e_sym_decod1_e(iter,bb)     = energy(sym_decod1_e);
-e_noise_decod1_e(iter,bb)   = energy(noise_decod1_e);
-e_an_decod1_e(iter,bb)      = energy(an_decod1_e);
-e_denom_decod1_e(iter,bb)   = energy(noise_decod1_e + an_decod1_e);        % energy of the sinr denominator for decoder 1 @Eve
-
-% @ Eve : decod 2
-e_sym_decod2_e(iter,bb)     = energy(sym_decod2_e);
-e_noise_decod2_e(iter,bb)   = energy(noise_decod2_e);
-e_an_decod2_e(iter,bb)      = energy(an_decod2_e);
-e_denom_decod2_e(iter,bb)   = energy(noise_decod2_e + an_decod2_e);        % energy of the sinr denominator for decoder 2 @Eve
-
-% @ Eve : decod 5
-e_sym_decod5_e(iter,bb)     = energy(sym_decod5_e);
-e_noise_decod5_e(iter,bb)   = energy(noise_decod5_e);
-e_an_decod5_e(iter,bb)      = energy(an_decod5_e);
-e_denom_decod5_e(iter,bb)   = energy(noise_decod5_e + an_decod5_e);        % energy of the sinr denominator for decoder 5 @Eve
-
-% instantaneous SINRs
-sinr1_b(iter,bb) = e_sym_decod1_b(iter,bb)/e_noise_decod1_b(iter,bb);
-sinr1_e(iter,bb) = e_sym_decod1_e(iter,bb)/e_denom_decod1_e(iter,bb);
-sinr2_e(iter,bb) = e_sym_decod2_e(iter,bb)/e_denom_decod2_e(iter,bb);
-sinr5_e(iter,bb) = e_sym_decod5_e(iter,bb)/e_denom_decod5_e(iter,bb);
-
-
-% instantaneous Secrecy capacity
-sr1(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr1_e(iter,bb));
-sr2(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr2_e(iter,bb));
-sr5(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr5_e(iter,bb));
-
-
-end
-waitbar(iter / nb_run)
-end
-
-
-
-a = 1;
-
 
 
 %% TRANSMISSION PART
@@ -573,3 +290,137 @@ bar(squeeze(alpha_opt(:,1,end)),'m'); hold on;
 
 yyaxis right
 plot(abs(H_bob_TX.*H_bob_RX).^2,'b');
+
+
+
+
+
+
+
+% Non optimized
+% sym_decod1_b = decod1*sym_b;
+% sym_decod1_e = decod1*sym_e;
+% sym_decod2_e = decod2*sym_e;
+% sym_decod5_e = decod5*sym_e;
+% 
+% noise_decod1_b = decod1*noise_b;
+% noise_decod1_e = decod1*noise_e;
+% noise_decod2_e = decod2*noise_e;
+% noise_decod5_e = decod5*noise_e;
+% 
+% an_decod1_e = decod1*an_e;
+% an_decod2_e = decod2*an_e;
+% an_decod5_e = decod5*an_e;
+% 
+% % Optimized
+% sym_decod1_opt_b = decod1*sym_opt_b;
+% sym_decod1_opt_e = decod1*sym_opt_e;
+% sym_decod2_opt_e = decod2*sym_opt_e;
+% sym_decod5_opt_e = decod5*sym_opt_e;
+% 
+% noise_decod1_opt_b = decod1*noise_opt_b;
+% noise_decod1_opt_e = decod1*noise_opt_e;
+% noise_decod2_opt_e = decod2*noise_opt_e;
+% noise_decod5_opt_e = decod5*noise_opt_e;
+% 
+% an_decod1_opt_e = decod1*an_opt_e;
+% an_decod2_opt_e = decod2*an_opt_e;
+% an_decod5_opt_e = decod5*an_opt_e;
+% 
+% 
+% %% Energy of the different RX components 
+% % @ Bob - non optimized
+% e_sym_decod1_b(iter,bb)     = energy(sym_decod1_b);
+% e_noise_decod1_b(iter,bb)   = energy(noise_decod1_b);
+% 
+% % @ Bob - optimized
+% e_sym_decod1_opt_b(iter,bb)     = energy(sym_decod1_opt_b);
+% e_noise_decod1_opt_b(iter,bb)   = energy(noise_decod1_opt_b);
+% 
+% 
+% % @ Eve : decod 1 - non optimized
+% e_sym_decod1_e(iter,bb)     = energy(sym_decod1_e);
+% e_noise_decod1_e(iter,bb)   = energy(noise_decod1_e);
+% e_an_decod1_e(iter,bb)      = energy(an_decod1_e);
+% e_denom_decod1_e(iter,bb)   = energy(noise_decod1_e + an_decod1_e);        % energy of the sinr denominator for decoder 1 @Eve
+% 
+% % @ Eve : decod 1 - optimized
+% e_sym_decod1_opt_e(iter,bb)     = energy(sym_decod1_opt_e);
+% e_noise_decod1_opt_e(iter,bb)   = energy(noise_decod1_opt_e);
+% e_an_decod1_opt_e(iter,bb)      = energy(an_decod1_opt_e);
+% e_denom_decod1_opt_e(iter,bb)   = energy(noise_decod1_opt_e + an_decod1_opt_e);        % energy of the sinr denominator for decoder 1 @Eve
+% 
+% 
+% 
+% % @ Eve : decod 2 - non optimized
+% e_sym_decod2_e(iter,bb)     = energy(sym_decod2_e);
+% e_noise_decod2_e(iter,bb)   = energy(noise_decod2_e);
+% e_an_decod2_e(iter,bb)      = energy(an_decod2_e);
+% e_denom_decod2_e(iter,bb)   = energy(noise_decod2_e + an_decod2_e);        % energy of the sinr denominator for decoder 2 @Eve
+% 
+% % @ Eve : decod 2 - optimized
+% e_sym_decod2_opt_e(iter,bb)     = energy(sym_decod2_opt_e);
+% e_noise_decod2_opt_e(iter,bb)   = energy(noise_decod2_opt_e);
+% e_an_decod2_opt_e(iter,bb)      = energy(an_decod2_opt_e);
+% e_denom_decod2_opt_e(iter,bb)   = energy(noise_decod2_opt_e + an_decod2_opt_e);        % energy of the sinr denominator for decoder 2 @Eve
+% 
+% 
+% 
+% % @ Eve : decod 5 - non optimized
+% e_sym_decod5_e(iter,bb)     = energy(sym_decod5_e);
+% e_noise_decod5_e(iter,bb)   = energy(noise_decod5_e);
+% e_an_decod5_e(iter,bb)      = energy(an_decod5_e);
+% e_denom_decod5_e(iter,bb)   = energy(noise_decod5_e + an_decod5_e);        % energy of the sinr denominator for decoder 5 @Eve
+% 
+% % @ Eve : decod 5 - optimized
+% e_sym_decod5_opt_e(iter,bb)     = energy(sym_decod5_opt_e);
+% e_noise_decod5_opt_e(iter,bb)   = energy(noise_decod5_opt_e);
+% e_an_decod5_opt_e(iter,bb)      = energy(an_decod5_opt_e);
+% e_denom_decod5_opt_e(iter,bb)   = energy(noise_decod5_opt_e + an_decod5_opt_e);        % energy of the sinr denominator for decoder 5 @Eve
+% 
+% 
+% 
+% % instantaneous SINRs - non optimized 
+% sinr1_b(iter,bb) = e_sym_decod1_b(iter,bb)/e_noise_decod1_b(iter,bb);
+% sinr1_e(iter,bb) = e_sym_decod1_e(iter,bb)/e_denom_decod1_e(iter,bb);
+% sinr2_e(iter,bb) = e_sym_decod2_e(iter,bb)/e_denom_decod2_e(iter,bb);
+% sinr5_e(iter,bb) = e_sym_decod5_e(iter,bb)/e_denom_decod5_e(iter,bb);
+% 
+% % instantaneous SINRs - optimized 
+% 
+% % If optimization does not succeed, sinr bob optimized = sinr bob not optimized
+% if e_sym_decod1_opt_b(iter,bb)/e_noise_decod1_opt_b(iter,bb) >= sinr1_b(iter,bb)
+%     sinr1_opt_b(iter,bb) = e_sym_decod1_opt_b(iter,bb)/e_noise_decod1_opt_b(iter,bb) ;
+% else
+%     sinr1_opt_b(iter,bb) = sinr1_b(iter,bb);
+% end
+%     
+% 
+% sinr1_opt_e(iter,bb) = e_sym_decod1_opt_e(iter,bb)/e_denom_decod1_opt_e(iter,bb);
+% sinr2_opt_e(iter,bb) = e_sym_decod2_opt_e(iter,bb)/e_denom_decod2_opt_e(iter,bb);
+% sinr5_opt_e(iter,bb) = e_sym_decod5_opt_e(iter,bb)/e_denom_decod5_opt_e(iter,bb);
+
+
+% % instantaneous capacity - non optimized 
+% capa1_b(iter,bb) = capacity(sinr1_b(iter,bb));
+% capa1_e(iter,bb) = capacity(sinr1_e(iter,bb));
+% capa2_e(iter,bb) = capacity(sinr2_e(iter,bb));
+% capa5_e(iter,bb) = capacity(sinr5_e(iter,bb));
+% 
+% % instantaneous capacity - optimized 
+% capa1_opt_b(iter,bb) = capacity(sinr1_opt_b(iter,bb));
+% capa1_opt_e(iter,bb) = capacity(sinr1_opt_e(iter,bb));
+% capa2_opt_e(iter,bb) = capacity(sinr2_opt_e(iter,bb));
+% capa5_opt_e(iter,bb) = capacity(sinr5_opt_e(iter,bb));
+% 
+% 
+% % instantaneous Secrecy capacity - non optimized
+% sr1(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr1_e(iter,bb));
+% sr2(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr2_e(iter,bb));
+% sr5(iter,bb) = secrecyCapacity(sinr1_b(iter,bb),sinr5_e(iter,bb));
+% 
+% % instantaneous Secrecy capacity - optimized
+% sr_opt_1(iter,bb) = secrecyCapacity(sinr1_opt_b(iter,bb),sinr1_opt_e(iter,bb));
+% sr_opt_2(iter,bb) = secrecyCapacity(sinr1_opt_b(iter,bb),sinr2_opt_e(iter,bb));
+% sr_opt_5(iter,bb) = secrecyCapacity(sinr1_opt_b(iter,bb),sinr5_opt_e(iter,bb));
+

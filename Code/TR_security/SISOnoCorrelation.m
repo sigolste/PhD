@@ -324,7 +324,21 @@ xlabel('Percentage of energy radiated dedicated for data (\%)')
 ylabel('Secrecy rate (bit/channel use)')
 legend('Same decoder - Simulation' , 'Matched filtering - Simulation' , 'AN killer - Simulation','LMMSE - Simulation', 'Own channel - Simulation', 'location', 'best')
 
+% Comparaison models - SR curves
+figure;
+plot(100*alpha,sr1_avg,'Marker','o','color','b'); hold on;
+plot(100*alpha,sr1_model,'Marker','o','color','r'); hold on;
+plot(100*alpha,sr2_avg,'Marker','square','color','m'); hold on;
+plot(100*alpha,sr2_model,'Marker','square','color','g'); hold on;
+plot(100*alpha,sr5_avg,'Marker','diamond','color','c'); hold on;
+plot(100*alpha,sr5_model,'Marker','diamond','color','y'); hold on;
+box on; grid on;
+xlabel('Percentage of energy radiated dedicated for data (\%)')
+ylabel('Secrecy rate (bit/channel use)')
+legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling', 'location', 'best')
 
+
+else
 % Comparaison simu vs models - maxima of SR
 figure;
 yyaxis left
@@ -357,18 +371,6 @@ legend('Same decoder - Simulation','Same decoder - Modeling', ...
         
 end        
 
-% Comparaison models - SR curves
-figure;
-plot(100*alpha,sr1_avg,'Marker','o','color','b'); hold on;
-plot(100*alpha,sr1_model,'Marker','o','color','r'); hold on;
-plot(100*alpha,sr2_avg,'Marker','square','color','m'); hold on;
-plot(100*alpha,sr2_model,'Marker','square','color','g'); hold on;
-plot(100*alpha,sr5_avg,'Marker','diamond','color','c'); hold on;
-plot(100*alpha,sr5_model,'Marker','diamond','color','y'); hold on;
-box on; grid on;
-xlabel('Percentage of energy radiated dedicated for data (\%)')
-ylabel('Secrecy rate (bit/channel use)')
-legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling', 'location', 'best')
 
 
 

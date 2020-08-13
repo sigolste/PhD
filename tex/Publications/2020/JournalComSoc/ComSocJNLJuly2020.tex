@@ -72,7 +72,9 @@
 
 
 \begin{document}
-\title{Still to define}
+	
+\title{Physical Layer Security in Frequency-Domain Fast-Fading TDD Time-Reversal SISO OFDM Communication}
+
 \author{\IEEEauthorblockN{Sidney Golstein\IEEEauthorrefmark{1}\IEEEauthorrefmark{2},
 		Trung-Hien Nguyen\IEEEauthorrefmark{1},
 		Fran\c cois Rottenberg\IEEEauthorrefmark{1},
@@ -88,7 +90,7 @@
 \thanks{This work was supported by the ANR GEOHYPE project, grant ANR-16-CE25-0003 of the French Agence Nationale de la Recherche and was also carried out in the framework of COST Action CA15104 IRACON.}}
 
 % The paper headers
-\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
+\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, \today}%
 {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Communications Society Journals}
 
 
@@ -133,21 +135,52 @@ I wish you the best of success.
 \subsection{Establishment Protocol}
 {\color{red}Parler des 3 differents protocol de communication permettant d'etablir la comm avec les 3 schemes}
 
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=.8\linewidth]{graphs/diagram_sequence-FF_TDD_A.jpg}
+	\caption{FF TDD, Alice asks first for communication}
+	\label{fig_ff_tdd_a}
+\end{figure}
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=.75\linewidth]{graphs/diagram_sequence-FF_TDD_B_no_pilot.jpg}
+	\caption{FF TDD, Bob asks first for communication, no pilot sent}
+	\label{fig_ff_tdd_b_no_pilot}
+\end{figure}
+
+
+\begin{figure}[!t]
+	\centering
+	\includegraphics[width=.8\linewidth]{graphs/diagram_sequence-FF_TDD_B_pilot.jpg}
+	\caption{FF TDD, Bob asks first for communication, pilots sent}
+	\label{fig_ff_tdd_b_pilot}
+\end{figure}
 
 
 \subsection{Communication Protocol}
+\begin{figure}[h!t]
+	\centering
+	\includegraphics[width=1\linewidth]{graphs/com_scheme.PNG}
+	\caption{Communication scheme}
+	\label{fig_com_scheme}
+\end{figure}
 {\color{red}Schema de communication avec addition d AN}
 
 \subsubsection{Received sequence at the intended }
+{\color{red} p6 rapport}
 \subsubsection{Received sequence at the unintended}
+{\color{red} p6 rapport}
 
 \subsection{Artificial noise Design}
+{\color{red} p5-6 rapport}
+
 
 
 
 %%%%%%%%%   PERFORMANCE   %%%%%%%%% 
 \section{Performance Assessments}
-
+{\color{red} Mettre les hypotheses p7 du rapport}
 
 \subsection{Hypothesis}
 {\color{red} Mettre les hypotheses p7 du rapport}
@@ -177,10 +210,13 @@ I wish you the best of success.
 \section{Simulation Results}
 
 \subsection{Comparaison between the different models}
+{\color{red} Equivalent of fig12 p15 rapport}
 
 \subsection{Comparaison between models and simulations}
+{\color{red} Equivalent of fig10 and 11 p15 rapport}
 
 \subsection{Waterfilling optimization}
+{\color{red} Equivalent of fig13 p15 rapport}
 
 %%%%%%%%%   CONCLUSONS   %%%%%%%%% 
 \section{Conclusions}
@@ -195,30 +231,6 @@ I wish you the best of success.
 
 
 
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=2.5in]{myfigure}
-% where an .eps filename suffix will be assumed under latex, 
-% and a .pdf suffix will be assumed for pdflatex; or what has been declared
-% via \DeclareGraphicsExtensions.
-%\caption{Simulation results for the network.}
-%\label{fig_sim}
-%\end{figure}
-
-
-
-% An example of a double column floating figure using two subfigures.
-
-%\begin{figure*}[!t]
-%\centering
-%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
-%\label{fig_first_case}}
-%\hfil
-%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
-%\label{fig_second_case}}
-%\caption{Simulation results for the network.}
-%\label{fig_sim}
-%\end{figure*}
 
 
 
