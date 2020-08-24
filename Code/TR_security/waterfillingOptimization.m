@@ -470,8 +470,6 @@ sr2_opt_avg = squeeze(mean(sr_opt_2,1));
 sr5_opt_avg = squeeze(mean(sr_opt_5,1));
 
 figure;
-
-subplot(1,2,1)
 plot(U,sr1_avg,'Marker','o','color','b'); hold on;
 plot(U,sr1_opt_avg,'Marker','o','color','r'); hold on;
 plot(U,sr2_avg,'Marker','square','color','m'); hold on;
@@ -486,7 +484,7 @@ legend('Same decoder - non optimized' , 'Same decoder - optimized' , ...
     'Own channel - non optimized', 'Own channel - optimized', 'location', 'best')
 
 
-subplot(1,2,2)
+figure;
 plot(U,sr_gain_avg_1,'Marker','o','color','b'); hold on;
 plot(U,sr_gain_avg_2,'Marker','square','color','r'); hold on;
 plot(U,sr_gain_avg_5,'Marker','diamond','color','g'); hold on;

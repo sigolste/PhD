@@ -19,13 +19,13 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1000;              % number of experiments
+nb_run = 2000;              % number of experiments
 alpha_step = 1;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 32;
-U = [2 4 8 16 32];
+Q = 128;
+U = [2 4 8 16];
 N = Q./U;
 
 M = 4;
@@ -33,8 +33,8 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-EbN0_b = 5; % energy per bit over noise psd @Bob - dB
-EbN0_e = [-10:20]; % energy per bit over noise psd @Eve - dB
+EbN0_b = 15; % energy per bit over noise psd @Bob - dB
+EbN0_e = [5]; % energy per bit over noise psd @Eve - dB
 snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
 snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
 
@@ -340,8 +340,39 @@ legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filter
 
 else
 % Comparaison simu vs models - maxima of SR
+% figure;
+% yyaxis left
+% plot(U,100*alpha1_simu_opt,'Marker','square') ; hold on;
+% plot(U,100*alpha1_model_opt,'Marker','square') ; hold on;
+% plot(U,100*alpha2_simu_opt,'Marker','v') ; hold on;
+% plot(U,100*alpha2_model_opt,'Marker','v') ; hold on;
+% plot(U,100*alpha5_simu_opt,'Marker','>') ; hold on;
+% plot(U,100*alpha5_model_opt,'Marker','>') ; 
+% ylabel('Percentage of energy radiated dedicated for data (\%)')
+% ylim([0 100])
+% 
+% yyaxis right
+% plot(U,sr1_simu_max,'Marker','o') ; hold on;
+% plot(U,sr1_model_max,'Marker','o') ; hold on;
+% plot(U,sr2_simu_max,'Marker','<') ; hold on;
+% plot(U,sr2_model_max,'Marker','<') ; hold on;
+% plot(U,sr5_simu_max,'Marker','diamond') ; hold on;
+% plot(U,sr5_model_max,'Marker','diamond') 
+% ylabel('Secrecy rate (bit/channel use)')
+% ylim([0 max(sr1_simu_max)])
+% 
+% xlabel('BOR')
+% legend('Same decoder - Simulation','Same decoder - Modeling', ...
+%     'Matched filtering - Simulation', 'Matched filtering - Modeling',...
+%     'Own channel - Simulation', 'Own channel - Modeling',...
+%     'Same decoder - Simulation','Same decoder - Modeling', ...
+%     'Matched filtering - Simulation' , 'Matched filtering - Modeling',...
+%     'Own channel - Simulation', 'Own channel - Modeling')      
+%         
+
+
 figure;
-yyaxis left
+subplot(1,2,1)
 plot(U,100*alpha1_simu_opt,'Marker','square') ; hold on;
 plot(U,100*alpha1_model_opt,'Marker','square') ; hold on;
 plot(U,100*alpha2_simu_opt,'Marker','v') ; hold on;
@@ -349,9 +380,15 @@ plot(U,100*alpha2_model_opt,'Marker','v') ; hold on;
 plot(U,100*alpha5_simu_opt,'Marker','>') ; hold on;
 plot(U,100*alpha5_model_opt,'Marker','>') ; 
 ylabel('Percentage of energy radiated dedicated for data (\%)')
-ylim([0 100])
+xlabel('BOR')
+box on; grid on;
+ylim([min(100*alpha2_model_opt) max(100*alpha1_simu_opt)])
+legend('Same decoder - Simulation','Same decoder - Modeling', ...
+    'Matched filtering - Simulation' , 'Matched filtering - Modeling',...
+    'Own channel - Simulation', 'Own channel - Modeling')
 
-yyaxis right
+
+subplot(1,2,2)
 plot(U,sr1_simu_max,'Marker','o') ; hold on;
 plot(U,sr1_model_max,'Marker','o') ; hold on;
 plot(U,sr2_simu_max,'Marker','<') ; hold on;
@@ -359,16 +396,16 @@ plot(U,sr2_model_max,'Marker','<') ; hold on;
 plot(U,sr5_simu_max,'Marker','diamond') ; hold on;
 plot(U,sr5_model_max,'Marker','diamond') 
 ylabel('Secrecy rate (bit/channel use)')
-ylim([0 max(sr1_simu_max)])
-
+ylim([min(sr2_simu_max) max(sr1_model_max)])
 xlabel('BOR')
+box on; grid on;
 legend('Same decoder - Simulation','Same decoder - Modeling', ...
     'Matched filtering - Simulation', 'Matched filtering - Modeling',...
-    'Own channel - Simulation', 'Own channel - Modeling',...
-    'Same decoder - Simulation','Same decoder - Modeling', ...
-    'Matched filtering - Simulation' , 'Matched filtering - Modeling',...
-    'Own channel - Simulation', 'Own channel - Modeling')      
+    'Own channel - Simulation', 'Own channel - Modeling')
+          
         
+
+
 end        
 
 
