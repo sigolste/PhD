@@ -19,12 +19,12 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 2000;              % number of experiments
-alpha_step = 1;             % Percentage between subsequent alpha values
+nb_run = 1000;              % number of experiments
+alpha_step = .25;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 128;
+Q = 64;
 U = [2 4 8 16];
 N = Q./U;
 
@@ -33,7 +33,7 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-EbN0_b = 15; % energy per bit over noise psd @Bob - dB
+EbN0_b = 10; % energy per bit over noise psd @Bob - dB
 EbN0_e = [5]; % energy per bit over noise psd @Eve - dB
 snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
 snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
