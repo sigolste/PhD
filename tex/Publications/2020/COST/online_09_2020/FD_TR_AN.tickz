@@ -1,0 +1,52 @@
+\tikzstyle{block} = [draw, fill=gray!20, rectangle, 
+    minimum height=3em, minimum width=4em]
+\tikzstyle{sum} = [draw, fill=gray!20, circle, node distance=.1cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+% The block diagram code is probably more verbose than necessary
+\begin{tikzpicture}[auto, node distance=2cm,>=latex']
+\label{TR_secure}
+    % We start by placing the blocks
+    \node [input, name=symbol] {};
+    \node [block, right of=symbol] (spreading) {$\underline{\underline{S}}$};
+    \node [block, right of=spreading, node distance=2.5cm] (precoding){$\underline{\underline{H}}^*_{\text{B}}$}; 
+    \node [sum, right of=precoding, pin={[pinstyle]below:$\underline{W}$},
+            node distance=2.1cm] (sum) {$+$};
+    \node [block, right of= sum,node distance=3cm] (channel_bob) {$\underline{\underline{H}}_{\text{B}}$};
+    \node [sum, right of=channel_bob, pin={[pinstyle]below:$\underline{V}_\text{B}$},
+            node distance=2cm] (sum2) {$+$};
+    \node [block, below of=channel_bob] (channel_eve) {$\underline{\underline{H}}_{\text{E}}$};
+    \node [sum, right of=channel_eve, pin={[pinstyle]below:$\underline{V}_\text{E}$},
+            node distance= 2cm] (sum3) {$+$};
+    \node [block, right of= sum2,node distance=2cm] (despread_bob) {$\underline{\underline{S}}^H$};
+    \node [block, right of= sum3,node distance=2cm] (despread_eve) {$\underline{\underline{S}}^H$};
+    \node [block, right of= despread_bob,node distance=2.5cm] (eq_bob) {$\underline{\underline{E}}$};
+    \node [block, right of= despread_eve,node distance=2.5cm] (eq_eve) {$\underline{\underline{E}}$};
+    \node [output, right of=eq_bob] (outputb) {};
+    \node [output, right of=eq_eve] (outpute) {};
+    
+    %\node [block, right of=channel, pin={[pinstyle]above:Disturbances},
+    %        node distance=3cm] (system) {System};
+    % We draw an edge between the controller and system block to 
+    % calculate the coordinate u. We need it to place the measurement block. 
+    %\draw [->] (precoding) -- node[name=y] {$\underline{Y}$} (sum);
+    %\node [output, right of=system] (output) {};
+    %\node [block, below of=u] (measurements) {Measurements};
+
+    % Once the nodes are placed, connecting them is easy. 
+    \draw [draw,->] (symbol) -- node {$\underline{X}$} (spreading);
+    \draw [->] (spreading) -- node [name = spread]{$\underline{X}_S$} (precoding);
+    \draw [->] (precoding) -- node [name = precod] {} (sum);
+    \draw [->] (sum) -- node [name=to_bob] {$\underline{X}_{\text{TR}}$}(channel_bob);
+    \draw [->] (to_bob) |- (channel_eve);
+    \draw [->] (channel_bob) -- node [name = noise_bob] {} (sum2);
+    \draw [->] (channel_eve) -- node [name = noise_eve] {} (sum3);
+    \draw [->] (sum2) -- node [name = dspr_eve] {$\underline{Y}_{\text{B}}$} (despread_bob);
+    \draw [->] (sum3) -- node [name = dspr_eve] {$\underline{Y}_{\text{E}}$} (despread_eve);
+    \draw [->] (despread_bob) -- node [name = eq_bob1] {$\underline{Y}_{\text{B}}^{S^H}$} (eq_bob);
+    \draw [->] (despread_eve) -- node [name = eq_eve1] {$\underline{Y}_{\text{E}}^{S^H}$} (eq_eve);
+    \draw [->] (eq_bob) -- node [name = out_bob] {$\underline{\hat{X}}_{\text{B}}$} (outputb);
+    \draw [->] (eq_eve) -- node [name = out_eve] {$\underline{\hat{X}}_{\text{E}}$} (outpute);
+\end{tikzpicture}

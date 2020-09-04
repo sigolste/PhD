@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.4.8)  21 AUG 2020 16:59
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.4.8)  4 SEP 2020 13:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -2350,13 +2350,7 @@ File: img/AN_killer.png Graphic file (type png)
 <use img/AN_killer.png>
 Package pdftex.def Info: img/AN_killer.png  used on input line 143.
 (pdftex.def)             Requested size: 244.55144pt x 91.84906pt.
- [10]
-! Double superscript.
-l.189 ...),  \; T_2 = (U+1)U\sigma_{\text{V,E}}^2^
-                                                   + (U+1) - U\sigma_{\text{...
-I treat `x^1^2' essentially like `x^1{}^2'.
-
-[11 <./img/AN_killer.png>]
+ [10] [11 <./img/AN_killer.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 230--231
 
  []
@@ -2452,18 +2446,8 @@ Underfull \hbox (badness 10000) in paragraph at lines 50--51
  []
 
 [14 <./graphs/ber_ebno_alpha_bor_globcom-eps-converted-to.pdf> <./graphs/ber_al
-pha_bor_ebno_globcom-eps-converted-to.pdf>]
-! Extra }, or forgotten $.
-l.52 ...much lower values of $\alpha_{\text{opt}}}
-                                                  $, i.e. higher \gls{an} en...
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-[15 <./graphs/SR_simu_anal_comparaison-eps-converted-to.pdf> <./graphs/SR_max2-
-eps-converted-to.pdf>]
+pha_bor_ebno_globcom-eps-converted-to.pdf>] [15 <./graphs/SR_simu_anal_comparai
+son-eps-converted-to.pdf> <./graphs/SR_max2-eps-converted-to.pdf>]
 Package epstopdf Info: Source file: <graphs/SR_filter_comparaison_new.eps>
 (epstopdf)                    date: 2020-07-02 15:48:43
 (epstopdf)                    size: 208249 bytes
@@ -2501,8 +2485,9 @@ File: graphs/alpha_waterfilling-eps-converted-to.pdf Graphic file (type pdf)
 Package pdftex.def Info: graphs/alpha_waterfilling-eps-converted-to.pdf  used o
 n input line 82.
 (pdftex.def)             Requested size: 317.91388pt x 233.46019pt.
-) (./conclusion.tex [16 <./graphs/SR_filter_comparaison_new-eps-converted-to.pd
-f>]
+)
+(./conclusion.tex [16 <./graphs/SR_filter_comparaison_new-eps-converted-to.pdf>
+]
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
@@ -3423,7 +3408,7 @@ exlive/2019/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2019
 1/public/lm/lmsy9.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/am
 sfonts/symbols/msam10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/p
 alatino/uplr8a.pfb>
-Output written on main.pdf (36 pages, 1384015 bytes).
+Output written on main.pdf (36 pages, 1383913 bytes).
 PDF statistics:
  1153 PDF objects out of 1200 (max. 8388607)
  1049 compressed objects within 11 object streams
