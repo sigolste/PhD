@@ -227,8 +227,8 @@ secrecy_capa(cc,nb_bor,bb) = capa_bob(cc,nb_bor,bb) - capa_eve(cc,nb_bor,bb) ;
 %
 end
 clc;
-fprintf(progress_bar(cc,nb_channels,'Channel Status'))
-fprintf(progress_bar(nb_bor,length(BOR),'Back Of Rate'))
+% fprintf(progress_bar(cc,nb_channels,'Channel Status'))
+% fprintf(progress_bar(nb_bor,length(BOR),'Back Of Rate'))
 %fprintf(syyydlib.progress_bar(dd,nb_pos,'Eve Position'))
 
 

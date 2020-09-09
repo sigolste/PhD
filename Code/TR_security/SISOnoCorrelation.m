@@ -130,15 +130,6 @@ sym_e = He_RX*sym_precoded_TX;
 an_e = He_RX*an_TX; % Only @Eve since no AN effect after decod1 @Bob
 
 
-%% SINR/capacity @Eve without post processing
-
-% He_equiv = sqrt(alpha(aa))*He_RX*matrix_spread;
-He_equiv = sqrt(alpha(aa))*He_RX*Hb_TX*matrix_spread;
-
-%He_equiv = sqrt(alpha(aa))*abs(He_RX).^2*abs(Hb_TX).^2*matrix_spread;
-
-
-% sinr_no_decod_e(iter,aa) = U*energy(sym_e)/energy(noise_e+an_e);
 
 %% Decoder
 decod1 = matrix_despread;                                   % despreading

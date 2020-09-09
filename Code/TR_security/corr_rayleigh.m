@@ -27,10 +27,10 @@ function [ RV ] = corr_rayleigh( nb_subca , bc , variance , nb_realizations )
     RV = RV.';
 
     %% Plot the frequency variation of the correlation 
-%     figure
-%     plot( delta_f , rho )
-%     xlabel('Nb of subcarrier')
-%     ylabel('correlation \rho')
+    figure
+    plot( delta_f , rho )
+    xlabel('Nb of subcarrier')
+    ylabel('correlation $\rho$')
 
 end
 

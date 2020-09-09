@@ -1,40 +1,41 @@
 \BOOKMARK [1][-]{section*.3}{Acronyms}{}% 1
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 2
-\BOOKMARK [1][-]{section.2}{System Model}{}% 3
-\BOOKMARK [2][-]{subsection.2.1}{Conventional FD TR SISO OFDM Communication}{section.2}% 4
-\BOOKMARK [3][-]{subsubsection.2.1.1}{Received sequence at the intended position}{subsection.2.1}% 5
-\BOOKMARK [3][-]{subsubsection.2.1.2}{Received sequence at the unintended position}{subsection.2.1}% 6
-\BOOKMARK [2][-]{subsection.2.2}{FD TR SISO OFDM communication with AN addition}{section.2}% 7
-\BOOKMARK [3][-]{subsubsection.2.2.1}{AN Design}{subsection.2.2}% 8
-\BOOKMARK [3][-]{subsubsection.2.2.2}{Received sequence at the intended position}{subsection.2.2}% 9
-\BOOKMARK [3][-]{subsubsection.2.2.3}{Received sequence at the unintended position}{subsection.2.2}% 10
-\BOOKMARK [1][-]{section.3}{Performance Assessment}{}% 11
-\BOOKMARK [2][-]{subsection.3.1}{SINR determination}{section.3}% 12
-\BOOKMARK [3][-]{subsubsection.3.1.1}{At Bob, i.e., the intended position}{subsection.3.1}% 13
-\BOOKMARK [3][-]{subsubsection.3.1.2}{At Eve, i.e., the unintended position}{subsection.3.1}% 14
-\BOOKMARK [2][-]{subsection.3.2}{Optimal amount of AN to inject}{section.3}% 15
-\BOOKMARK [3][-]{subsubsection.3.2.1}{Eve's estimator: same structure as Bob}{subsection.3.2}% 16
-\BOOKMARK [3][-]{subsubsection.3.2.2}{Eve's estimator: matched filtering}{subsection.3.2}% 17
-\BOOKMARK [2][-]{subsection.3.3}{Secrecy rate optimization via waterfilling}{section.3}% 18
-\BOOKMARK [1][-]{section.4}{Simulation Results}{}% 19
-\BOOKMARK [2][-]{subsection.4.1}{Decoding results}{section.4}% 20
-\BOOKMARK [2][-]{subsection.4.2}{Secrecy results}{section.4}% 21
-\BOOKMARK [3][-]{subsubsection.4.2.1}{Comparaison between models and simulations}{subsection.4.2}% 22
-\BOOKMARK [3][-]{subsubsection.4.2.2}{Comparison between the different decoding structures}{subsection.4.2}% 23
-\BOOKMARK [3][-]{subsubsection.4.2.3}{Waterfilling Optimization}{subsection.4.2}% 24
-\BOOKMARK [1][-]{section.5}{Conclusion \046 Perspectives}{}% 25
-\BOOKMARK [1][-]{section.5}{References}{}% 26
-\BOOKMARK [1][-]{section.5}{Appendices}{}% 27
-\BOOKMARK [1][-]{Appendix.1.A}{SINR derivation}{}% 28
-\BOOKMARK [2][-]{subsection.1.A.1}{At the intended position}{Appendix.1.A}% 29
-\BOOKMARK [2][-]{subsection.1.A.2}{At the unintended position}{Appendix.1.A}% 30
-\BOOKMARK [3][-]{subsubsection.1.A.2.1}{Eve and Bob with identical capacities}{subsection.1.A.2}% 31
-\BOOKMARK [3][-]{subsubsection.1.A.2.2}{Matched Filtering}{subsection.1.A.2}% 32
-\BOOKMARK [3][-]{subsubsection.1.A.2.3}{AN suppression}{subsection.1.A.2}% 33
-\BOOKMARK [3][-]{subsubsection.1.A.2.4}{LMMSE}{subsection.1.A.2}% 34
-\BOOKMARK [1][-]{Appendix.1.B}{Optimal amount of AN to inject derivation}{}% 35
-\BOOKMARK [2][-]{subsection.1.B.1}{Despreading at Eve}{Appendix.1.B}% 36
-\BOOKMARK [2][-]{subsection.1.B.2}{Matched filtering at Eve}{Appendix.1.B}% 37
-\BOOKMARK [1][-]{Appendix.1.C}{Momentum computation of complex-valued random normal variables}{}% 38
-\BOOKMARK [2][-]{subsection.1.C.1}{Real-valued random normal variable}{Appendix.1.C}% 39
-\BOOKMARK [2][-]{subsection.1.C.2}{Complex-valued random normal variable}{Appendix.1.C}% 40
+\BOOKMARK [1][-]{section.2}{Handshake Protocol}{}% 3
+\BOOKMARK [1][-]{section.3}{Communication Protocol}{}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Conventional FD TR SISO OFDM Communication}{section.3}% 5
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Received sequence at the intended position}{subsection.3.1}% 6
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Received sequence at the unintended position}{subsection.3.1}% 7
+\BOOKMARK [2][-]{subsection.3.2}{FD TR SISO OFDM communication with AN addition}{section.3}% 8
+\BOOKMARK [3][-]{subsubsection.3.2.1}{AN Design}{subsection.3.2}% 9
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Received sequence at the intended position}{subsection.3.2}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Received sequence at the unintended position}{subsection.3.2}% 11
+\BOOKMARK [1][-]{section.4}{Performance Assessment}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{SINR determination}{section.4}% 13
+\BOOKMARK [3][-]{subsubsection.4.1.1}{At Bob, i.e., the intended position}{subsection.4.1}% 14
+\BOOKMARK [3][-]{subsubsection.4.1.2}{At Eve, i.e., the unintended position}{subsection.4.1}% 15
+\BOOKMARK [2][-]{subsection.4.2}{Optimal amount of AN to inject}{section.4}% 16
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Eve's estimator: same structure as Bob}{subsection.4.2}% 17
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Eve's estimator: matched filtering}{subsection.4.2}% 18
+\BOOKMARK [2][-]{subsection.4.3}{Secrecy rate optimization via waterfilling}{section.4}% 19
+\BOOKMARK [1][-]{section.5}{Simulation Results}{}% 20
+\BOOKMARK [2][-]{subsection.5.1}{Decoding results}{section.5}% 21
+\BOOKMARK [2][-]{subsection.5.2}{Secrecy results}{section.5}% 22
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Comparaison between models and simulations}{subsection.5.2}% 23
+\BOOKMARK [3][-]{subsubsection.5.2.2}{Comparison between the different decoding structures}{subsection.5.2}% 24
+\BOOKMARK [3][-]{subsubsection.5.2.3}{Waterfilling Optimization}{subsection.5.2}% 25
+\BOOKMARK [1][-]{section.6}{Conclusion \046 Perspectives}{}% 26
+\BOOKMARK [1][-]{section.6}{References}{}% 27
+\BOOKMARK [1][-]{section.6}{Appendices}{}% 28
+\BOOKMARK [1][-]{Appendix.1.A}{SINR derivation}{}% 29
+\BOOKMARK [2][-]{subsection.1.A.1}{At the intended position}{Appendix.1.A}% 30
+\BOOKMARK [2][-]{subsection.1.A.2}{At the unintended position}{Appendix.1.A}% 31
+\BOOKMARK [3][-]{subsubsection.1.A.2.1}{Eve and Bob with identical capacities}{subsection.1.A.2}% 32
+\BOOKMARK [3][-]{subsubsection.1.A.2.2}{Matched Filtering}{subsection.1.A.2}% 33
+\BOOKMARK [3][-]{subsubsection.1.A.2.3}{AN suppression}{subsection.1.A.2}% 34
+\BOOKMARK [3][-]{subsubsection.1.A.2.4}{LMMSE}{subsection.1.A.2}% 35
+\BOOKMARK [1][-]{Appendix.1.B}{Optimal amount of AN to inject derivation}{}% 36
+\BOOKMARK [2][-]{subsection.1.B.1}{Despreading at Eve}{Appendix.1.B}% 37
+\BOOKMARK [2][-]{subsection.1.B.2}{Matched filtering at Eve}{Appendix.1.B}% 38
+\BOOKMARK [1][-]{Appendix.1.C}{Momentum computation of complex-valued random normal variables}{}% 39
+\BOOKMARK [2][-]{subsection.1.C.1}{Real-valued random normal variable}{Appendix.1.C}% 40
+\BOOKMARK [2][-]{subsection.1.C.2}{Complex-valued random normal variable}{Appendix.1.C}% 41

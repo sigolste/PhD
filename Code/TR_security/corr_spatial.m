@@ -51,8 +51,8 @@ function [ H , RHO_SPATIAL ] = corr_spatial( nb_subca , b_subca , r , fc , nb_re
         plot( r , RHO_SPATIAL( 1 , : , ii ) )
     end
     xlabel('Distance')
-    ylabel('spatial correlation \rho')
-    addToolbarExplorationButtons(fig)
+    ylabel('spatial correlation $\rho$')
+%     addToolbarExplorationButtons(fig)
     
     %% Verification
 %     RHO_matrix_calculated = corrcoef( squeeze( H( : , 1 , : ) ) ) ;                               % Should be identical to RHO matrix if enough realizations
