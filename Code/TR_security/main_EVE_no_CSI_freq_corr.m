@@ -73,7 +73,7 @@ nb_channels = 500;                                          % Number of realizat
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
-scenario = "2";
+scenario = "1";
 switch scenario 
     
     % BER

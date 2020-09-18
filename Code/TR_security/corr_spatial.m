@@ -45,13 +45,13 @@ function [ H , RHO_SPATIAL ] = corr_spatial( nb_subca , b_subca , r , fc , nb_re
     end
  
     % Plot the spatial variation of the correlation 
-    fig = figure ;
-    hold on
-    for ii = 1 : nb_subca
-        plot( r , RHO_SPATIAL( 1 , : , ii ) )
-    end
-    xlabel('Distance')
-    ylabel('spatial correlation $\rho$')
+%     fig = figure ;
+%     hold on
+%     for ii = 1 : nb_subca
+%         plot( r , RHO_SPATIAL( 1 , : , ii ) )
+%     end
+%     xlabel('Distance')
+%     ylabel('spatial correlation $\rho$')
 %     addToolbarExplorationButtons(fig)
     
     %% Verification

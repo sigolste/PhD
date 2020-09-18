@@ -64,7 +64,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1000;                               % number of experiments
+nb_run = 10;                               % number of experiments
 nb_pos = 80;                                % Number of spatial positions between Bob and Eve
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
@@ -144,8 +144,8 @@ Hb_RX = ctranspose(Hb_TX);
 
 for bb =1:length(U)
     
-msg_TX = randi( [0 1] , nb_bit(bb) , 1 ) ;                                         % Random bit data stream
-sym_TX = qammod(msg_TX,M,'gray','UnitAveragePower',true, 'InputType', 'bit');  % QAM modulation, can be changed to different modulation types, Nxnb_run
+msg_TX = randi( [0 1] , nb_bit(bb) , 1 ) ;                                      % Random bit data stream
+sym_TX = qammod(msg_TX,M,'gray','UnitAveragePower',true, 'InputType', 'bit');   % QAM modulation, can be changed to different modulation types, Nxnb_run
 
 
 
@@ -183,9 +183,6 @@ sym_RX_e = He_RX*(sym_precoded_TX + an_TX);
 % Useful symbol
 sym_b = Hb_RX*sym_precoded_TX; % Qx1
 sym_e = He_RX*sym_precoded_TX;
-
-
-
 
 % Noise symbol
 [noise_b, ~ ] = addNoise(sym_b , snr_b, energy(sym_precoded_TX+an_TX));     %addNoise(sym_b , snr_b, energy(sym_RX_b)); 

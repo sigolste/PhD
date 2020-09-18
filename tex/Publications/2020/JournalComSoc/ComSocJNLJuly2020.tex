@@ -98,6 +98,9 @@
 
 \usepackage{hyperref}
 
+
+\usepackage{tabularx}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
 %%%%%%%%%%%%%%%%% BEGINNING OF THE TEXT %%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -205,10 +208,31 @@ Prior to the secure data transmission between Alice and Bob, a handshake protoco
 
 In this paper, we consider a Fast Fading (FF) Time-Division Duplex (TDD) communication. In doing so, we will investigate three different decoding schemes at Eve depending on weither Alice or Bob wants to first initiate the secure communication. The FF hypothesis means that each OFDM block sent by Alice will experience a different channel realization. The TDD hypothesis implies that channel reciprocity between Alice and Bob or Alice and Eve can be used. 
 
-The first investigated situation arises when Alice asks first to Bob for secure commnication. In this configuration, she sends a pilot to Bob allowing Eve to estimate her own channel frequency response (CFR) $\HE$. From that, Bob acknowledges to Alice without need of sending his channel estimation $\HB$. This comes from the channel reciprocity property in TDD systems. Finally, Alice will send precoded data without pilot to Bob. From the FF assumption, Eve cannot learn the precoding performed by the transmitter. In this configuration, Eve will implement the \textit{"own channel knowledge"} decoding structure since she only has the knowledge of her own channel. 
+The first investigated situation arises when Alice asks first to Bob for secure commnication, as depicted in Fig.\ref{fig_ff_tdd_a}. In this configuration, she sends a pilot to Bob allowing Eve to estimate her own channel frequency response (CFR) $\HE$. From that, Bob acknowledges to Alice without need of sending his channel estimation $\HB$. This comes from the channel reciprocity property in TDD systems. Finally, Alice will send precoded data without pilot to Bob. From the FF assumption, Eve cannot learn the precoding performed by the transmitter. In this configuration, Eve will implement the \textit{"own channel knowledge"} decoding structure since she only has the knowledge of her own channel. 
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=.9\linewidth]{graphs/diagram_sequence-FF_TDD_A.jpg}
+	\caption{FF TDD, Alice initiates communication}
+	\label{fig_ff_tdd_a}
+\end{figure}
 
-The last 2 scenarios appear when Bob first requests to Alice for secure communication. In both cases, Bob transmits a pilot to Alice allowing her to know Bob's channel. If Alice only transmits precoded data to Bob, Eve will not be able to know anything about the communication parameters. In that situation, she will implement the "\textit{same decoding structure as Bob}", i.e., she will only despread the received sequence. However, if Alice sends precoded pilot and data to Bob, Eve will be able to know her equivalent channel $\HB^*\HE$ and will implement the "\textit{matched filtering}" decoding structure. 
 
+The last 2 scenarios appear when Bob first requests to Alice for secure communication. In both cases, Bob transmits a pilot to Alice allowing her to know Bob's channel. \\
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=.9\linewidth]{graphs/diagram_sequence-FF_TDD_B_no_pilot.jpg}
+	\caption{FF TDD, Bob initiates the communication, no pilot sent}
+	\label{fig_ff_tdd_b_no_pilot}
+\end{figure} \\
+If Alice only transmits precoded data to Bob, Eve will not be able to know anything about the communication parameters. In that situation, she will implement the "\textit{same decoding structure as Bob}", i.e., she will only despread the received sequence. This situation is presented in Fig.\ref{fig_ff_tdd_b_no_pilot}.
+
+However, if Alice sends precoded pilot and data to Bob, Eve will be able to know her equivalent channel $\HB^*\HE$ and will implement the "\textit{matched filtering}" decoding structure. This is depicted in Fig.\ref{fig_ff_tdd_b_pilot}
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=.95\linewidth]{graphs/diagram_sequence-FF_TDD_B_pilot.jpg}
+	\caption{FF TDD, Bob initiates the communication, pilots sent}
+	\label{fig_ff_tdd_b_pilot}
+\end{figure}\\
 In the following, these three decoding schemes will be investigated and analytic models will be derived.
 
 
@@ -343,12 +367,12 @@ Equation (\ref{eq:rx_an_eve_eq}) shows that the addition of AN in the FD TR SISO
 The classical metric used to evaluate the degree of secrecy in a communication in the PLS field is the secrecy capacity channel, or secrecy rate (SR). The SR is defined as the maximum transmission rate that can be supported by the legitimate receiver's channel while ensuring the impossibility for the eavesdropper to retrieve the data, \cite{7348007}. In the ergodic sense, it can be expressed as:
 \begin{equation}
 \begin{split}
-C_S &=  \EX{\log_2{\left(1+\gamma_B\right)} - \log_2{\left(1+\gamma_E\right)}} \; \; \; , \; \; \;  \gamma_B > \gamma_E \\
-&\leq   \log_2 \left( 1+ \EX{\gamma_B} \right) - \log_2 \left( 1+ \EX{\gamma_E}\right) 
+C_S &=  \left[\EX{\log_2{\left(1+\gamma_B\right)} - \log_2{\left(1+\gamma_E\right)}}\right]^+  \\
+&\approx  \left[ \log_2 \left( 1+ \EX{\gamma_B} \right) - \log_2 \left( 1+ \EX{\gamma_E}\right)\right]^+
 \end{split}
 \label{eq:SR}
 \end{equation}
-with $\gamma_B$ and $\gamma_E$ being respectively the SINR at Bob and Eve's positions. The inequality in (\ref{eq:SR}) arises from the Jensen's inequality. To estimate the SR of the communication, we observe from (\ref{eq:SR}) that an analytic expression of Bob and Eve ergodic SINR must be derived.
+where $\left[x\right]^+$ is equal to $x$ if $x>0$, or $0$ if $x \leq 0$,  $\gamma_B$ and $\gamma_E$ being respectively the SINR at Bob and Eve's positions. To estimate the SR of the communication, we observe from (\ref{eq:SR}) that an analytic expression of Bob and Eve ergodic SINR must be derived.
 
 
 
@@ -382,28 +406,19 @@ At Bob, a simple despreading operation is performed. As a reminder, due to the p
 \label{eq:RV_sinr_b}
 \end{split}
 \end{equation}
-where $A_{1,n} = \frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2$, $x_n$ is the $n^{\text{th}}$ data symbol, and $A_{2,n} = \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} \left| v_{\text{B}, n + iN}\right|$ is the $n^{\text{th}}$ noise symbol component and where it is observed that $k_n \independent x_n \independent v_{B,n}$.\\
+where $A_{1,n} = \frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2$, $x_n$ is the $n^{\text{th}}$ data symbol, and $A_{2,n} = \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} \left| v_{\text{B}, n + iN}\right|$ is the $n^{\text{th}}$ noise symbol component and where it is observed that $A_{1,n} \independent x_n \independent A_{2,n}$.\\
 %We find\footnote{See Appendix \ref{appA:SINR_deriv}}:
-For the term $A_{1,n}$, we have:
+For the term $A_{1,n}$, we have (see \ref{sec:data-term-app}):
 \begin{equation}
 	\begin{split}
-	\EX{|A_1|^2} =& \EX{\module{\sqrt{\alpha} \; \spread^H \module{\HB}^2 \spread}^2} \\
-	\EX{|A_{1,n}|^2} =&\EX{\left|\frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2\right|^2}  \\
-	=& \frac{\alpha}{U^2} \EX{\left(\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2\right) \left(\sum_{j=0}^{U-1} \left| h_{\text{B}, n + jN}\right|^2\right)^H}\\
-	=&  \frac{\alpha}{U^2} \Big(\EX{\sum_{i=0}^{U-1}\left| h_{\text{B}, n + iN}\right|^4} +\\
-	& \EX{\sum_{i=0}^{U-1}\left| h_{\text{B}, n + iN}\right|^2}\EX{\sum_{\substack{j=0 \\ j\neq i}}^{U-1} | h^*_{\text{B}, n + jN}|^2} \Big) \\
-	=& \frac{\alpha}{U^2} \left( 2U + U(U-1)\right) = \frac{\alpha (U+1)}{U}
+	\EX{|A_{1,n}|^2} =& \frac{\alpha (U+1)}{U}
 	\end{split}
 	\label{eq:appA:data_bob}
 \end{equation}
-where we used the fact that $\EX{\left| h_{\text{B}, n + iN}\right|^2} = 1$ and $\EX{\left| h_{\text{B}, n + iN}\right|^4} = 2$ since $\HB \sim \mathcal{CN}(0,1)$.\\
-The mean energy per noise symbol, $A_{2,n}$, can be derived as follow:
+The mean energy per noise symbol, $A_{2,n}$, can be derived as follow (see \ref{sec:awgn-term-app}):
 \begin{equation}
 	\begin{split}
-	\EX{|A_2|^2} &=  \EX{\module{\spread^H \vb}^2} \\
-	&= \EX{\left(\spread^H \vb \right)\left(\spread^H \vb \right)^H} \\
-	&=\EX{\spread^H \vb \vb^* \spread } \\
-	\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |v_{\text{B}, n + iN}|^2} = \sigma^2_{\text{V,B}}
+	\EX{|A_{2,n}|^2} &= \sigma^2_{\text{V,B}}
 	\end{split}
 	\label{eq:appA:noise_bob}
 \end{equation}
@@ -435,7 +450,7 @@ where $A_{1,n}$, $A_{2,n}$ and $A_{3,n}$ being respectively the data, noise and 
 
 \paragraph{Same decoding strucure as Bob}
 \label{sec:same-decoding-strucure-as-bob}
-This scenario corresponds to the situation where Bob first requests a secure communication to Alice. He sends her a pilot and she answers with precoded data without pilot. As a consequence, Eve will not be able to know any communication parameter.  Therefore, the eavesdropper is limited to a despreading operation of the received signal thanks to $\textbf{G}=\spread^H$. In that case, the received sequence becomes:
+This scenario corresponds to the situation presented in Fig.\ref{fig_ff_tdd_b_no_pilot}. The decoding structure at Eve is therefore $\textbf{G}=\spread^H$. In that case, the received sequence becomes:
 \begin{equation}
 \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \HE \textbf{H}^*_{\text{B}} \spread\; \textbf{x} \; +  \; \sqrt{1-\alpha} \; \spread^H \HE \w  \; +  \; \spread^H  \ve 
 \label{eq:rx_eve_filt0}
@@ -448,32 +463,26 @@ A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1}  v_{\text{E}, n + iN}\\
 A_{3,n} &= \sqrt{1-\alpha}\frac{1}{\sqrt{U}}\sum_{i=0}^{U-1}  h_{\text{E}, n + iN} \; w_{n + iN}
 \end{split}
 \end{equation}
-For the data component, we have:
+For the data component, we have (see \ref{sec:data-term-app-1}):
 \begin{equation}
 	\begin{split}
-	\EX{|\textbf{A}_{1}|^2} &= \EX{\module{\sqrt{\alpha}\spread^H \HE\HB^* \spread}^2} \\
-	\EX{|A_{1,n}|^2}&=\alpha \EX{\frac{1}{U^2} \sum_{i=0}^{U-1} \left| h_{\text{E}, n + iN} \right|^2 \left| h^*_{\text{B}, n + iN}\right|^2 } \\
-	&= \frac{\alpha}{U}
+	\EX{|A_{1,n}|^2}&= \frac{\alpha}{U}
 	\end{split}
 	\label{eq:appA:data_eve_filt0}
 \end{equation}
 
-For the noise component:
+For the noise component, we obtain (see \ref{sec:awgn-term-app-1}):
 \begin{equation}
 	\begin{split}
-	\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \ve}^2} \\
-	&=\EX{\spread^H \ve \ve^* \spread } \\
-	\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+	\EX{|A_{2,n}|^2} &=\sigma^2_{\text{V,E}}
 	\end{split}
 	\label{eq:appA:noise_eve_filt0}
 \end{equation}
 
-The AN term is given by:
+The AN term is given by (see \ref{sec:an-term-app-1}):
 \begin{equation}
 	\begin{split}
-	\EX{|\textbf{A}_{3}|^2} &=  \EX{\module{\sqrt{1-\alpha}\spread^H \HE \w}^2} \\
-	&=(1-\alpha)\EX{\spread^H \HE\textbf{H}^*_{\text{E}} \w\w^* \spread } \\
-	\EX{|A_{3,n}|^2}  &= \frac{1-\alpha}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}w_{n + iN}|^2} = \frac{1-\alpha}{U}
+	\EX{|A_{3,n}|^2}  &= \frac{1-\alpha}{U}
 	\end{split}
 	\label{eq:appA:an_eve_filt0}
 \end{equation}
@@ -482,12 +491,13 @@ From (\ref{eq:expected_sinr_eve}), (\ref{eq:appA:data_eve_filt0}), (\ref{eq:appA
 \EX{\gamma_{E,n}} \gtrapprox \frac{\frac{\alpha}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U}}
 \label{eq:sinr_eve_filt0}
 \end{equation}
+%%%%%%%% CA DANS UN TABLEAU 
 Low performances at Eve are expected with this decoding structure since the despreading operation will not coherently add the received symbol components. No frequency diversiy will be obtained, leading to suboptimal decoding performances, and therefore to high SR values. 
-
+%%%%%%%%%
 %%
 
 \paragraph{Matched filtering}
-In this scenario, Bob initiates the communication. He sends a pilot to Alice which answers with precoded data and pilot. From that, Eve is able to know her equivalent channel $\HB^*\HE$ and implements a matched filtering decoding structure $\textbf{G} = \spread^H \HB\HE^*$. The received signal is given by:
+The scenario is depicted in Fig.\ref{fig_ff_tdd_b_pilot}. Eve implements a matched filtering decoding structure $\textbf{G} = \spread^H \HB\HE^*$. The received signal is given by:
 \begin{equation}
 \textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \module{\HE}^2 \module{\HB}^2 \spread\textbf{x} +  \sqrt{1-\alpha} \spread^H \HB\module{\HE}^2 \w  +  \spread^H  \textbf{H}^*_E \textbf{H}_B \ve
 \label{eq:rx_eve_filt1}
@@ -500,25 +510,19 @@ A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} h^*_{\text{E}, n + iN} \; h_{\text
 A_{3,n} &=\frac{ \sqrt{1-\alpha}  }{\sqrt{U}}\sum_{i=0}^{U-1}    h_{\text{\textbf{B}}, n + iN} \left|h_{\text{E}, n + iN}\right|^2\; w_{n + iN}
 \end{split}
 \end{equation}
-The data component can be derived as:
-\begin{multline}
-\EX{|A_{1,n}|^2} = \alpha \EX{\left|\frac{1}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2 \left| h_{\text{E}, n + iN}\right|^2\right|^2} \\
-=\frac{\alpha}{U^2} \mathbb{E} \Bigg[\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^4 \left| h_{\text{E}, n + iN}\right|^4 \\
-+ \sum_{i=0}^{U-1}\sum_{\substack{j=0 \\ j\neq i}}^{U-1}  \left| h_{\text{B}, n + jN}\right|^2 \left| h_{\text{E}, n + iN}\right|^2 \left| h^*_{\text{B}, n + iN}\right|^2 \left| h^*_{\text{E}, n + jN}\right|^2 \Bigg] \\
-= \frac{\alpha}{U^2} \left(U.2.2 + U(U-1) \right) = \frac{\alpha (U+3)}{U}
+The data component can be derived as (see \ref{sec:data-term-app-2}):
+\begin{equation}
+\EX{|A_{1,n}|^2} =  \frac{\alpha (U+3)}{U}
 \label{eq:data_eve_filt1}
-\end{multline}
-where we used the fact that $\EX{\left| h_{\text{E}, n + iN}\right|^2} = 1$ and $\EX{\left| h_{\text{E}, n + iN}\right|^4} = 2$ since $\HE \sim \mathcal{CN}(0,1)$.\\
-The additve white noise component is determined as follow:
+\end{equation}
+The additve white noise component is determined as follow  (see \ref{sec:awgn-term-app-2}):
 \begin{equation}
 	\begin{split}
-	\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \HE^* \HB \ve}^2} \\
-	&=\EX{\spread^H   \HE \HE^* \HB\HB^*  \ve \ve^* \spread } \\
-	\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^2 |h_{\text{B}, n + iN}|^2 |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+	\EX{|A_{2,n}|^2} &= \sigma^2_{\text{V,E}}
 	\end{split}
 	\label{eq:noise_eve_filt1}
 \end{equation}
-The component $\textbf{A}_{3,n}$ depends on $\textbf{w}$ and $\HB$ which are correlated via the AN design (\ref{eq:an_cond}). The expectation is therefore more difficult to compute. After some mathematical operations, we find: {\color{red} JUSQU'A QUEL POINT METTRE LES DERIVATIONS ICI ? CA PREND 3 PAGES DANS LE RAPPORT}
+The AN term is given by (see \ref{sec:an-term-app-2}):
 \begin{equation}
 	\EX{|A_{3,n}|^2} = \frac{1-\alpha}{U+1}
 	\label{eq:an_eve_filt1}
@@ -533,7 +537,7 @@ From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt1}), (\ref{eq:noise_eve
 
 \paragraph{Own channel knowledge}
 \label{sec:own-channel-knowledge}
-This situation corresponds to the scenario where Alice wants to initiate the communication with Bob. She sends a pilot to Bob allowing Eve to know $\HE$. Bob acknowledges and Alice can then send back precoded data. Consequently, Eve will decode the data thanks to $\textbf{G} = \spread^H \HE^*$. The received sequence is:
+This situation is shown in Fig.\ref{fig_ff_tdd_a}. Eve will decode the data thanks to $\textbf{G} = \spread^H \HE^*$. The received sequence is:
 \begin{equation}
 	\textbf{y}_{\text{E}}^G = \sqrt{\alpha} \spread^H \module{\HE}^2 \HB^* \spread\textbf{x} +  \sqrt{1-\alpha} \spread^H \module{\HE}^2 \w  +  \spread^H  \textbf{H}^*_E  \ve
 	\label{eq:rx_eve_filt5}
@@ -546,29 +550,22 @@ A_{2,n} &= \frac{1}{\sqrt{U}}\sum_{i=0}^{U-1} h^*_{\text{E}, n + iN}  v_{\text{E
 A_{3,n} &=\frac{ \sqrt{1-\alpha}  }{\sqrt{U}}\sum_{i=0}^{U-1}   \left|h_{\text{E}, n + iN}\right|^2 w_{n + iN}
 \end{split}
 \end{equation}
-The first term is determined as:
-\begin{multline}
-\EX{|A_{1,n}|^2} = \alpha \EX{\left|\frac{1}{U}\sum_{i=0}^{U-1} h_{\text{B}, n + iN}^* \left| h_{\text{E}, n + iN}\right|^2\right|^2} \\
-=\frac{\alpha}{U^2} \mathbb{E}\Bigg[ \sum_{i=0}^{U-1} \left| h_{\text{B}, n + jN}\right|^2 \left| h_{\text{E}, n + iN}\right|^4 \\
-+ \sum_{i=0}^{U-1}\sum_{\substack{j=0 \\ j\neq i}}^{U-1}  h_{\text{B}, n + jN} h^*_{\text{B}, n + iN} \left| h_{\text{E}, n + jN}\right|^2 \left| h^*_{\text{E}, n + iN}\right|^2 \Bigg] \\
-= \frac{\alpha}{U^2} \left(U.2.1 + U(U-1).1.1.0\right) = \frac{2\alpha}{U}
+The first term is determined as, see \ref{sec:data-term-app-3}:
+\begin{equation}
+\EX{|A_{1,n}|^2} = \frac{2\alpha}{U}
 \label{eq:data_eve_filt5}
-\end{multline}
-The AWGN term is derived as follow:
+\end{equation}
+The AWGN term is derived as follow, see \ref{sec:awgn-term-app-3}:
 \begin{equation}
 \begin{split}
-\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \HE^* \ve}^2} \\
-&=\EX{\spread^H   \left|\HE\right|^2  \left|\ve\right|^2 \spread } \\
-\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^2 |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+\EX{|A_{2,n}|^2} &= \sigma^2_{\text{V,E}}
 \end{split}
 \label{eq:noise_eve_filt5}
 \end{equation}
-Finally, the AN term is given by:
+Finally, the AN term is given by, see \ref{sec:an-term-app-3}:
 \begin{equation}
 \begin{split}
-\EX{|\textbf{A}_{3}|^2} &=  \EX{\module{\sqrt{1-\alpha}\spread^H \left|\HE\right|^2 \w}^2} \\
-&=(1-\alpha)\EX{\spread^H \left|\HE\right|^2 \w\w^* \left|\HE^*\right|^2\spread } \\
-\EX{|A_{3,n}|^2}  &= \frac{1-\alpha}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^4 |w_{n + iN}|^2} = \frac{2(1-\alpha)}{U}
+\EX{|A_{3,n}|^2}  &=  \frac{2(1-\alpha)}{U}
 \end{split}
 \label{eq:an_eve_filt5}
 \end{equation}
@@ -577,7 +574,15 @@ From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt5}), (\ref{eq:noise_eve
 \EX{\gamma_{E,n}} \gtrapprox \frac{\frac{\alpha }{U}}{\frac{\sigma^2_{\text{V,E}}}{2} + \frac{1-\alpha}{U}}
 \label{eq:sinr_eve_filt5}
 \end{equation}
+%%%%%% DANS UN TABLEAU 
 One can observe that (\ref{eq:sinr_eve_filt5}) is very similar to (\ref{eq:sinr_eve_filt0}) such that high SR values are expected. In particular, (\ref{eq:sinr_eve_filt5}) leads to slightly higher SINR values at Eve than (\ref{eq:sinr_eve_filt0}), i.e., slightly lower SR values, especially at high $\sigma^2_{\text{V,E}}$ and high $\alpha$. 
+
+
+
+
+
+
+
 
 
 
@@ -591,12 +596,7 @@ For each handshake scenario, we derived a closed form approximation of the SINR 
 C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 + \frac{\frac{\alpha}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U}}\right)
 \label{eq:SR_anal2_decod_0}
 \end{equation}
-If we introduce $T_1=-(U+1),  \; T_2 = (U+1)U\sigma_{\text{V,E}}^2 + U + 1- U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+1)$, it is easy to show that the SR can be expressed as:
-\begin{equation}
-C_s \lessapprox \log_2 \left( \frac{\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{T_3} \right)
-\label{eq:SR_anal3_decod_0}
-\end{equation}
-Since $T_3$ is always strictly positive, the SR is maximized for:
+If we introduce $T_1=-(U+1),  \; T_2 = (U+1)U\sigma_{\text{V,E}}^2 + U + 1- U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+1)$, it is easy to show that the SR is maximized for:
 \begin{equation}
 \alpha_{\text{opt}} = \frac{-T_2}{2T_1}
 \label{eq:optimal_alpha_decod_0}
@@ -610,19 +610,7 @@ With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt1}), the SR is ex
 C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}\right)
 \label{eq:SR_anal2_decod_1}
 \end{equation}
-If we introduce $T_1 = U+1$, $T_2 = (U+1)^2\sigma_{\text{V,E}}^2 + (U+1) - U\sigma_{\text{V,B}}^2$, $T_3 = U(U+1)\sigma_{\text{V,B}}^2\sigma_{\text{E}}^2 + U \sigma_{\text{V,B}}^2$, and $T_4=(U+1)(U+3)\sigma_{\text{V,B}}^2-U\sigma_{\text{V,B}}^2$, we obtain:
-\begin{equation}
-C_s \lessapprox \log_2 \left( \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \right)
-\label{eq:SR_anal2_decod1}
-\end{equation}
-We have to find the zeroes of:
-\begin{equation}
-\begin{split}
-\frac{\partial C_s}{\partial \alpha} &= \frac{ \frac{-\alpha^2 T_1 T_4 \; - \; 2 \alpha T_1 T_3 \; + \; \left( T_2 T_3 \; - \; T_3 T_4 \right) }{\left( \alpha T_4 \; + \; T_3\right)^2} }{ \frac{-\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{\alpha T_4 \; + \; T_3} \; . \; \ln{2}} 
-\label{eq:SR_derivative}
-\end{split}
-\end{equation}
-After some algebraic manipulations, one obtains: 
+If we introduce $T_1 = U+1$, $T_2 = (U+1)^2\sigma_{\text{V,E}}^2 + (U+1) - U\sigma_{\text{V,B}}^2$, $T_3 = U(U+1)\sigma_{\text{V,B}}^2\sigma_{\text{E}}^2 + U \sigma_{\text{V,B}}^2$, and $T_4=(U+1)(U+3)\sigma_{\text{V,B}}^2-U\sigma_{\text{V,B}}^2$, the optimal amount of data energy to transmit is: 
 \begin{equation}
 \alpha_{\text{opt}} = \frac{\pm\sqrt{T_1^2 T_3^2 \; + \; T_1 T_2 T_3 T_4 \; - \; T_1 T_3 T_4^2} \; - \; T_1 T_3}{T_1 T_4}
 \label{eq:optimal_alpha_decod_1}
@@ -636,12 +624,7 @@ With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt5}), we obtain a 
 C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\frac{\alpha }{U}}{\frac{\sigma^2_{\text{V,E}}}{2} + \frac{1-\alpha}{U}}\right)
 \label{eq:SR_anal2_decod_5}
 \end{equation}
-By introducing $T_1=-2(U+1),  \; T_2 = (U+1)(2+U\sigma_{\text{V,E}}^2) - 2U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+2)$, it is easy to show that the SR can be expressed as:
-\begin{equation}
-C_s \lessapprox \log_2 \left( \frac{\alpha^2 T_1 \; + \; \alpha T_2 \; + \; T_3}{T_3} \right)
-\label{eq:SR_anal3_decod_5}
-\end{equation}
-Since $T_3$ is always strictly positive, the SR is maximized for:
+By introducing $T_1=-2(U+1),  \; T_2 = (U+1)(2+U\sigma_{\text{V,E}}^2) - 2U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+2)$, we maximize the SR for:
 \begin{equation}
 \alpha_{\text{opt}} = \frac{-T_2}{2T_1}
 \label{eq:optimal_alpha_decod_5}
@@ -693,6 +676,26 @@ Based on the statistics of Bob and Eve channels, we obtain a closed form approxi
 \end{itemize}
 Since we consider that Bob and Eve channels are independent, optimizing the energy coefficients that weight each data subcarrier to enhance the capacity at Bob will not modify the capacity at Eve. Consequently, the communication SR will increase with this waterfilling optimization procedure. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization and since a FF environment is considered. 
 
+\subsection{Performance summary}
+\begin{table}[!thb]
+	\centering
+	\begin{tabular}{|p{1.8cm}|p{1.8cm}|p{1.8cm}|p{1.8cm}|}
+		\hline
+		& \textbf{Same decoding structure as Bob} & \textbf{Matched filtering}  & \textbf{Own channel knowledge}  \\ 
+		\hline
+		\textbf{Handshaking protocol} & Bob initiates the communication. Alice sends precoded without pilot.
+		& Bob initiates the communication. Alice sends precoded with pilot. & Alice initiates the communication. Bob ACK and Alice sends precoded data.\\
+		\hline
+		\textbf{Decoding structure at Eve} &  $\textbf{G} = \spread^H$ & $\textbf{G} = \spread^H \HB \HE^*$ & $\textbf{G} = \spread^H \HE^*$ \\
+		\hline
+		\textbf{SR expression} & Eq.(\ref{eq:SR_anal2_decod_0})  &  Eq.(\ref{eq:SR_anal2_decod_1}) & Eq.(\ref{eq:SR_anal2_decod_5})\\
+		\hline
+		\textbf{Performance} &  High SR values since very poor decoding performance at Eve. & Low SR values since matched filtering at Eve, leading to good decoding performances. & Very similar performances than the first model. However, slightly lower SR values for high AWGN energy at Eve, and high $\alpha$. \\
+		\hline
+	\end{tabular}
+	\caption{Performance summary for the three investigated models}
+	\label{tab-perf-summary}
+\end{table} 
 
 
 %%%%%%%%%   SIMULATION RESULTS   %%%%%%%%% 
@@ -710,7 +713,7 @@ Since we consider that Bob and Eve channels are independent, optimizing the ener
 \end{figure}
 Fig.\ref{fig_modelvssimu} shows the secrecy performances for the three investigated scenarios, i.e., Eve implementing a simple despreading (circle markers), Eve implementing a matched filter (square markers), and Eve knowing her own channel (diamond markers), in terms of the SR evolution as a function of $\alpha$. The figure also outlines a comparaison between the simulation curves (continuous lines) and the analytic ones (dotted lines).\\
 
-First, it can be seen that the analytic models given by (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod1}), and (\ref{eq:SR_anal3_decod_5}) approximate well the simulation curves and remain tight upper bounds for all scenarios.  In addition, one can notice the importance of the AN addition to increase the SR. In fact, we observe a SR enhancement with the addition of AN except for very high percentages of AN sent, i.e., when $\alpha \to 0$, or for very high percentages of data sent, i.e., $\alpha \to 1$. Furthermore, for all three models, no more secrecy is obtained when $\alpha \to 0$ since the SINR's at Bob and Eve drop to zero. As anticipated from sections \ref{sec:same-decoding-strucure-as-bob} and \ref{sec:own-channel-knowledge}, high SR values are obtained, i.e., low decoding performances at Eve, when she has the same capabilities than Bob, and when she knows her own channel. We also observe that these two scenarios exhibit very similar behaviours except when $\alpha \to 1$, as explained in section \ref{sec:own-channel-knowledge}. Finally, we observe low SR values when Eve implements a matched filtering decoding structure. This can be understood from (\ref{eq:rx_eve_filt1}) where we notice that each transmitted data symbol will be afffected by a real gain at Eve. From that, each transmitted symbol will benefit from frequency diversity, leading to high decoding performances for the wiretap link, and so, low SR values.   
+First, it can be seen that the analytic models given by (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}) approximate well the simulation curves and remain tight upper bounds for all scenarios.  In addition, one can notice the importance of the AN addition to increase the SR. In fact, we observe a SR enhancement with the addition of AN except for very high percentages of AN sent, i.e., when $\alpha \to 0$, or for very high percentages of data sent, i.e., $\alpha \to 1$. Furthermore, for all three models, no more secrecy is obtained when $\alpha \to 0$ since the SINR's at Bob and Eve drop to zero. As anticipated from sections \ref{sec:same-decoding-strucure-as-bob} and \ref{sec:own-channel-knowledge}, high SR values are obtained, i.e., low decoding performances at Eve, when she has the same capabilities than Bob, and when she knows her own channel. We also observe that these two scenarios exhibit very similar behaviours except when $\alpha \to 1$, as explained in section \ref{sec:own-channel-knowledge}. Finally, we observe low SR values when Eve implements a matched filtering decoding structure. This can be understood from (\ref{eq:rx_eve_filt1}) where we notice that each transmitted data symbol will be afffected by a real gain at Eve. From that, each transmitted symbol will benefit from frequency diversity, leading to high decoding performances for the wiretap link, and so, low SR values.   
 
 
 
@@ -724,7 +727,7 @@ First, it can be seen that the analytic models given by (\ref{eq:SR_anal2_decod_
 	\caption{Optimal of AN energy to inject, $E_b/N_0 = 10$dB at Bob,  $E_b/N_0 = 5$dB at Eve}
 	\label{fig_optimalAN}
 \end{figure}
-The left part of Fig.\ref{fig_optimalAN} illustrates the values of $\alpha_{\text{opt}}$ given by (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}) and (\ref{eq:optimal_alpha_decod_5}) that maximize the  ergodic SR determined from the closed-form approximations (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod1}), and (\ref{eq:SR_anal3_decod_5}), as well as obtained from the numerical simulations, as a function of the BOR. The analytic estimations of the optimal amount of data energy to inject are not perfect but, the resulting simulated SR are very close to the maximal SR obtained numerically, as it can be observed on right part of Fig.\ref{fig_optimalAN}. The reason can be observed in Fig.\ref{fig_modelvssimu} where the SR curves vary very slowly about their maxima when $\alpha$ changes, for all models. So, for a given BOR value, Alice can make a rough determination of $\alpha_{\text{opt}}$ depending on Eve decoding structure, and therefore the available SR, if $E_b/N_0$ is known. One can also note that much lower values of $\alpha_{\text{opt}}$ should be injected to maximize the SR when Eve matched filters the received signal compared to the two other scenarios.
+The left part of Fig.\ref{fig_optimalAN} illustrates the values of $\alpha_{\text{opt}}$ given by (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}) and (\ref{eq:optimal_alpha_decod_5}) that maximize the  ergodic SR determined from the closed-form approximations (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}), as well as obtained from the numerical simulations, as a function of the BOR. The analytic estimations of the optimal amount of data energy to inject are not perfect but, the resulting simulated SR are very close to the maximal SR obtained numerically, as it can be observed on right part of Fig.\ref{fig_optimalAN}. The reason can be observed in Fig.\ref{fig_modelvssimu} where the SR curves vary very slowly about their maxima when $\alpha$ changes, for all models. So, for a given BOR value, Alice can make a rough determination of $\alpha_{\text{opt}}$ depending on Eve decoding structure, and therefore the available SR, if $E_b/N_0$ is known. One can also note that much lower values of $\alpha_{\text{opt}}$ should be injected to maximize the SR when Eve matched filters the received signal compared to the two other scenarios.
 
 
 \begin{figure}[h!t]
@@ -789,13 +792,138 @@ In this paper, the problem of securing the FD TR SISO OFDM wireless transmission
 
 
 %%%%%%%%%   APPENDICES  %%%%%%%%% 
-%\appendices
-%\section{AUCUNE ANNEXE POUR  LE MOMENT}
+\appendices
+\section{SINR derivation}\label{sec:sinr-derivation-app}
+
+
+\subsection{At the intended position}
+\subsubsection{Data term}\label{sec:data-term-app}
+\begin{equation}
+	\begin{split}
+		\EX{|A_1|^2} =& \EX{\module{\sqrt{\alpha} \; \spread^H \module{\HB}^2 \spread}^2} \\
+		\EX{|A_{1,n}|^2} =&\EX{\left|\frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2\right|^2}  \\
+		=& \frac{\alpha}{U^2} \EX{\left(\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2\right) \left(\sum_{j=0}^{U-1} \left| h_{\text{B}, n + jN}\right|^2\right)^H}\\
+		=&  \frac{\alpha}{U^2} \Big(\EX{\sum_{i=0}^{U-1}\left| h_{\text{B}, n + iN}\right|^4} +\\
+		& \EX{\sum_{i=0}^{U-1}\left| h_{\text{B}, n + iN}\right|^2}\EX{\sum_{\substack{j=0 \\ j\neq i}}^{U-1} | h^*_{\text{B}, n + jN}|^2} \Big) \\
+		=& \frac{\alpha}{U^2} \left( 2U + U(U-1)\right) = \frac{\alpha (U+1)}{U}
+	\end{split}
+	\label{eq:appA:data_bob-app}
+\end{equation}
+where we used the fact that $\EX{\left| h_{\text{B}, n + iN}\right|^2} = 1$ and $\EX{\left| h_{\text{B}, n + iN}\right|^4} = 2$ since $\HB \sim \mathcal{CN}(0,1)$.
+
+
+
+\subsubsection{AWGN term}\label{sec:awgn-term-app}
+\begin{equation}
+	\begin{split}
+		\EX{|A_2|^2} &=  \EX{\module{\spread^H \vb}^2} \\
+		&= \EX{\left(\spread^H \vb \right)\left(\spread^H \vb \right)^H} \\
+		&=\EX{\spread^H \vb \vb^* \spread } \\
+		\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |v_{\text{B}, n + iN}|^2} = \sigma^2_{\text{V,B}}
+	\end{split}
+	\label{eq:appA:noise_bob-app}
+\end{equation}
 
 
 
 
 
+\subsection{At the unintended position}\label{sec:at-the-unintended-position-app}
+\subsubsection{Same decoding structure as Bob}\label{sec:same-decoding-structure-as-bob-app}
+\paragraph{Data term}\label{sec:data-term-app-1}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{1}|^2} &= \EX{\module{\sqrt{\alpha}\spread^H \HE\HB^* \spread}^2} \\
+		\EX{|A_{1,n}|^2}&=\alpha \EX{\frac{1}{U^2} \sum_{i=0}^{U-1} \left| h_{\text{E}, n + iN} \right|^2 \left| h^*_{\text{B}, n + iN}\right|^2 } \\
+		&= \frac{\alpha}{U}
+	\end{split}
+	\label{eq:appA:data_eve_filt0-app}
+\end{equation}
+
+
+
+\paragraph{AWGN term}\label{sec:awgn-term-app-1}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \ve}^2} \\
+		&=\EX{\spread^H \ve \ve^* \spread } \\
+		\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+	\end{split}
+	\label{eq:appA:noise_eve_filt0-app}
+\end{equation}
+
+
+\paragraph{AN term}\label{sec:an-term-app-1}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{3}|^2} &=  \EX{\module{\sqrt{1-\alpha}\spread^H \HE \w}^2} \\
+		&=(1-\alpha)\EX{\spread^H \HE\textbf{H}^*_{\text{E}} \w\w^* \spread } \\
+		\EX{|A_{3,n}|^2}  &= \frac{1-\alpha}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}w_{n + iN}|^2} = \frac{1-\alpha}{U}
+	\end{split}
+	\label{eq:appA:an_eve_filt0-app}
+\end{equation}
+
+\subsubsection{Matched filtering}\label{sec:matched-filtering-app}
+\paragraph{Data term}\label{sec:data-term-app-2}
+\begin{multline}
+	\EX{|A_{1,n}|^2} = \alpha \EX{\left|\frac{1}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2 \left| h_{\text{E}, n + iN}\right|^2\right|^2} \\
+	=\frac{\alpha}{U^2} \mathbb{E} \Bigg[\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^4 \left| h_{\text{E}, n + iN}\right|^4 \\
+	+ \sum_{i=0}^{U-1}\sum_{\substack{j=0 \\ j\neq i}}^{U-1}  \left| h_{\text{B}, n + jN}\right|^2 \left| h_{\text{E}, n + iN}\right|^2 \left| h^*_{\text{B}, n + iN}\right|^2 \left| h^*_{\text{E}, n + jN}\right|^2 \Bigg] \\
+	= \frac{\alpha}{U^2} \left(U.2.2 + U(U-1) \right) = \frac{\alpha (U+3)}{U}
+	\label{eq:data_eve_filt1-app}
+\end{multline}
+where we used the fact that $\EX{\left| h_{\text{E}, n + iN}\right|^2} = 1$ and $\EX{\left| h_{\text{E}, n + iN}\right|^4} = 2$ since $\HE \sim \mathcal{CN}(0,1)$.
+
+
+
+\paragraph{AWGN term}\label{sec:awgn-term-app-2}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \HE^* \HB \ve}^2} \\
+		&=\EX{\spread^H   \HE \HE^* \HB\HB^*  \ve \ve^* \spread } \\
+		\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^2 |h_{\text{B}, n + iN}|^2 |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+	\end{split}
+	\label{eq:noise_eve_filt1-app}
+\end{equation}
+
+\paragraph{AN term}\label{sec:an-term-app-2}
+The component $\textbf{A}_{3,n}$ depends on $\textbf{w}$ and $\HB$ which are correlated via the AN design (\ref{eq:an_cond}). The expectation is therefore more difficult to compute. After some mathematical operations, we find: {\color{red} JUSQU'A QUEL POINT METTRE LES DERIVATIONS ICI ? CA PREND 3 PAGES DANS LE RAPPORT}
+\begin{equation}
+	\EX{|A_{3,n}|^2} = \frac{1-\alpha}{U+1}
+	\label{eq:an_eve_filt1-app}
+\end{equation}
+
+
+\subsubsection{Own channel knowledge}\label{sec:own-channel-knowledge-app}
+\paragraph{Data term}\label{sec:data-term-app-3}
+\begin{multline}
+	\EX{|A_{1,n}|^2} = \alpha \EX{\left|\frac{1}{U}\sum_{i=0}^{U-1} h_{\text{B}, n + iN}^* \left| h_{\text{E}, n + iN}\right|^2\right|^2} \\
+	=\frac{\alpha}{U^2} \mathbb{E}\Bigg[ \sum_{i=0}^{U-1} \left| h_{\text{B}, n + jN}\right|^2 \left| h_{\text{E}, n + iN}\right|^4 \\
+	+ \sum_{i=0}^{U-1}\sum_{\substack{j=0 \\ j\neq i}}^{U-1}  h_{\text{B}, n + jN} h^*_{\text{B}, n + iN} \left| h_{\text{E}, n + jN}\right|^2 \left| h^*_{\text{E}, n + iN}\right|^2 \Bigg] \\
+	= \frac{\alpha}{U^2} \left(U.2.1 + U(U-1).1.1.0\right) = \frac{2\alpha}{U}
+	\label{eq:data_eve_filt5-app}
+\end{multline}
+
+
+\paragraph{AWGN term}\label{sec:awgn-term-app-3}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{2}|^2} &=  \EX{\module{\spread^H \HE^* \ve}^2} \\
+		&=\EX{\spread^H   \left|\HE\right|^2  \left|\ve\right|^2 \spread } \\
+		\EX{|A_{2,n}|^2} &= \frac{1}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^2 |v_{\text{E}, n + iN}|^2} = \sigma^2_{\text{V,E}}
+	\end{split}
+	\label{eq:noise_eve_filt5-app}
+\end{equation}
+
+\paragraph{AN term}\label{sec:an-term-app-3}
+\begin{equation}
+	\begin{split}
+		\EX{|\textbf{A}_{3}|^2} &=  \EX{\module{\sqrt{1-\alpha}\spread^H \left|\HE\right|^2 \w}^2} \\
+		&=(1-\alpha)\EX{\spread^H \left|\HE\right|^2 \w\w^* \left|\HE^*\right|^2\spread } \\
+		\EX{|A_{3,n}|^2}  &= \frac{1-\alpha}{U} \EX{\sum_{i=0}^{U-1} |h_{\text{E}, n + iN}|^4 |w_{n + iN}|^2} = \frac{2(1-\alpha)}{U}
+	\end{split}
+	\label{eq:an_eve_filt5-app}
+\end{equation}
 
 \ifCLASSOPTIONcaptionsoff
   \newpage
@@ -803,7 +931,7 @@ In this paper, the problem of securing the FD TR SISO OFDM wireless transmission
 
 %%%%%%%%%   BIBLIOGRAPHY   %%%%%%%%% 
 
-%\newpage
+\newpage
 \bibliographystyle{IEEEtran}
 \bibliography{biblio} 
 

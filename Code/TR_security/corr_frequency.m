@@ -24,6 +24,7 @@ function [ H , abs_rho] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_re
 %
 %   by Julien Sarrazin
 %**************************************************************************
+%
 
     ind_subca = 0 : 1 : nb_subca - 1 ;                                      % Sub-carrier index
     delta_f = ind_subca .* b_subca ;                                         % Frequency separation between the first subcarrier and the others
