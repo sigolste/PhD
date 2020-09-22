@@ -1,4 +1,4 @@
-function sinr = sinrModeling(alpha,U,snr_b,snr_e,type)
+function sinr = sinrModeling(alpha,U,snr_b,snr_e,Na,Nb,Ne,type)
 
 sigma_b = 1./U/10^(snr_b/10);    % expected noise energy @Bob
 sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Bob
@@ -8,7 +8,8 @@ alpha = alpha.';
 switch type 
     case "bob_decod1"
         sinr = alpha.*(U+1)./U./sigma_b;
-        
+    case "bob_MISO_decorrelated" % A VERIFIER
+        sinr = Na.*alpha.*(U+1)./U./sigma_b;
     case "eve_decod1"
         sinr = alpha./(U.*sigma_e + (1-alpha));
         

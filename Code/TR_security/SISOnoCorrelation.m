@@ -20,12 +20,12 @@ h = waitbar(0,'Simulation Progression...');
 %% Parameters
 % Simulation parameters
 nb_run = 1000;              % number of experiments
-alpha_step = .25;             % Percentage between subsequent alpha values
+alpha_step = 1;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 64;
-U = [2 4 8 16];
+Q = 8;
+U = [2];
 N = Q./U;
 
 M = 4;
@@ -33,8 +33,8 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-EbN0_b = 10; % energy per bit over noise psd @Bob - dB
-EbN0_e = [5]; % energy per bit over noise psd @Eve - dB
+EbN0_b = 15; % energy per bit over noise psd @Bob - dB
+EbN0_e = [15]; % energy per bit over noise psd @Eve - dB
 snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
 snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
 
@@ -265,10 +265,10 @@ sr5_avg = squeeze(mean(sr5,1));
 
 
 %% SINR modeling:
-sinr1_model_b = sinrModeling(alpha,U,snr_b,snr_e,"bob_decod1");
-sinr1_model_e = sinrModeling(alpha,U,snr_b,snr_e,"eve_decod1");
-sinr2_model_e = sinrModeling(alpha,U,snr_b,snr_e,"eve_decod2");
-sinr5_model_e = sinrModeling(alpha,U,snr_b,snr_e,"eve_decod5");
+sinr1_model_b = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"bob_decod1");
+sinr1_model_e = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"eve_decod1");
+sinr2_model_e = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"eve_decod2");
+sinr5_model_e = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"eve_decod5");
 
 
 sr1_model = secrecyCapacity(sinr1_model_b,sinr1_model_e);

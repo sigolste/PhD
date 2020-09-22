@@ -23,7 +23,7 @@ nb_run = 1000;              % number of experiments
 alpha_step = 1;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
-Na = 1:5;           % Number of antennas @Alice
+Na = 5;           % Number of antennas @Alice
 Nb = 1;             % Number of antennas @Bob
 Ne = 1;             % Number of antennas @Eve
 % Communication parameters
@@ -74,13 +74,12 @@ He_RX = conj(He_TX);
 
 % (De)-Spreading matrix creation
 [matrix_spread,matrix_despread] = spreadingMatrixMISO(Q,Na(nt),N(bb),U(bb)); % MISO --> size of spreading matrix: Q.Na x N
-                                                                             % beamforming gain: S^H S = Na*I
 
 %% Encoder
 
 % Spreading + TR precoding
 sym_spread = matrix_spread*sym_TX;  % QxQ
-sym_precoded = Hb_TX*sym_spread; % QxQxNa, not weighted 
+sym_precoded = Hb_TX.*sym_spread; % QxQxNa, not weighted 
 
 % AN generation
 an = generateANMISO(Na(nt),Hb_RX,Q,U(bb),matrix_despread,energy(sym_precoded),"svd"); % QxNa, not weighted
@@ -96,7 +95,7 @@ sym_RX_b = Hb_RX*(sym_precoded_TX + an_TX);
 sym_RX_e = He_RX*(sym_precoded_TX + an_TX);
 
 % Useful symbol
-sym_b = Hb_RX*sym_precoded_TX; % Qx1
+sym_b = Hb_RX.*sym_precoded_TX; % Qx1
 sym_e = He_RX*sym_precoded_TX;    
 
 
@@ -106,7 +105,7 @@ sym_e = He_RX*sym_precoded_TX;
 [noise_e, e_noise_e ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
 
 % AN symbol
-an_e = He_RX*an_TX; % Only @Eve since no AN effect after decod1 @Bob
+an_e = He_RX*an_TX,3; % Only @Eve since no AN effect after decod1 @Bob
 
 %% Decoder
 decod1 = matrix_despread;                                   % despreading
