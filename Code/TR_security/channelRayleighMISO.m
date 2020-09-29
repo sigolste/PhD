@@ -11,10 +11,12 @@ function y = channelRayleighMISO(N_TX,len, mu , sigma)
 % Output:
 %   y : rayleigh distributed channel 
 
-y = zeros(len*N_TX,len*N_TX);
-vec  = 1/sqrt(2)*(sigma*randn(len*N_TX,1) + sigma*1j*randn(len*N_TX,1)) + mu;
+        y = zeros(len*N_TX,len*N_TX);
+        vec  = 1/sqrt(2)*(sigma*randn(len*N_TX,1) + sigma*1j*randn(len*N_TX,1)) + mu;
+        y = diag(vec);
+        
+end
 
-y = diag(vec);
 % for nn = 1:N_TX
 %     y = [y diag(vec(nn*N_TX:,1));
 % end

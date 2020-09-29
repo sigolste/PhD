@@ -28,7 +28,7 @@ function [ H , RHO_SPATIAL ] = corr_spatial( nb_subca , b_subca , r , fc , nb_re
     ind_subca = 0 : 1 : nb_subca - 1 ;                                      % Sub-carrier index
     delta_f = ind_subca * b_subca ;                                         % Frequency separation between the first subcarrier and the others    
     f = fc + delta_f - delta_f( end ) / 2 ;                                 % Frequency vector
-    [ F , R ] = ndgrid( f , r ) ;
+    [ F , R ] = ndgrid( f , r ) ;                                           % Grid of frequencies and positions
     
     Rho_spatial = sinc( 2 * F / c .* R ) ;                                  % Spatial correlation for each frequency --> pourquoi pas 2pi??
     

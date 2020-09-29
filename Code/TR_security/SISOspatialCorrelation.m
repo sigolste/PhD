@@ -69,7 +69,7 @@ nb_pos = 80;                                % Number of spatial positions betwee
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 b_subcar = .1e6 ;                           % Bandwidth of each subcarrier
-r = linspace( 0 , 2*c/fc , nb_pos ) ;       % Eve's distance from Bob . Distance from 0 to 1 with 40 points
+r = linspace( 0 , 2*c/fc , nb_pos ) ;       % Eve's distance from Bob . Distance from 0 to 1 with 40 points   0:Na*lambda*le coef: nb_pos = Na antennas
 dist = r./(c/fc);                           % Distance between subsequent position of Eve
 
 alpha_step = 2;                           % Percentage between subsequent alpha values
