@@ -165,12 +165,12 @@ switch scenario
         dist = r./lambda_c;                                                 % Distance between TX antennas in wavelengths
         [Hb_TX, rho_space_b,rho_freq_b] = corr_spatial_frequency( Q , b_subcar(bf) , r,  fc , sigma_tau , Na(nt) ) ;
         
-        %[He_TX, rho_space_e,rho_freq_e] = corr_spatial_frequency( Q , b_subcar(bf) , r,  fc , sigma_tau , Na(nt) ) ;
+        [He_TX, rho_space_e,rho_freq_e] = corr_spatial_frequency( Q , b_subcar(bf) , r,  fc , sigma_tau , Na(nt) ) ;
         %He_TX = channelRayleighMISO(Na(nt),Q, mu , sigma);
-        [He_TX ,rho_space_e] = corr_spatial( Q , b_subcar(bf) , r , fc , 1 ) ;
+        %[He_TX ,rho_space_e] = corr_spatial( Q , b_subcar(bf) , r , fc , 1 ) ;
         
         Hb_TX = diag(reshape(Hb_TX.',[],1));                                % Dimension of 1xQxNa --> need to reshape to have diag of Q.Na x Q.Na
-        He_TX = diag(reshape(squeeze(He_TX),[],1));
+        He_TX = diag(reshape(He_TX.',[],1));                                % Dimension of 1xQxNa --> need to reshape to have diag of Q.Na x Q.Na
        
 
 end
