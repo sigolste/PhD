@@ -206,18 +206,9 @@ The reminder of this article is organized as follows: the handshake and the comm
 \label{sec:establishment}
 Prior to the secure data transmission between Alice and Bob, a handshake protocol must take place. Depending on it, Eve will obtain different knowledges about the communication parameters which will lead to different decoding capabilities and so, different security performances. 
 
-In this paper, we consider a Fast Fading (FF) Time-Division Duplex (TDD) communication. In doing so, we will investigate three different decoding schemes at Eve depending on weither Alice or Bob wants to first initiate the secure communication. The FF hypothesis means that each OFDM block sent by Alice will experience a different channel realization. The TDD hypothesis implies that channel reciprocity between Alice and Bob or Alice and Eve can be used. 
+In this paper, we consider a Fast Fading (FF) Time-Division Duplex (TDD) communication. In doing so, we will investigate three different decoding schemes at Eve depending on weither Alice or Bob wants to first initiate the secure communication. The FF hypothesis means that each OFDM block sent by Alice will experience a different channel realization. {\color{red}ICI, donner des ordres de grandeurs. On dit que le fait qu'on soit en FF ne permet pas à Eve de learn des paramètres car à chaque block OFDM le canal change MAIS d'un autre côté, ce le fading n'est pas assez rapide que pour qu'Alice et Bob ait le temps de s'envoyer une request + ACK sans le canal ait changé...} The TDD hypothesis implies that channel reciprocity between Alice and Bob or Alice and Eve can be used. 
 
-The first investigated situation arises when Alice asks first to Bob for secure commnication, as depicted in Fig.\ref{fig_ff_tdd_a}. In this configuration, she sends a pilot to Bob allowing Eve to estimate her own channel frequency response (CFR) $\HE$. From that, Bob acknowledges to Alice without need of sending his channel estimation $\HB$. This comes from the channel reciprocity property in TDD systems. Finally, Alice will send precoded data without pilot to Bob. From the FF assumption, Eve cannot learn the precoding performed by the transmitter. In this configuration, Eve will implement the \textit{"own channel knowledge"} decoding structure since she only has the knowledge of her own channel. 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=.9\linewidth]{graphs/diagram_sequence-FF_TDD_A.jpg}
-	\caption{FF TDD, Alice initiates communication}
-	\label{fig_ff_tdd_a}
-\end{figure}
-
-
-The last 2 scenarios appear when Bob first requests to Alice for secure communication. In both cases, Bob transmits a pilot to Alice allowing her to know Bob's channel. \\
+The first two scenarios appear when Bob first requests to Alice for secure communication. In both cases, Bob transmits a pilot to Alice allowing her to know Bob's channel. \\
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=.9\linewidth]{graphs/diagram_sequence-FF_TDD_B_no_pilot.jpg}
@@ -226,13 +217,21 @@ The last 2 scenarios appear when Bob first requests to Alice for secure communic
 \end{figure} \\
 If Alice only transmits precoded data to Bob, Eve will not be able to know anything about the communication parameters. In that situation, she will implement the "\textit{same decoding structure as Bob}", i.e., she will only despread the received sequence. This situation is presented in Fig.\ref{fig_ff_tdd_b_no_pilot}.
 
-However, if Alice sends precoded pilot and data to Bob, Eve will be able to know her equivalent channel $\HB^*\HE$ and will implement the "\textit{matched filtering}" decoding structure. This is depicted in Fig.\ref{fig_ff_tdd_b_pilot}
+However, if Alice sends a precoded pilot and  precoded data to Bob, Eve will be able to know her equivalent channel $\HB^*\HE$ and will implement the "\textit{matched filtering}" decoding structure. This is depicted in Fig.\ref{fig_ff_tdd_b_pilot}
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=.95\linewidth]{graphs/diagram_sequence-FF_TDD_B_pilot.jpg}
 	\caption{FF TDD, Bob initiates the communication, pilots sent}
 	\label{fig_ff_tdd_b_pilot}
 \end{figure}\\
+The third investigated situation arises when Alice asks first to Bob for secure commnication, as depicted in Fig.\ref{fig_ff_tdd_a}. In this configuration, she sends a pilot to Bob allowing Eve to estimate her own channel frequency response (CFR) $\HE$. From that, Bob acknowledges to Alice without need of sending his channel estimation $\HB$. This comes from the channel reciprocity property in TDD systems. Finally, Alice will send precoded data without pilot to Bob. From the FF assumption, Eve cannot learn the precoding performed by the transmitter. In this configuration, Eve will implement the \textit{"own channel knowledge"} decoding structure. 
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=.85\linewidth]{graphs/diagram_sequence-FF_TDD_A.jpg}
+	\caption{FF TDD, Alice initiates communication}
+	\label{fig_ff_tdd_a}
+\end{figure}
+
 In the following, these three decoding schemes will be investigated and analytic models will be derived.
 
 
@@ -593,7 +592,7 @@ For each handshake scenario, we derived a closed form approximation of the SINR 
 \subsubsection{Same decoding strucure as Bob}
  With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt0}), the SR becomes:
 \begin{equation}
-C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 + \frac{\frac{\alpha}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U}}\right)
+C_s \approx \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 + \frac{\frac{\alpha}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U}}\right)
 \label{eq:SR_anal2_decod_0}
 \end{equation}
 If we introduce $T_1=-(U+1),  \; T_2 = (U+1)U\sigma_{\text{V,E}}^2 + U + 1- U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+1)$, it is easy to show that the SR is maximized for:
@@ -607,7 +606,7 @@ If we introduce $T_1=-(U+1),  \; T_2 = (U+1)U\sigma_{\text{V,E}}^2 + U + 1- U\si
 \subsubsection{Matched filtering}
 With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt1}), the SR is expressed as:
 \begin{equation}
-C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}\right)
+C_s \approx \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}\right)
 \label{eq:SR_anal2_decod_1}
 \end{equation}
 If we introduce $T_1 = U+1$, $T_2 = (U+1)^2\sigma_{\text{V,E}}^2 + (U+1) - U\sigma_{\text{V,B}}^2$, $T_3 = U(U+1)\sigma_{\text{V,B}}^2\sigma_{\text{E}}^2 + U \sigma_{\text{V,B}}^2$, and $T_4=(U+1)(U+3)\sigma_{\text{V,B}}^2-U\sigma_{\text{V,B}}^2$, the optimal amount of data energy to transmit is: 
@@ -621,7 +620,7 @@ where only the positive root is solution since $\alpha \in [0,1]$.
 \subsubsection{Own channel knowledge}
 With (\ref{eq:SR}), (\ref{sinr_bob}) and (\ref{eq:sinr_eve_filt5}), we obtain a SR expression given by:
 \begin{equation}
-C_s \lessapprox \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\frac{\alpha }{U}}{\frac{\sigma^2_{\text{V,E}}}{2} + \frac{1-\alpha}{U}}\right)
+C_s \approx \log_2 \left( 1 +  \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2} \right) - \log_2\left( 1 +  \frac{\frac{\alpha }{U}}{\frac{\sigma^2_{\text{V,E}}}{2} + \frac{1-\alpha}{U}}\right)
 \label{eq:SR_anal2_decod_5}
 \end{equation}
 By introducing $T_1=-2(U+1),  \; T_2 = (U+1)(2+U\sigma_{\text{V,E}}^2) - 2U\sigma_{\text{V,B}}^2 $ and $T_3 = U\sigma_{\text{V,B}}^2(U\sigma_{\text{V,E}}^2+2)$, we maximize the SR for:
@@ -634,18 +633,25 @@ By introducing $T_1=-2(U+1),  \; T_2 = (U+1)(2+U\sigma_{\text{V,E}}^2) - 2U\sigm
 %%
 \subsection{Required SNR at Bob for a targetted SR}
  \label{sec:required-snr-at-bob-for-a-targetted-sr}
-With the closed-form approximations of the SR (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}) and (\ref{eq:SR_anal2_decod_5}), it is possible to determine what should be the SNR at Bob and the amount of data energy to transmit $\alpha$, in order to target a given SR, for different Eve SNR and BOR values. One can study under which conditions it is possible to guarantee a desired level of secrecy using the investigated FD TR SISO schemes. We introduce $x$ being the targetted SR in bit per channel use, $\delta_{B,1}, \delta_{B,2}$ and $\delta_{B,3}$ being respectively Bob's SNR in dB for the first, second and third investigated handshake procedure. Remembering that $\sigma^2_{\text{V,B}} = \frac{1/U}{10^{\frac{\delta_B}{10}}}$, we can show that:
+With the closed-form approximations of the SR (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}) and (\ref{eq:SR_anal2_decod_5}), it is possible to determine what should be the SNR at Bob and the amount of data energy to transmit $\alpha$, in order to target a given SR, for different Eve SNR and BOR values. One can study under which conditions it is possible to guarantee a desired level of secrecy using the investigated FD TR SISO schemes. We introduce $x$ being the targetted SR in bit per channel use, $\delta_{B,1}, \delta_{B,2}$ and $\delta_{B,3}$ being respectively Bob's SNR for the first, second and third investigated handshake procedure. Remembering that $\sigma^2_{\text{V,B}} = \frac{1}{U\delta_{B,i}} , \;  i = 1,2,3$, we can show that:
+\begin{equation}
+	\delta_{B,i} = \frac{2^x T_{i,1} - T_{i,2} }{T_{i,3}} \; i = 1,2,3
+	\label{eq:snr_calibration_bob}
+\end{equation}
+where we define: 
 \begin{equation}
 \begin{split}
-	\delta_{B,1} &= 10 \log_{10}  \left[\frac{2^x(U\sigma_{\text{V,E}}^2+1) - (U\sigma_{\text{V,E}}^2+1-\alpha)}{\alpha(U+1)(U\sigma_{\text{V,E}}^2+1-\alpha)}\right] \\
-	\delta_{B,2} &= 10 \log_{10}  \left[\frac{T_1 - T_2}{T_3}\right] \\
-	\delta_{B,3} &= 10 \log_{10} \left[  \frac{2^x(U\sigma_{\text{V,E}}^2+2) - (U\sigma_{\text{V,E}}^2+2-2\alpha)}{\alpha(U+1)(U\sigma_{\text{V,E}}^2+2-2\alpha)}  \right]
+	T_{1,1} &=  U\sigma_{\text{V,E}}^2+1\\
+	T_{1,2} &=  U\sigma_{\text{V,E}}^2+1-\alpha\\
+	T_{1,3} &=  \alpha(U+1)(U\sigma_{\text{V,E}}^2+1-\alpha) \\
+	T_{2,1} &=  U(U+1)\sigma_{\text{V,E}}^2 + \alpha(U+1)(U+3)+U(1-\alpha)\\
+	T_{2,2} &=   U(U+1)\sigma_{\text{V,E}}^2+U(1-\alpha) \\	
+	T_{2,3} &=  \alpha U(U+1)\left[(U+1)\sigma_{\text{V,E}}^2+(1-\alpha)\right] \\
+	T_{3,1} &=  U\sigma_{\text{V,E}}^2+2\\
+	T_{3,2} &=  U\sigma_{\text{V,E}}^2+2-2\alpha\\
+	T_{3,3} &=  \alpha(U+1)(U\sigma_{\text{V,E}}^2+2-2\alpha)\\
 \end{split}
-\label{eq:snr_calibration_bob}
-\end{equation}
-where we define: \\ $T_1 = 2^x\left[U(U+1)\sigma_{\text{V,E}}^2 + \alpha(U+1)(U+3)+
-U(1-\alpha)\right]$, \\
-$T_2 = U(U+1)\sigma_{\text{V,E}}^2+U(1-\alpha)$, and  \\$T_3 =  \alpha U(U+1)\left[(U+1)\sigma_{\text{V,E}}^2+(1-\alpha)\right]$\\
+\end{equation} 
 Eq.(\ref{eq:snr_calibration_bob})  gives the required SNR at Bob to target a SR $x$ as a function of the BOR $U$ and the noise level at Eve $\sigma_{\text{V,E}}^2$, for the three investigated decoding structures.
 
 
@@ -658,8 +664,7 @@ Eq.(\ref{eq:snr_calibration_bob})  gives the required SNR at Bob to target a SR 
 \subsection{Secrecy rate optimization via waterfilling}
 \label{subsec:perf_waterf}
 From section \ref{subsec:best_alpha}, the optimal amount of transmitted data energy is derived. The analytic expressions (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}) and (\ref{eq:optimal_alpha_decod_5}) lead to the coefficients $\alpha_{\text{opt}}$ that maximize the ergodic SR of the communication depending on the investigated scenarios.
-In particular, we observe that $\alpha_{\text{opt}}$ is an unique coefficient weighting the $Q$ components of the useful data. That is, each subcarrier will be affected by the same coefficient. However, we know that the channel capacity at one subcarrier is proportional to the subcarrier energy. Therefore, subcarriers with higher gains will contribute more to the total channel capacity than subcarriers with lower gains. We also consider throughout this paper that Alice can instantaneously estimate Bob's channel but does not have any information about Eve instantaneous CSI. From that, we can compute the instantaneous capacity at Bob but we only have access to the ergodic capacity at Eve. From this discussion, we can state that, if we could have access to Eve's instantaneous capacity, we could tune the amount of transmitted data energy at each subcarrier, i.e., applying a different weight at each subcarrier depending on its power, in such a way that it enhances the instantaneous capacity at Bob and it degrades the instantaneous capacity at the eavesdropper position. Since we only have access to the ergodic capacity at Eve, we proceed as follow:\\
-Based on the statistics of Bob and Eve channels, we obtain a closed form approximation of the ergodic SR depending on the handshake procedure. From that, we can find  the value of $\alpha_{\text{opt}}$ that, in the ergodic sense, will maximize the SR. Then, at each channel realization, we determine a new set of coefficients, denoted by $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob while ensuring that:
+In particular, we observe that $\alpha_{\text{opt}}$ is an unique coefficient weighting the $Q$ components of the useful data. That is, each subcarrier will be affected by the same coefficient. However, we know that the channel capacity at one subcarrier is proportional to the subcarrier energy. Therefore, subcarriers with higher gains will contribute more to the total channel capacity than subcarriers with lower gains. We also consider throughout this paper that Alice can instantaneously estimate Bob's channel but does not have any information about Eve instantaneous CSI. From that, we can compute the instantaneous capacity at Bob but we only have access to the ergodic capacity at Eve. Therefore, we can tune the amount of transmitted data energy at each subcarrier, i.e., we can apply a different weight at each subcarrier, in such a way that we enhance the instantaneous capacity at Bob while keeping the average transmitted data energy constant. As a conclusion, at each channel realization, we determine a new set of coefficients, denoted by $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob while ensuring that:
 \begin{itemize}
 	\item[1.] The total radiated energy remains constant:
 	\begin{equation}
@@ -674,7 +679,7 @@ Based on the statistics of Bob and Eve channels, we obtain a closed form approxi
 	\forall \epsilon > 0 \; , \; \exists \;  \boldsymbol\alpha_{\text{w}} \: : \; \left|\spread^H \HB \sqrt{1-\boldsymbol\alpha_{\text{w}}}\odot \w\right|^2 < \epsilon
 	\end{equation}
 \end{itemize}
-Since we consider that Bob and Eve channels are independent, optimizing the energy coefficients that weight each data subcarrier to enhance the capacity at Bob will not modify the capacity at Eve. Consequently, the communication SR will increase with this waterfilling optimization procedure. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization and since a FF environment is considered. 
+Since we consider that Bob and Eve channels are independent, optimizing the energy coefficients that weight each data subcarrier to enhance the capacity at Bob will not modify the  ergodic capacity at Eve. Consequently, the communication SR will increase with this waterfilling optimization procedure. However it is worth to note that this approach is computationally expensive since new weights have to be determined at each channel realization and since a FF environment is considered. 
 
 \subsection{Performance summary}
 \begin{table}[!thb]
@@ -700,9 +705,7 @@ Since we consider that Bob and Eve channels are independent, optimizing the ener
 
 %%%%%%%%%   SIMULATION RESULTS   %%%%%%%%% 
 \section{Simulation Results} \label{sec:simulation-results}
-
-
-
+In this section, we present some simulation results that were performed on \textsc{Matlab}. A bit stream is modulated, the AN signal is generated. The transmitted signal goes through Bob and Eve Rayleigh channels. At the receiver the SINRs are computed in order to obtain the capacities and so, the secrecy rates. We consider one thousand runs and the SR is stored in a matrix at each iteration. The ergodic SR is obtained by averaging over the experiments the values contained in the matrix. 
 %%
 \subsection{Model performances}
 \begin{figure}[h!t]
@@ -755,8 +758,6 @@ The right part of Fig.\ref{fig_targettedSR} represents the required SNR values a
 \end{figure}
 Fig. \ref{fig_waterfilling_opt} presents the maximal values of the SR for the three decoding structures, before (dotted lines) and after (continuous lines) waterfilling optimization. As a reminder, before and after optimization, the mean energy radiated dedicated to the useful data remains unchanged, and the AN signal always remains in Bob's null space. The optimal amount of data energy to inject is computed thanks to (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}) and (\ref{eq:optimal_alpha_decod_5}) in order to ensure a maximal ergodic SR. The SR is then further increased via the waterfilling optimization procedure, as described in section \ref{subsec:perf_waterf}. As we can see, there is an increase of the SR for all three models and all BOR values thanks to the waterfilling. 
 
-
-
 %%%%%%%%%   CONCLUSONS   %%%%%%%%% 
 \section{Conclusions}\label{sec:conclusions}
 In this paper, the problem of securing the FD TR SISO OFDM wireless transmission, in a FF environment, from a transmitter to a legitimate receiver in the presence of a passive eavesdropper is considered. A novel and original approach based on the addition of an AN signal onto OFDM blocks that improves the PLS is proposed. This approach can be easily integrated into existing standards based on OFDM. It only requires a single transmit antenna and is therefore well suited for devices with limited capabilities. Three different decoding structures for the passive eavesdropper are considered, resulting from the handshake procedure between Alice and Bob. Analytic and simulation results show that the novel approach significantly improves the security of the communication and so considerably jeopardizes any attempt of an eavesdropper to retrieve the data.
@@ -788,7 +789,7 @@ In this paper, the problem of securing the FD TR SISO OFDM wireless transmission
 
 
 
-
+%\newpage
 
 
 %%%%%%%%%   APPENDICES  %%%%%%%%% 
@@ -925,13 +926,13 @@ The component $\textbf{A}_{3,n}$ depends on $\textbf{w}$ and $\HB$ which are cor
 	\label{eq:an_eve_filt5-app}
 \end{equation}
 
-\ifCLASSOPTIONcaptionsoff
-  \newpage
-\fi
+%\ifCLASSOPTIONcaptionsoff
+%  \newpage
+%\fi
 
 %%%%%%%%%   BIBLIOGRAPHY   %%%%%%%%% 
 
-\newpage
+%\newpage
 \bibliographystyle{IEEEtran}
 \bibliography{biblio} 
 

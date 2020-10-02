@@ -166,11 +166,10 @@ switch scenario
         [Hb_TX, rho_space_b,rho_freq_b] = corr_spatial_frequency( Q , b_subcar(bf) , r,  fc , sigma_tau , Na(nt) ) ;
         
         %[He_TX, rho_space_e,rho_freq_e] = corr_spatial_frequency( Q , b_subcar(bf) , r,  fc , sigma_tau , Na(nt) ) ;
-        %He_TX = channelRayleighMISO(Na(nt),Q, mu , sigma);
+        % He_TX = channelRayleighMISO(Na(nt),Q, mu , sigma);
         [He_TX ,rho_space_e] = corr_spatial( Q , b_subcar(bf) , r , fc , 1 ) ;
-        
         Hb_TX = diag(reshape(Hb_TX.',[],1));                                % Dimension of 1xQxNa --> need to reshape to have diag of Q.Na x Q.Na
-        He_TX = diag(reshape(squeeze(He_TX),[],1));
+        He_TX = diag(reshape(He_TX.',[],1));
        
 
 end
@@ -420,10 +419,7 @@ h = colorbar;
 set(get(h,'label'),'string','Secrecy rate (bit/channel use)');
 title('Own channel knowledge')
 
-close(h)
-
-
-%save('MISOnoCorrelAtEve'); %figure_no_eve_correlfigure1)
+save('MISOnoCorrelAtEve'); %figure_no_eve_correlfigure1)
 
 
 % sinr1_model_b = sinrModeling(alpha,U,snr_b,snr_e,Na,Nb,Ne,"bob_MISO_decorrelated");
