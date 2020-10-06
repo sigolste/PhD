@@ -43,11 +43,11 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1500;              % number of experiments
+nb_run = 2000;              % number of experiments
 nb_model = 3;
 
 
-Q = 16;
+Q = 32;
 U = [2 4 8 16];
 N = Q./U;
 
@@ -239,9 +239,9 @@ x0.x = alpha_to_opt;
 
 
 % Problem options
-options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',1500,'MaxFunctionEvaluations',300000);
+options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',2500,'MaxFunctionEvaluations',300000);
 %options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
-options.StepTolerance       = 1e-5;
+options.StepTolerance       = 5*1e-6;
 options.FunctionTolerance   = 1e-9;
 options.ConstraintTolerance = 1e-6;
 options.OptimalityTolerance = 1e-12;
