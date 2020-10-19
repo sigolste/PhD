@@ -43,7 +43,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 2000;              % number of experiments
+nb_run = 10;              % number of experiments
 nb_model = 3;
 
 
@@ -156,7 +156,7 @@ sinr5_opt_e             = zeros(nb_run,length(U));
 % sr_opt_1             = zeros(nb_run,length(U),nb_model);
 % sr_opt_2             = zeros(nb_run,length(U));
 % sr_opt_5             = zeros(nb_run,length(U));
-
+tic
 
 %% Mainloop
 for iter = 1:nb_run
@@ -245,7 +245,7 @@ options.StepTolerance       = 5*1e-6;
 options.FunctionTolerance   = 1e-9;
 options.ConstraintTolerance = 1e-6;
 options.OptimalityTolerance = 1e-12;
-options.UseParallel;
+%options.UseParallel;
 
 % show(prob)                                                                % Show the problem, i.e., function to optimization, constraints, initial point
 % Solve the problem
@@ -425,7 +425,7 @@ end
 end
 waitbar(iter / nb_run)
 end
-
+toc
 %% POST PROCESSING
 capa1_b = capacity(sinr1_b);
 capa1_opt_b = capacity(sinr1_opt_b);
@@ -496,6 +496,6 @@ legend('Secrecy gain - Same decoder' , 'Secrecy gain - Matched filter',...
     'Secrecy gain - Own channel', 'location', 'best')
 
 
-
+close(h);
 
 

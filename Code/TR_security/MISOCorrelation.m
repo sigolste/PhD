@@ -420,7 +420,7 @@ h = colorbar;
 set(get(h,'label'),'string','Secrecy rate (bit/channel use)');
 title('Own channel knowledge')
 
-close(h)
+close(h);
 
 
 %save('MISOnoCorrelAtEve'); %figure_no_eve_correlfigure1)

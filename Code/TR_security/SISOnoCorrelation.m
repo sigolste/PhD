@@ -19,13 +19,13 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1000;              % number of experiments
+nb_run = 500;              % number of experiments
 alpha_step = 1;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 8;
-U = [2];
+Q = 128;
+U = [2 4 8 16];
 N = Q./U;
 
 M = 4;
@@ -35,8 +35,8 @@ nb_bit = k.*N;
 % AWGN parameters
 EbN0_b = 15; % energy per bit over noise psd @Bob - dB
 EbN0_e = [15]; % energy per bit over noise psd @Eve - dB
-snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
+snr_b  = 15; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = 15; %EbN0_e + 10*log10(k);  % SNR @Eve
 
 % Channel parameters 
 mu = 0;         % Channel mean
@@ -317,15 +317,16 @@ legend('Same decoder - Simulation' , 'Matched filtering - Simulation' , 'AN kill
 
 % Comparaison models - SR curves
 figure;
-plot(100*alpha,sr1_avg,'Marker','o','color','b'); hold on;
-plot(100*alpha,sr1_model,'Marker','o','color','r'); hold on;
-plot(100*alpha,sr2_avg,'Marker','square','color','m'); hold on;
-plot(100*alpha,sr2_model,'Marker','square','color','g'); hold on;
-plot(100*alpha,sr5_avg,'Marker','diamond','color','c'); hold on;
-plot(100*alpha,sr5_model,'Marker','diamond','color','y'); hold on;
+plot(100*(1-alpha),sr1_avg,'Marker','o','color','b'); hold on;
+plot(100*(1-alpha),sr1_model,'Marker','o','color','r'); hold on;
+plot(100*(1-alpha),sr2_avg,'Marker','square','color','m'); hold on;
+plot(100*(1-alpha),sr2_model,'Marker','square','color','g'); hold on;
+plot(100*(1-alpha),sr5_avg,'Marker','diamond','color','c'); hold on;
+plot(100*(1-alpha),sr5_model,'Marker','diamond','color','y'); hold on;
 box on; grid on;
-xlabel('Percentage of energy radiated dedicated for data (\%)')
+xlabel('Percentage of radiated AN energy (\%)')
 ylabel('Secrecy rate (bit/channel use)')
+ylim([0 4])
 legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling', 'location', 'best')
 
 
@@ -364,19 +365,19 @@ else
 
 figure;
 subplot(1,2,1)
-plot(U,100*alpha1_simu_opt,'Marker','square') ; hold on;
-plot(U,100*alpha1_model_opt,'Marker','square') ; hold on;
-plot(U,100*alpha2_simu_opt,'Marker','v') ; hold on;
-plot(U,100*alpha2_model_opt,'Marker','v') ; hold on;
-plot(U,100*alpha5_simu_opt,'Marker','>') ; hold on;
-plot(U,100*alpha5_model_opt,'Marker','>') ; 
-ylabel('Percentage of energy radiated dedicated for data (\%)')
+plot(U,100*(1-alpha1_simu_opt),'Marker','square') ; hold on;
+plot(U,100*(1-alpha1_model_opt),'Marker','square') ; hold on;
+plot(U,100*(1-alpha2_simu_opt),'Marker','v') ; hold on;
+plot(U,100*(1-alpha2_model_opt),'Marker','v') ; hold on;
+plot(U,100*(1-alpha5_simu_opt),'Marker','>') ; hold on;
+plot(U,100*(1-alpha5_model_opt),'Marker','>') ; 
+ylabel('Percentage radiated AN energy (\%)')
 xlabel('BOR')
 box on; grid on;
-ylim([min(100*alpha2_model_opt) max(100*alpha1_simu_opt)])
-legend('Same decoder - Simulation','Same decoder - Modeling', ...
-    'Matched filtering - Simulation' , 'Matched filtering - Modeling',...
-    'Own channel - Simulation', 'Own channel - Modeling')
+%ylim([max(100*(1-alpha1_simu_opt)) min(100*(1-alpha2_model_opt)) ])
+legend('SDS Decoder - Simulation','SDS Decoder - Modeling', ...
+    'MF Decoder - Simulation', 'MF Decoder - Modeling',...
+    'OC Decoder - Simulation', 'OC Decoder - Modeling')
 
 
 subplot(1,2,2)
@@ -387,12 +388,12 @@ plot(U,sr2_model_max,'Marker','<') ; hold on;
 plot(U,sr5_simu_max,'Marker','diamond') ; hold on;
 plot(U,sr5_model_max,'Marker','diamond') 
 ylabel('Secrecy rate (bit/channel use)')
-ylim([min(sr2_simu_max) max(sr1_model_max)])
+ylim([2 8])%ylim([min(sr2_simu_max) max(sr1_simu_max)])
 xlabel('BOR')
 box on; grid on;
-legend('Same decoder - Simulation','Same decoder - Modeling', ...
-    'Matched filtering - Simulation', 'Matched filtering - Modeling',...
-    'Own channel - Simulation', 'Own channel - Modeling')
+legend('SDS Decoder - Simulation','SDS Decoder - Modeling', ...
+    'MF Decoder - Simulation', 'MF Decoder - Modeling',...
+    'OC Decoder - Simulation', 'OC Decoder - Modeling')
           
         
 
