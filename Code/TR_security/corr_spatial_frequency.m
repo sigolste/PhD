@@ -3,11 +3,11 @@ function [H,rho_space,rho_freq] = corr_spatial_frequency(nb_subcar , b_subcar , 
 % them and that have a frequency correlation between their subcarriers
 
 %% Frequency correlation: 
-ind_subca = 0 : 1 : nb_subcar - 1 ;                                     % Sub-carrier index
-delta_f = ind_subca .* b_subcar ;                                       % Frequency separation between the first subcarrier and the others
-rho_freq = sigma_tau ./ ( 1 + 1i * 2 * pi * delta_f * sigma_tau ) ;          % Frequency variation of the correlation (first line of the covaraince matrix)
-rho_freq = rho_freq ./ max( abs( rho_freq ) ) ;                                        % Normalization
-RHO_freq = toeplitz( rho_freq ) ;                                                 % Covariance matrix
+ind_subca = 0 : 1 : nb_subcar - 1 ;                                         % Sub-carrier index
+delta_f = ind_subca .* b_subcar ;                                           % Frequency separation between the first subcarrier and the others
+rho_freq = sigma_tau ./ ( 1 + 1i * 2 * pi * delta_f * sigma_tau ) ;         % Frequency variation of the correlation (first line of the covaraince matrix)
+rho_freq = rho_freq ./ max( abs( rho_freq ) ) ;                             % Normalization
+RHO_freq = toeplitz( rho_freq ) ;                                           % Covariance matrix
 rho_freq = abs(RHO_freq);
 T_freq = cholcov( RHO_freq ) ;
 H_freq = 1/sqrt(2)*( randn( nb_realizations , size( T_freq , 1 ) ) ...

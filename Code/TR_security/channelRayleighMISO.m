@@ -9,15 +9,10 @@ function y = channelRayleighMISO(N_TX,len, mu , sigma)
 %   N_TX : number of TX antennas
 %
 % Output:
-%   y : rayleigh distributed channel 
+%   y : rayleigh distributed channel without correlation
 
-        y = zeros(len*N_TX,len*N_TX);
-        vec  = 1/sqrt(2)*(sigma*randn(len*N_TX,1) + sigma*1j*randn(len*N_TX,1)) + mu;
+vec  = 1/sqrt(2)*(sigma*randn(len*N_TX,1) + sigma*1j*randn(len*N_TX,1)) + mu;
         y = diag(vec);
         
 end
 
-% for nn = 1:N_TX
-%     y = [y diag(vec(nn*N_TX:,1));
-% end
-% y = diag(1/sqrt(2)*(sigma*randn(len,1) + sigma*1j*randn(len,1)) + mu);

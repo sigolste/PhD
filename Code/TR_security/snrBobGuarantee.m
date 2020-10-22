@@ -7,13 +7,6 @@
 % - SISO communication
 % - No spatial nor frequency correlation
 % - 3 decoding structures investigated at Eve. 
-%
-% For given targetted SR and a given set of (snr_e,U), we find the value of
-% alpha that gives the lowest value of snr_b (i.e. the easiest to obtain in
-% reality). We will finally inject this value of alpha in our system since
-% it allows to have the lowest SNR at Bob while reaching a given SR for a
-% given couple of (U,snr_e)
-
 
 
 clear all;
@@ -30,7 +23,7 @@ set(0, 'defaultFigurePosition',  [-1267  44   1256    872])
 
 
 
-sr_targetted = linspace(0.01,6,100);
+sr_targetted = linspace(0.01,6,100);        % SR from 0.1 to 5 bit/channel use with 100 points
 U = [2 4 8 16 32 64].';
 sr_lin = 2.^sr_targetted; % linear value of the targetted secrecy rate
 

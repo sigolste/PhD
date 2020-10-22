@@ -37,8 +37,8 @@ Ne = 1;             % Number of antennas @Eve
 
 
 % Communication parameters
-Q = 4;
-U = [4];
+Q = 8;
+U = [8];
 N = Q./U;
 
 M = 4;
@@ -79,7 +79,7 @@ elseif scenario == "spatial_frequency_correlation"
     n_pts_freq = 40;
     coef_freq = linspace(0.1,max_lambda_freq,n_pts_freq);
     delta_f_n = coef_freq.*delta_f_c;                             % subcarrier BW from 0 to 5 times the coherence BW of the system. 
-    b_subcar = delta_f_n./N;
+    b_subcar = delta_f_n./N;        % If b_subcar > 1 (where N = number of symbols but also number of subcarriers between two subsequent symbol components) --> 
     
     y_axis = delta_f_n./delta_f_c;
     x_axis = b_space;
