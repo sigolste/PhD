@@ -43,7 +43,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 10;              % number of experiments
+nb_run = 1000;              % number of experiments
 nb_model = 3;
 
 
@@ -57,9 +57,9 @@ nb_bit = k.*N;
 
 % AWGN parameters
 EbN0_b = 15; % energy per bit over noise psd @Bob - dB
-EbN0_e = [15]; % energy per bit over noise psd @Eve - dB
-snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
+EbN0_e = [10]; % energy per bit over noise psd @Eve - dB
+snr_b  = 20; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = 20; %EbN0_e + 10*log10(k);  % SNR @Eve
 
 % Channel parameters 
 mu = 0;         % Channel mean
@@ -232,7 +232,7 @@ cstr_e_an   = fcn2optimexpr(f4,x,'OutputSize',[1,1]);                       % AN
 %prob.Constraints.cons_alpha = sum_alpha == alpha_global(nb_bor);
 prob.Constraints.cons_energy_AN     = cstr_e_an     == e_an_TX;%(1-alpha_global)/U(bb);
 prob.Constraints.cons_energy_total  = cstr_e_tot    == e_sym_transmitted; %1/U(bb);
-prob.Constraints.cons_orthog        = cstr_ortho    <= 1e-9;
+prob.Constraints.cons_orthog        = cstr_ortho    <= 1e-7;
 
 % Initial vector
 x0.x = alpha_to_opt;
@@ -240,11 +240,10 @@ x0.x = alpha_to_opt;
 
 % Problem options
 options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',2500,'MaxFunctionEvaluations',300000);
-%options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
-options.StepTolerance       = 5*1e-6;
-options.FunctionTolerance   = 1e-9;
-options.ConstraintTolerance = 1e-6;
-options.OptimalityTolerance = 1e-12;
+% options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
+options.StepTolerance = 1e-6;
+options.FunctionTolerance = 1e-7;
+options.ConstraintTolerance = 1e-7;
 %options.UseParallel;
 
 % show(prob)                                                                % Show the problem, i.e., function to optimization, constraints, initial point
@@ -316,7 +315,7 @@ e_noise_decod1_opt_b(iter,bb,mm)   = energy(noise_decod1_opt_b);
 
 % instantaneous SINRs - non optimized 
 sinr1_b(iter,bb,mm) = e_sym_decod1_b(iter,bb,mm)/e_noise_decod1_b(iter,bb,mm);
-
+sinr1_opt_b(iter,bb,mm) = e_sym_decod1_opt_b(iter,bb,mm)/e_noise_decod1_opt_b(iter,bb,mm) ;
 % instantaneous SINRs - optimized 
 % If optimization doesn't succeed: bob SINR = non optimized SINR
 if e_sym_decod1_opt_b(iter,bb)/e_noise_decod1_opt_b(iter,bb,mm) >= sinr1_b(iter,bb,mm)
