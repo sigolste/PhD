@@ -43,11 +43,11 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1000;              % number of experiments
+nb_run = 1500;              % number of experiments
 nb_model = 3;
 
 
-Q = 32;
+Q = 16;
 U = [2 4 8 16];
 N = Q./U;
 
@@ -58,8 +58,8 @@ nb_bit = k.*N;
 % AWGN parameters
 EbN0_b = 15; % energy per bit over noise psd @Bob - dB
 EbN0_e = [10]; % energy per bit over noise psd @Eve - dB
-snr_b  = 20; %EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = 20; %EbN0_e + 10*log10(k);  % SNR @Eve
+snr_b  = 15; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = 15; %EbN0_e + 10*log10(k);  % SNR @Eve
 
 % Channel parameters 
 mu = 0;         % Channel mean
@@ -227,23 +227,23 @@ f4 = @(x) energy(sqrt(ones(Q,1) - x).*an);                                  % AN
 
 cstr_ortho  = fcn2optimexpr(f2,x,'OutputSize',[1,1]);                       % Orthogonality constraints
 cstr_e_tot  = fcn2optimexpr(f3,x,'OutputSize',[1,1]);                       % Total energy constraint
-cstr_e_an   = fcn2optimexpr(f4,x,'OutputSize',[1,1]);                       % AN energy constraint
+cstr_e_an   = fcn2optimexpr(f4,x,'OutputSize',[1,1]);                       % AN energy constraintnk
 
 %prob.Constraints.cons_alpha = sum_alpha == alpha_global(nb_bor);
 prob.Constraints.cons_energy_AN     = cstr_e_an     == e_an_TX;%(1-alpha_global)/U(bb);
 prob.Constraints.cons_energy_total  = cstr_e_tot    == e_sym_transmitted; %1/U(bb);
-prob.Constraints.cons_orthog        = cstr_ortho    <= 1e-7;
+prob.Constraints.cons_orthog        = cstr_ortho    <= 1e-9;
 
 % Initial vector
 x0.x = alpha_to_opt;
 
 
 % Problem options
-options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',2500,'MaxFunctionEvaluations',300000);
-% options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
+options = optimoptions('fmincon','Algorithm', 'interior-point','MaxIterations',7500,'MaxFunctionEvaluations',300000);
+%options.Display = 'iter-detailed';                                         % Display the problem status at each iteration
 options.StepTolerance = 1e-6;
-options.FunctionTolerance = 1e-7;
-options.ConstraintTolerance = 1e-7;
+options.FunctionTolerance = 1e-9;
+options.ConstraintTolerance = 1e-9;
 %options.UseParallel;
 
 % show(prob)                                                                % Show the problem, i.e., function to optimization, constraints, initial point
