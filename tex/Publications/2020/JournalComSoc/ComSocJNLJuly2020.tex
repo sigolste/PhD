@@ -112,7 +112,6 @@
 \title{Physical Layer Security in a SISO Communication using Frequency-Domain Time-Reversal OFDM Precoding and Artificial Noise Injection}
 
 \author{\IEEEauthorblockN{Sidney J. Golstein\IEEEauthorrefmark{1}\IEEEauthorrefmark{2},
-		Trung-Hien Nguyen\IEEEauthorrefmark{1},
 		Fran\c cois Rottenberg\IEEEauthorrefmark{1}\IEEEauthorrefmark{3},
 		Fran\c cois Horlin\IEEEauthorrefmark{1}, 
 		Philippe De Doncker\IEEEauthorrefmark{1}, and
@@ -122,12 +121,15 @@
 \IEEEauthorblockA{\IEEEauthorrefmark{2}Sorbonne Université, CNRS, Laboratoire de Génie Electrique et Electronique de Paris, 75252, Paris, France \\
 	Université Paris-Saclay, CentraleSupélec, CNRS, Laboratoire de Génie Electrique et Electronique de Paris, 91192, Gif-sur-Yvette, France} \\
 \IEEEauthorblockA{\IEEEauthorrefmark{3} ICTEAM, Universit\'{e} catholique de Louvain, 1348 Louvain-la-Neuve, Belgium} \\
-\IEEEauthorblockA{\small{\{sigolste,trung-hien,francois.rottenberg,fhorlin,philippe.dedoncker\}@ulb.ac.be}} \\
+\IEEEauthorblockA{\small{\{sigolste,fhorlin,philippe.dedoncker\}@ulb.ac.be}} \\
+\IEEEauthorblockA{\small{francois.rottenberg@uclouvain.be}}\\
 \IEEEauthorblockA{\small{julien.sarrazin@sorbonne-universite.fr}}
 \thanks{This work was supported by the ANR GEOHYPE project, grant ANR-16-CE25-0003 of the French Agence Nationale de la Recherche and was also carried out in the framework of COST Action CA15104 IRACON.}}
 
 % The paper headers
-\markboth{Journal of ...,~Vol.~to-define, No.~to-define, \today}%
+%\markboth{IEEE Transactions on Wireless Communications,~Vol.~to-define, No.~to-define, November 2020}%
+%\markboth{IEEE Transactions on Wireless Communications, November 2020}%
+\markboth{Paper-TW-Nov-20-1594}
 {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Communications Society Journals}
 
 
@@ -136,7 +138,7 @@
 
 
 \begin{abstract}
-A frequency domain (FD) time-reversal (TR) precoder is proposed to perform physical layer security (PLS) in single-input single-output (SISO) systems using orthogonal frequency-division multiplexing (OFDM). To maximize the secrecy of the communication, the design of an artificial noise (AN) signal well-suited to the proposed FD TR-based OFDM SISO system is derived. This new scheme guarantees the secrecy of a communication towards a legitimate user when the instantaneous channel state information (CSI) of a potential eavesdropper is not known. The instantaneous CSI of the legitimate receiver is known at the transmitter thanks to channel reciprocity  in time division duplex (TDD) systems. In particular, an AN signal that does not corrupt the data transmission to the legitimate receiver but degrades the decoding performance of the eavesdropper is derived. Three optimal decoding structures at the eavesdropper are considered, depending on the amount of CSI she can estimate in a fast fading (FF) environment, which in turns depends on the handhsake procedure. Closed-form approximations of the AN energy to inject in order to maximize the secrecy rate (SR) of the communication are derived. In addition, the required conditions at the legitimate receiver's end to guarantee a given SR in the communication are determined, even when Eve's signal-to-noise ratio (SNR) is infinite. Furthermore, a waterfilling power allocation strategy, to inject AN, is presented to further enhance the secrecy of the scheme. Simulation results are presented to demonstrate the security performance of the proposed secure FD TR SISO OFDM system.
+A frequency domain (FD) time-reversal (TR) precoder is proposed to perform physical layer security (PLS) in single-input single-output (SISO) systems using orthogonal frequency-division multiplexing (OFDM) and artificial noise (AN) signal injection. The AN signal does not corrupt the data transmission to the legitimate receiver but degrades the decoding performance of the eavesdropper. This scheme guarantees the secrecy of a communication towards a legitimate user when the transmitter knows the instantaneous channel state information (CSI) of the legitimate link thanks to the channel reciprocity in time division duplex (TDD) systems, but does not know the instantaneous CSI of a potential eavesdropper. Three optimal decoding structures at the eavesdropper are considered in a fast fading (FF) environment depending on the handshake procedure between Alice and Bob. Closed-form approximations of the AN energy to inject in order to maximize the SR of the communication are derived. In addition, the required conditions at the legitimate receiver's end to guarantee a given SR are determined when Eve's signal-to-noise ratio (SNR) is infinite. Furthermore, a waterfilling power allocation strategy is presented to further enhance the secrecy of the scheme. Simulation results are presented to demonstrate the security performance of the proposed secure system.
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -160,13 +162,13 @@ Physical layer security, time-reversal, time division duplex, fast-fading, eaves
 %I wish you the best of success.
 
 
-\IEEEPARstart{T}{he} demand for wireless communication services and the number of interconnected users is increasing day by day. Internet-based services have become ubiquitous in daily life. Wireless communication has become the dominant access for most of these services and is intrisically unsecure due to its unbounded nature. Therefore, several issues have emerged and need to be urgently adressed such as data confidentiality and integrity. The amount of leaked information is also an important feature that needs to be considered and minimized in order to guarantee secrecy of wireless transmissions, \cite{8509094,8543573,BlochMatthieu1981-2011Ps:f}.
+\IEEEPARstart{I}{nternet}-based services have become ubiquitous in daily life. Wireless communication has become the dominant access for most of these services but it is intrisically unsecure due to its unbounded nature. Therefore, several issues have emerged and need to be urgently adressed such as data confidentiality and integrity. The amount of leaked information is also an important feature that needs to be considered and minimized in order to guarantee secrecy of wireless transmissions, \cite{8509094,8543573,BlochMatthieu1981-2011Ps:f}.
 
 % Parler de crypto et ses prob
-The concept of security started with Shannon's work, \cite{6769090}. First, these techniques are based on the assumption that the eavesdropper (Eve) has limited computational power capabilities. With the fast development in computing power devices, secret keys that were secure decades ago are nowadays more subject to successful brut-force attacks. Second, the security is enhanced when the key length increases, resulting in more waste of resources. In addition, the key management processes become a real issue with the deployment of large-scale heterogeneous and decentralized networks involving different acces technologies, such as 5G networks. Finally, the emergence of power-limited, delay-sentive and processing-restricted wireless technologies, such as Internet Of Things (IoT), banking, health monitoring, vehicular communications, makes cryptography-based methods naturally unsuitable, \cite{8509094}.
+The concept of security started with Shannon's work, \cite{6769090}. These techniques are based on the assumption that the eavesdropper (Eve) has limited computational power capabilities. With the fast development in computing power devices, secret keys that were secure decades ago are nowadays more subject to successful brut-force attacks. Security is enhanced when the key length increases, resulting in more waste of resources. In addition, the key management processes become a real issue with the deployment of large-scale heterogeneous and decentralized networks involving different acces technologies, such as 5G networks. Finally, the emergence of power-limited, delay-sentive and processing-restricted wireless technologies, such as Internet Of Things (IoT), banking, health monitoring, vehicular communications, makes cryptography-based methods naturally unsuitable, \cite{8509094}.
 
 % Prob de la crypto assurés par la PLS
-To circumvent the aforementionned issues, physical layer security (PLS) has emerged as an effective way to enhance security of wireless communications, \cite{alves2012performance,yang2012physical,tran2015secrecy,8353879}. PLS classically takes benefit of the unpredictable wireless channel characteristics (e.g., multipath fading, noise, dispersion, diversity) to improve security of communications against potential eavesdroppers without relying on computational complexity, i.e., the security is not affected if Eve has unlimited computing capabilities, \cite{9049811,snchez2020survey}. 
+To circumvent the aforementionned issues, physical layer security (PLS) has emerged as an effective way to enhance security of wireless communications, \cite{alves2012performance,yang2012physical,tran2015secrecy,8353879}. PLS classically takes benefit from unpredictable wireless channel characteristics (e.g., multipath fading, noise, dispersion, diversity) to improve security of communications against potential eavesdroppers without relying on computational complexity, i.e., the security is not affected if Eve has unlimited computing capabilities, \cite{9049811,snchez2020survey}. 
 
 % Introduction de la PLS
 The starting point of PLS was exposed in 1975 by Wyner where he explained that a communication can be made secure, without sharing a secret key, when the wiretap channel of the eavesdropper is a degraded version, i.e., noisier, of the legitimate link (Bob), \cite{6772207}. This work was later extended to the broadcast channel in \cite{1055892}, and to the Gaussian channel in \cite{1055917}. 
@@ -232,7 +234,7 @@ The AN should not have any impact at Bob's position but should corrupt the data 
 	\textbf{x}_{\text{TR}} = \sqrt{\alpha} \;\HB^*  \spread\; \textbf{x} +  \sqrt{1-\alpha} \; \w
 	\label{eq:sym_rad_AN}
 \end{equation} 
-where $\alpha \in [0,1]$ defines the ratio of the total energy sent dedicated to the useful signal, while ensuring that the total transmitted power remains constant, and equals to $1$ per transmitted symbol for any value of $\alpha$.
+where $\alpha \in [0,1]$ defines the ratio of the total power sent dedicated to the useful signal, while ensuring that the total transmitted power remains constant, and equals to $1$ per transmitted symbol for any value of $\alpha$.
 
 The channels between Alice and Bob ($\HB$) and between Alice and Eve ($\HE$) are $Q\times Q$ diagonal matrices whose elements are $h_{\text{B},q}$ and $h_{\text{E},q}$ (for $q = 0,...,Q-1$) and follow a zero-mean unit-variance complex normal distribution, i.e., their modulus follow a Rayleigh distribution. The overall channel energies are normalized to unity for each channel realization, i.e., $\mathbb{E}\left[\left|h_{\text{B},q}\right|^2\right]  = \mathbb{E}\left[\left|h_{\text{E},q}\right|^2\right] = 1, \; q = 0,...,Q-1$. The precoding matrix $\HB^*$ is also a diagonal matrix with elements $h_{\text{B},q}^*$. At Bob, a despreading operation is performed by applying $\spread^H$. It is assumed that Bob and Eve know the spreading sequence. Bob then applies a zero forcing (ZF) equalization, while Eve uses the best decoding structure \mat{G} she can, depending on the scenario, before applying a ZF equalization too, as explained in section \ref{sec:establishment}. A perfect synchronization is finally assumed at Bob and Eve positions.\\
 
@@ -275,7 +277,7 @@ After despreading, the received sequence at Bob is:
 	\textbf{y}_{\text{B}}^H = \sqrt{\alpha} \; \spread^H \module{\HB}^2 \spread \textbf{x} \;  +  \;  \spread^H \textbf{v}_\text{B} 
 	\label{eq:rx_bob_AN}
 \end{equation}
-where $\textbf{v}_\text{B}$ is the FD complex Additive White Gaussian Noise (AWGN) with noise's variance $\EX{|v_{\text{B},n}|^2}  = \sigma_{\text{V,B}}^2$ and covariance matrix $\EX{(\spread^H  \textbf{v}_\text{B}) . (\spread^H \textbf{v}_\text{B})^H} = \sigma_{\text{V,B}}^2 . \textbf{I}_N$. In (\ref{eq:rx_bob_AN}), each transmitted data symbol is affected by a real gain $ \frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2$ at the position of the legitimate receiver. This frequency diversity gain consequently increases the received useful signal power at Bob in fading environments and increases with the BOR value. Considering a fixed bandwidth, the TR focusing effect is enhanced for higher BOR's at the expense of the data rate. It is also observed that no AN contribution is present in (\ref{eq:rx_bob_AN}) since (\ref{eq:an_cond}) is respected. A ZF equalization is performed at the receiver leading to:
+where $\textbf{v}_\text{B}$ is the FD complex Additive White Gaussian Noise (AWGN) with noise's variance $\EX{|v_{\text{B},n}|^2}  = \sigma_{\text{V,B}}^2$ and covariance matrix $\EX{(\spread^H  \textbf{v}_\text{B}) (\spread^H \textbf{v}_\text{B})^H} = \sigma_{\text{V,B}}^2 \textbf{I}_N$. In (\ref{eq:rx_bob_AN}), each transmitted data symbol is affected by a real gain $ \frac{\sqrt{\alpha}}{U}\sum_{i=0}^{U-1} \left| h_{\text{B}, n + iN}\right|^2$ at the position of the legitimate receiver. This frequency diversity gain consequently increases the received useful signal power at Bob in fading environments and increases with the BOR value. Considering a fixed bandwidth, the TR focusing effect is enhanced for higher BOR's at the expense of the data rate. It is also observed that no AN contribution is present in (\ref{eq:rx_bob_AN}) since (\ref{eq:an_cond}) is respected. A ZF equalization is performed at the receiver leading to:
 \begin{equation}
 	\begin{split}
 		\hat{\textbf{x}}_{\text{B}} &= \left( \sqrt{\alpha} \spread^H \module{\HB}^2 \spread \right)^{-1}  \left(\sqrt{\alpha}  \spread^H\module{\HB}^2 \spread \textbf{x}   +    \spread^H \textbf{v}_\text{B}\right) \\
@@ -339,7 +341,7 @@ The third investigated situation arises when Alice asks first to Bob for secure 
 	\label{fig_ff_tdd_a}
 \end{figure}
 
-In the following section, the three decoding schemes are studied. Analytic models of their performance are derived and discussed.
+In the following section, the three decoding schemes are studied. Analytical models of their performance are derived and discussed.
 
 
 
@@ -396,16 +398,16 @@ where $\left[x\right]^+ = \text{max}(x,0)$,  $\gamma_B$ and $\gamma_E$ being res
 	\end{split}
 	\label{eq:SR2}
 \end{equation}
-As it is observed in simulations, the bound (\ref{eq:SR2}) is tight, leading to an accurate approximation. To estimate the SR of the communication, the analytic expressions of Bob and Eve ergodic SINR's are derived in the following sections.
+As it is observed in simulations, the bound (\ref{eq:SR2}) is tight, leading to an accurate approximation. To estimate the SR of the communication, the analytical expressions of Bob and Eve ergodic SINR's are derived in the following sections.
 
 
 
 %%%%%%%%%%%%%%%%
 
 \subsection{Hypothesis}
-In order to obtain the analytic models, the following assumptions are considered:
+In order to obtain the analytical models, the following assumptions are considered:
 \begin{itemize}
-	\item The data and noise symbols are independent of each other. 
+	\item The data and noise are independent of each other. 
 	\item $h_{B,i} \independent h_{B,j}, \forall i \neq j$, i.e., no frequency correlation between Bob's channel subcarriers
 	\item $h_{E,i} \independent h_{E,j}, \forall i \neq j$, i.e., no frequency correlation between Eve's channel subcarriers\footnote{Thanks to the design of the spreading matrix, the $U$ subcarriers composing one symbol are spaced by $N = Q/U$ subcarriers. If this distance is larger than the coherence bandwidth of the channel, the assumption holds. This usually occurs in rich multipath environments and for sufficiently large bandwidths and moderate BOR values.}.
 	\item $h_{B,i} \independent h_{E,j}, \forall i,j$, i.e., Bob and Eve are sufficiently spaced leading to no spatial correlation between them.
@@ -414,13 +416,13 @@ In order to obtain the analytic models, the following assumptions are considered
 %%%%%%%%%%%%%%%%
 
 \subsection{SINR determination}
-In this section, the ergodic SINR for the transmitted symbols $n, \; n = 0,...,N-1$ at Bob and Eve positions are derived, depending on the investigated scenario, i.e., on the handshake procedure. 
+In this section, the ergodic SINR for transmitted symbol $n, \; n = 0,...,N-1$ at Bob and Eve positions are derived, depending on the investigated scenario, i.e., on the handshake procedure. 
 
 
 
 %%%%%%%%
 \subsubsection{At the intended position}
-At Bob, a simple despreading operation is performed. Thanks to the precoding at the transmitter side, every received data symbols are affected by a real gain, as expressed in (\ref{eq:rx_bob_AN}). The ergodic SINR for the transmitted symbols $n$ is given by:
+At Bob, a simple despreading operation is performed. Thanks to the precoding at the transmitter side, every received data symbol is affected by a real gain, as expressed in (\ref{eq:rx_bob_AN}). The ergodic SINR for transmitted symbol $n$ is given by:
 \begin{equation}
 \begin{split}
 \EX{\gamma_{B,n}} &= \EX{ \frac{  \left| \sqrt{\alpha} B_{1,n} x_n \right|^2  }{  \left| B_{2,n} \right|^2} }  = \alpha \EX{\left| B_{1,n}  x_n\right|^2}  \EX{\frac{1}{\left| B_{2,n} \right|^2}}  \\
@@ -444,12 +446,12 @@ As detailed in \ref{sec:data-term-app} and \ref{sec:awgn-term-app}, the componen
 	\label{eq:appA:noise_bob}
 \end{equation}
 
-From (\ref{eq:RV_sinr_b}), (\ref{eq:appA:data_bob}) and (\ref{eq:appA:noise_bob}), the ergodic SINR for particular symbols $n$ at the intended position is thus given by:
+From (\ref{eq:RV_sinr_b}), (\ref{eq:appA:data_bob}) and (\ref{eq:appA:noise_bob}), the ergodic SINR for particular symbol $n$ at the intended position is thus given by:
 \begin{equation}
 \EX{\gamma_{B,n}} \geq \frac{\alpha \;(U+1)}{U \; \sigma_{\text{V,B}}^2}
 \label{sinr_bob}
 \end{equation}
-As a reminder, the transmitted energy per symbol is equal to 1. It has been observed in simulations than the lower-bound (\ref{sinr_bob}) is tight enough to be used as an approximation of the averaged SINR at the intended position. 
+As a reminder, the transmitted energy per symbol is equal to 1. It has been observed in simulations than the lower-bound (\ref{sinr_bob}) is tight enough to be used as an approximation for the averaged SINR at the intended position. 
 
 
 %%%%%%%%
@@ -463,7 +465,7 @@ At the unintended position, the received signal before ZF equalization is given 
 \label{eq:expected_sinr_eve}
 \end{split}
 \end{equation}
-where $E_{1,n}^G$, $E_{2,n}^G$ and $E_{3,n}^G$ being respectively the data, noise and AN $n^{\text{th}}$ symbol components of the received signal at Eve's position, for a particular decoding structure \mat{G}. The expression of the SINR at Eve depends on the receiving structure $\textbf{G}$ whose design depends on the amount of knowledge Eve can obtain. The expression (\ref{eq:expected_sinr_eve}) is therefore derived for  the three considered scenarios.
+where $E_{1,n}^G$, $E_{2,n}^G$ and $E_{3,n}^G$ are respectively the data, noise and AN $n^{\text{th}}$ symbol components of the received signal at Eve's position, for a particular decoding structure \mat{G}. The expression of the SINR at Eve depends on the receiving structure $\textbf{G}$ whose design depends on the amount of knowledge Eve can obtain. The expression (\ref{eq:expected_sinr_eve}) is therefore derived for  the three considered scenarios.
 
 
 
@@ -502,7 +504,7 @@ As detailed in  \ref{sec:data-term-app-1},  \ref{sec:awgn-term-app-1}, and \ref{
 	\end{split}
 	\label{eq:appA:an_eve_filt0}
 \end{equation}
-From (\ref{eq:expected_sinr_eve}), (\ref{eq:appA:data_eve_filt0}), (\ref{eq:appA:noise_eve_filt0}), and (\ref{eq:appA:an_eve_filt0}), the ergodic SINR for particular symbols $n$ when Eve has the same capabilities as Bob is given by:
+From (\ref{eq:expected_sinr_eve}), (\ref{eq:appA:data_eve_filt0}), (\ref{eq:appA:noise_eve_filt0}), and (\ref{eq:appA:an_eve_filt0}), the ergodic SINR for particular symbol $n$ when Eve has the same capabilities as Bob is given by:
 \begin{equation}
 \EX{\gamma_{E,n}^{SDS}} \gtrapprox \frac{\frac{\alpha}{U}}{\sigma^2_{\text{V,E}}+\frac{1-\alpha}{U}}
 \label{eq:sinr_eve_filt0}
@@ -544,9 +546,9 @@ As detailed in  \ref{sec:data-term-app-2},  \ref{sec:awgn-term-app-2}, and \ref{
 	\EX{|E_{3,n}^{MF}|^2} = \frac{1-\alpha}{U+1}
 	\label{eq:an_eve_filt1}
 \end{equation}
-From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt1}), (\ref{eq:noise_eve_filt1}), and (\ref{eq:an_eve_filt1}),  the ergodic SINR for particular symbols $n$ when Eve matched filters the received sequence is given by:
+From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt1}), (\ref{eq:noise_eve_filt1}), and (\ref{eq:an_eve_filt1}),  the ergodic SINR for particular symbol $n$ when Eve matched filters the received sequence is given by:
 \begin{equation}
-\EX{\gamma_{E,n}} \gtrapprox \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}
+\EX{\gamma_{E,n}^{MF}} \gtrapprox \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}
 \label{eq:sinr_eve_filt1}
 \end{equation}
 The numerator in (\ref{eq:sinr_eve_filt1}) is about U times larger than in (\ref{eq:sinr_eve_filt0}) thanks to a frequency diversity gain.
@@ -584,7 +586,7 @@ As detailed in  \ref{sec:data-term-app-3},  \ref{sec:awgn-term-app-3}, and \ref{
 \end{split}
 \label{eq:an_eve_filt5}
 \end{equation}
-From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt5}), (\ref{eq:noise_eve_filt5}), and (\ref{eq:an_eve_filt5}),  the ergodic SINR for particular symbols $n$ when Eve knows her own channel is given by:
+From (\ref{eq:expected_sinr_eve}), (\ref{eq:data_eve_filt5}), (\ref{eq:noise_eve_filt5}), and (\ref{eq:an_eve_filt5}),  the ergodic SINR for particular symbol $n$ when Eve knows her own channel is given by:
 \begin{equation}
 \EX{\gamma_{E,n}^{OC}} \gtrapprox \frac{\frac{\alpha }{U}}{\frac{\sigma^2_{\text{V,E}}}{2} + \frac{1-\alpha}{U}}
 \label{eq:sinr_eve_filt5}
@@ -604,8 +606,7 @@ One can observe that (\ref{eq:sinr_eve_filt5}) is very similar to (\ref{eq:sinr_
 %%
 \subsection{Optimal amount of data energy to inject}
 \label{subsec:best_alpha}
-It has to be pointed out that lower bounds of the SINR at Bob and Eve were determined for the three investigated scenarios. However, it has been observed by simulations that these bounds remain very tight, such that it can be used as close approximations of the SINR.\\
-It has been observed by numerical simulations that closed form approximated SINR lower bounds, derived in (\ref{sinr_bob}),  (\ref{eq:sinr_eve_filt0}), (\ref{eq:sinr_eve_filt1}), and (\ref{eq:sinr_eve_filt5}), are very tight and are therefore used in the remaining as an approximation. By doing so, an analytic expression of the SR can be determined using (\ref{eq:SR2}) as a function of $\alpha$. It is therefore straightforward to determine the amount of data energy to inject in the communication, with respect to AN, in order to maximize the ergodic SR.
+It has to be pointed out that lower bounds of the SINR at Bob and Eve were determined for the three investigated scenarios. From simulations, the closed form approximated SINR lower bounds, derived in (\ref{sinr_bob}),  (\ref{eq:sinr_eve_filt0}), (\ref{eq:sinr_eve_filt1}), and (\ref{eq:sinr_eve_filt5}), are observed to be very tight and are therefore used in the remaining as an approximation. By doing so, an analytical expression of the SR can be determined using (\ref{eq:SR2}) as a function of $\alpha$. It is therefore straightforward to determine the amount of data energy to inject in the communication, with respect to AN, in order to maximize the ergodic SR.
 \subsubsection{SDS Decoder}
  With (\ref{eq:SR}), (\ref{sinr_bob}), and (\ref{eq:sinr_eve_filt0}), the SR becomes:
 \begin{equation}
@@ -700,39 +701,39 @@ By replacing the values of $\alpha$ in (\ref{eq:snr_calibration_bob_SDS_infinite
 %%
 \subsection{Secrecy rate optimization via waterfilling}
 \label{subsec:perf_waterf}
-From section \ref{subsec:best_alpha}, the optimal amount of transmitted data energy is derived thanks to eq.(\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}). It leads to the coefficient $\alpha_{\text{opt}}^G$ that maximizes the ergodic SR of the communication depending on $\mat{G}$. It is a unique power coefficient weighting the $Q$ components of the useful transmitted data.  Since the channel capacity is proportionnal to the subcarrier energy, and since Alice has access only to the instaneous channel capacity at Bob, she can tune the amount of transmitted data energy at each subcarrier, i.e., she can apply a different weight at each subcarrier, to enhance the instantaneous capacity at Bob. In doing so, at each channel realization, she determines a new set of coefficients, denoted $\boldsymbol\alpha_{\text{w}} = [\alpha_{\text{w},0},...,\alpha_{\text{w},Q-1}]^T $, that enhances the instantaneous capacity at Bob. Because Bob and Eve channels are independent, enhancing the channel capacity at Bob does not change the channel capacity at Eve. This power allocation strategy is described below. 
+From section \ref{subsec:best_alpha}, the optimal amount of transmitted data energy is derived thanks to eq.(\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}). It leads to the coefficient $\alpha_{\text{opt}}^G$ that maximizes the ergodic SR of the communication depending on $\mat{G}$. It is a unique power coefficient weighting the $Q$ components of the useful transmitted data.  Since the channel capacity is proportionnal to the subcarrier energy, and since Alice has access only to the instantaneous channel capacity at Bob, she can tune the amount of transmitted data energy at each subcarrier, i.e., she can apply a different weight at each subcarrier, to enhance the instantaneous capacity at Bob. In doing so, at each channel realization, she determines a new set of coefficients, denoted $\boldsymbol\alpha_{\text{w}}^G = [\alpha_{\text{w},0}^G,...,\alpha_{\text{w},Q-1}^G]^T $, that enhances the instantaneous capacity at Bob. Because Bob and Eve channels are independent, enhancing the channel capacity at Bob does not change the ergodic capacity at Eve. This power allocation strategy is described below. 
 
-If $\mat{z} = [z_0,...,z_{Q-1}]^T$ is the variable to optimize, the objective function to maximize is:
+If $\mat{\alpha}_w^G = [\alpha_{w,0}^G,...,\alpha_{w,Q-1}^G]^T$ is the variable to optimize, the objective function to maximize is:
 \begin{equation}
-	\operatorname*{arg\,max}_z  f(\mat{z}) = \left| \spread^H \HB^* \sqrt{\mat{z}} \HB \spread \right|^2
+	\operatorname*{arg\,max}_{\alpha_w^G}  f(\mat{\alpha}_w^G) = \left| \spread^H \HB^* \sqrt{\mat{\alpha}_w^G} \HB \spread \right|^2
 	\label{eq:objective_fct}
 \end{equation}
 Eq.(\ref{eq:objective_fct}) corresponds to the numerator of Bob's SINR. The constraints are:
 \begin{equation}
-0 \leq z_i \leq 1 , \; \forall \; i = 0,...,Q-1  \label{eq:constraint1}
+0 \leq \alpha_{w,i} ^G\leq 1 , \; \forall \; i = 0,...,Q-1  \label{eq:constraint1}
 \end{equation}
 \begin{itemize}
 	\item The received AN still lies in Bob's null space after optimization
 \end{itemize}
 \begin{equation}
-\left| \spread^H \HB^* \sqrt{\mat{1}- \mat{z}} \w  \right|^2 -  \left| \spread^H \HB^* \sqrt{\mat{1}- \mat{\alpha_{\text{opt}}^G}} \w  \right|^2 \leq \epsilon \label{eq:constraint2}
+\left| \spread^H \HB^* \sqrt{\mat{1}- \mat{\alpha}_w^G} \w  \right|^2 -  \left| \spread^H \HB^* \sqrt{\mat{1}- \alpha_{\text{opt}}^G} \w  \right|^2 \leq \epsilon \label{eq:constraint2}
 \end{equation}
 \begin{itemize}
 	\item The total transmitted energy remains unchanged after optimization
 \end{itemize}
 \begin{equation}
-\module{\sqrt{\mat{z}} \HB^* \spread \mat{x} + \sqrt{\mat{1}-\mat{z}}\w }^2   - \module{\sqrt{\mat{\alpha_{\text{opt}}^G}}  \HB^* \spread \mat{x} + \sqrt{1-\mat{\alpha_{\text{opt}}^G}} \w }^2 \leq \epsilon \label{eq:constraint3}
+\module{\sqrt{\mat{\alpha}_w^G} \HB^* \spread \mat{x} + \sqrt{\mat{1}-\mat{\alpha}_w^G}\w }^2   - \module{\sqrt{\alpha_{\text{opt}}^G}  \HB^* \spread \mat{x} + \sqrt{1-\alpha_{\text{opt}}^G} \w }^2 \leq \epsilon \label{eq:constraint3}
 \end{equation}
 \begin{itemize}
 	\item The transmitted AN energy remains unchanged after optimization
 \end{itemize}
 \begin{equation}
-	\module{\sqrt{\mat{1}- \mat{z}}\w}^2 - \module{\sqrt{\mat{1}- \mat{\alpha_{\text{opt}}^G}}\w}^2 \leq \epsilon \label{eq:constraint4}
+	\module{\sqrt{\mat{1}- \mat{\alpha}_w^G}\w}^2 - \module{\sqrt{\mat{1}- \alpha_{\text{opt}}^G}\w}^2 \leq \epsilon \label{eq:constraint4}
 \end{equation}
 where $\epsilon = 1e^{-6}$ is the constraint tolerance. A maximum of 2500 iterations is allowed to carry out the optimization, with a step tolerance of $1e^{-6}$. The optimization is performed thanks to the interior-point algorithm. \\
 The initial vector, depending on the investigated scenario $\mat{G}$, is:
 \begin{equation}
-	\mat{z}_0 =\left[\alpha_{\text{opt}}^G , ... ,\alpha_{\text{opt}}^G \right]^T = \mat{\alpha_{\text{opt}}^G} \; \in \; \mathbb{R}^{Q\times 1}
+	\mat{\alpha}_w^{G,0} =\left[\alpha_{\text{opt}}^G , ... ,\alpha_{\text{opt}}^G \right]^T  \; \in \; \mathbb{R}^{Q\times 1}
 \end{equation}
 
 It is worth nothing that this approach is computationally expensive since new weights have to be determined at each channel realization because of the FF environment. 
@@ -774,27 +775,27 @@ In this section, simulation results obtained with \textsc{Matlab} are presented.
 \subsection{Model performances}
 \begin{figure}[h!t]
 	\centering
-	\includegraphics[width=1\linewidth]{graphs/SISO_SR_10dB.eps}
+	\includegraphics[width=1\linewidth]{graphs/SISO_SR_10dB.pdf}
 	\caption{Models vs simulations, $\delta_B = 10$dB,  $\delta_E = 10$dB, BOR = 4}
 	\label{fig_modelvssimu}
 \end{figure}
 Fig.\ref{fig_modelvssimu} shows the secrecy performances as a function of $1-\alpha$, i.e., the AN energy injected, for the three investigated scenarios: Eve implementing a simple despreading (SDS Decoder), Eve implementing a matched filter (MF Decoder), and Eve knowing her own channel (OC Decoder). Fig.\ref{fig_modelvssimu} also outlines a comparaison between the simulation curves (lines) and the analytic ones (markers).
 
-First, it can be seen that the analytic models given by (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}) approximate well the simulation curves and remain tight upper bounds for all scenarios.  In addition, one can notice the importance of the AN addition on the SR. In fact, one can observe a SR enhancement with the addition of AN except for very high percentages of AN sent, i.e., when $1-\alpha \to 1$, or for very low percentages of AN sent, i.e., $1-\alpha \to 0$. Furthermore, for all three models, SR$\to 0$ when $1-\alpha \to 1$ since the SINR at Bob and Eve drop to zero. As anticipated from sections \ref{sec:same-decoding-strucure-as-bob} and \ref{sec:own-channel-knowledge}, high SR values are obtained, i.e., low decoding performances at Eve, when she has the same capabilities than Bob, and when she only knows her own channel. It is also observed that these two scenarios exhibit very similar behaviours except when $1-\alpha \to 0$, as explained in section \ref{sec:own-channel-knowledge}. Finally, one can observe lower SR values when Eve implements a matched filtering decoding structure. This can be understood from (\ref{eq:rx_eve_filt1}) where it is  noticed that each transmitted data symbol is afffected by a real gain at Eve such that it benefits from a frequency diversity gain, leading to higher decoding performances at Eve, and so, lower SR values. In fact, Eve SINR is about U times larger with the MF decoder compared to the SDS and the OC decoders.
+First, it can be seen that the analytical models given by (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}) well approximate the simulation curves and remain tight upper bounds for all scenarios.  In addition, one can notice the importance of the AN addition on the SR. In fact, one can observe a SR enhancement with the addition of AN except for very high percentages of AN sent, i.e., when $1-\alpha \to 1$, or for very low percentages of AN sent, i.e., $1-\alpha \to 0$. Furthermore, for all three models, SR$\to 0$ when $1-\alpha \to 1$ since the SINR at Bob and Eve drops to zero. As anticipated from sections \ref{sec:same-decoding-strucure-as-bob} and \ref{sec:own-channel-knowledge}, high SR values are obtained, i.e., low decoding performance at Eve, when she has the same capabilities as Bob, and when she only knows her own channel. It is also observed that these two scenarios exhibit very similar behaviours except when $1-\alpha \to 0$, as explained in section \ref{sec:own-channel-knowledge}. Finally, one can observe lower SR values when Eve implements a matched filtering decoding structure. This can be understood from (\ref{eq:rx_eve_filt1}) where it is  noticed that each transmitted data symbol is afffected by a real gain at Eve such that it benefits from a frequency diversity gain, leading to higher decoding performances at Eve, and so, lower SR values. In fact, Eve SINR is about U times larger with the MF decoder compared to the SDS and the OC decoders.
 
 \begin{figure}[h!t]
 	\centering
-	\includegraphics[width=1\linewidth]{graphs/optimal_alpha_15dB.eps}
+	\includegraphics[width=1\linewidth]{graphs/optimal_alpha_15dB.pdf}
 	\caption{Optimal of AN energy to inject, $\delta_B = 15$dB,  $\delta_E = 15$dB}
 	\label{fig_optimalAN}
 \end{figure}
-The left part of Fig.\ref{fig_optimalAN} illustrates the values of $\alpha_{\text{opt}}$ given by (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}) that maximize the  ergodic SR determined from the closed-form approximations (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}), as well as obtained from the numerical simulations, as a function of the BOR. There is a slight discrepency between the analytic estimations of the optimal amount of data energy to inject using (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}), and its numerical estimation. However, the resulting analytic SR does not differ much from the maximal SR obtained in simulation, as it can be observed on the right part of Fig.\ref{fig_optimalAN}. Indeed, as observed in Fig.\ref{fig_modelvssimu}, the SR is a function that varies slowly about its maximum, for all models. So, for a given BOR value, Alice can make a rough determination of $\alpha_{\text{opt}}^G$ depending on Eve decoding structure, and therefore the available SR, if $\delta_B$ and $\delta_E$ are known. One can also note that much more AN power should be injected to maximize the SR when Eve matched filters the received signal compared to the two other scenarios.
+The left part of Fig.\ref{fig_optimalAN} illustrates the values of $\alpha_{\text{opt}}$ given by (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}) that maximize the  ergodic SR determined from the closed-form approximations (\ref{eq:SR_anal2_decod_0}), (\ref{eq:SR_anal2_decod_1}), and (\ref{eq:SR_anal2_decod_5}), as well as obtained from the numerical simulations, as a function of the BOR. There is a slight discrepency between the analytical estimations of the optimal amount of data energy to inject using (\ref{eq:optimal_alpha_decod_0}), (\ref{eq:optimal_alpha_decod_1}), and (\ref{eq:optimal_alpha_decod_5}), and its numerical estimation. However, the resulting analytical SR does not differ much from the maximal SR obtained in simulation, as it can be observed on the right part of Fig.\ref{fig_optimalAN}. Indeed, as observed in Fig.\ref{fig_modelvssimu}, the SR is a function that varies slowly about its maximum, for all models. So, for a given BOR value, Alice can make a rough determination of $\alpha_{\text{opt}}^G$ depending on Eve decoding structure, and therefore the available SR, if $\delta_B$ and $\delta_E$ are known. One can also note that much more AN power should be injected to maximize the SR when Eve matched filters the received signal compared to the two other scenarios.
 
 
 \begin{figure}[h!t]
 	\centering
 	\captionsetup{justification=centering}
-	\includegraphics[width=1\linewidth]{graphs/SR_guarantee.eps}
+	\includegraphics[width=1\linewidth]{graphs/SR_guarantee.pdf}
 	\caption{Guaranteeing SR, $\delta_E = \infty$}
 	\label{fig_targettedSR}
 \end{figure} 
@@ -808,7 +809,7 @@ The right part of Fig.\ref{fig_targettedSR} represents the required SNR values a
 \subsection{Waterfilling optimization performances}
 \begin{figure}[h!t]
 	\centering
-	\includegraphics[width=1\linewidth]{graphs/SR_gain.eps}
+	\includegraphics[width=1\linewidth]{graphs/SR_gain.pdf}
 	\caption{SR gain thanks to waterfilling optimization, $\delta_B  = 15$dB, $\delta_E = 15$dB}
 	\label{fig_waterfilling_opt}
 \end{figure}
@@ -825,7 +826,7 @@ The ergodic secrecy rate performance is analytically derived, assuming Rayleigh 
 Under the assumptions of fast-fading and uncorrelated channels, it is shown that a positive secrecy rate can be guaranteed even when Eve’s SNR is infinite, for moderate values of Bob’s SNR. For instance, with an upsampling of 8, a secrecy rate of 0.75 and 2.2 bits/channel use is obtained with a Bob’s SNR of 5 dB and 10 dB, respectively, with Eve’s SNR is infinite. Furthermore, Alice can be aware of this guaranteed secrecy rate if she knows Bob’s SNR. She can thus communicate while not exceeding this secrecy rate and therefore ensures the secrecy of the communication. Finally, an enhancement of this scheme is proposed via an optimal power allocation strategy over the subcarriers depending on the instantaneous CSI.
 
 
-This paper shows, consequently, with analytic and simulation results, that a scheme exploiting only frequency degrees of freedom can achieve a positive ergodic secrecy rate to considerably jeopardize any attempt of an eavesdropper to retrieve the data. This approach can be easily integrated into existing standards based on OFDM and does not necessitate extra hardware. However, a perspective of this work is to extend it to multiple antenna systems to assess the benefit of the extra spatial degree of freedom.
+This paper shows, consequently, with analytical and simulation results, that a scheme exploiting only frequency degrees of freedom can achieve a positive ergodic secrecy rate to considerably jeopardize any attempt of an eavesdropper to retrieve the data. This approach can be easily integrated into existing standards based on OFDM and does not necessitate extra hardware. However, a perspective of this work is to extend it to multiple antenna systems to assess the benefit of the extra spatial degree of freedom.
 
 
 

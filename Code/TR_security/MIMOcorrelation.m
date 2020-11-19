@@ -15,14 +15,14 @@ set(0,'DefaultLineMarkerSize',15);
 set(0, 'defaultFigurePosition',  [-1267  44   1256    872])
 
 
-N_A = 2;       % nb of TX antennas
+N_A = 2;     % nb of TX antennas
 N_B = 3;     % nb of RX antennas @Bob
 N_E = 4;     % nb of RX antennas @Eve
 
 
 % Communication parameters
-Q = 512;
-U = [4];
+Q = 8;
+U = [2];
 N = Q./U;
 
 M = 4;
@@ -39,18 +39,18 @@ delta_f_c = 1 / 2 / pi / sigma_tau ;                                        % Ap
 
 % Spatial parameters
 coef_space_A = 0.001;                                                         % Spacement between antennas in lambda_c         
-coef_space_B = 10 ;
+coef_space_B = 0.01 ;
 coef_space_E = 0.1;
 
 
 % frequency parameters
-coef_freq_B = N/6;                                                            % Subcarrier spacement in fraction of delta_fc for AB chanel
+coef_freq_B = N/6;                                                            % Subcarrier spacement in fraction of delta_fc for AB channel
 coef_freq_E = N;
 
 
 
-[Hb_RX , Hb_space_RX , Hb_freq_RX , Hb_no_corr_RX] = channelMIMO(fc , c , lambda_c , sigma_tau, Q , N , N_A , N_B , coef_space_A , coef_space_B , coef_freq_B);
-[He_RX , He_space_RX , He_freq_RX , He_no_corr_RX] = channelMIMO(fc , c , lambda_c , sigma_tau, Q , N , N_A , N_E , coef_space_A , coef_space_E , coef_freq_E);
+[Hb_RX , Hb_freq_RX , Hb_space_RX , Hb_no_corr_RX] = channelMIMO(fc , c , lambda_c , sigma_tau, Q , N , N_A , N_B , coef_space_A , coef_space_B , coef_freq_B);
+[He_RX , He_freq_RX , He_space_RX , He_no_corr_RX] = channelMIMO(fc , c , lambda_c , sigma_tau, Q , N , N_A , N_E , coef_space_A , coef_space_E , coef_freq_E);
 
 
 

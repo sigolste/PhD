@@ -38,7 +38,7 @@ Ne = 1;             % Number of antennas @Eve
 
 % Communication parameters
 Q = 8;
-U = [8];
+U = [2];
 N = Q./U;
 
 M = 4;

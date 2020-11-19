@@ -10,8 +10,8 @@ function [W] = generateANMISO(N_TX,Hb , Q , U, despread_matrix, e , type)
 % 
 %
 % INPUTS
-%   N_RX: number of TX antennas 
-%   H: legitimate receiver's channel --> [H] = [Q,Q,N_TX]
+%   N_RX : number of TX antennas 
+%   H : legitimate receiver's channel --> [H] = [Q,Q,N_TX]
 %   Q: number of OFDM subcarriers
 %   U: Back Of Rate used for the communication
 %   despread_matrix: Despreading matrix --> [S] = [Q/U,Q]
