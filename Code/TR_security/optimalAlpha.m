@@ -18,7 +18,7 @@ function alpha_opt = optimalAlpha(U,snr_b,snr_e,type)
 
 
 sigma_b = 1./U/10^(snr_b/10);    % expected noise energy @Bob
-sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Bob
+sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Eve
 switch type
     case "model1"
         a = -(U+1);

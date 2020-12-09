@@ -1,0 +1,273 @@
+\documentclass[12pt]{article}
+\input{preambule.tex}
+
+%\newcommand{\bibfont}{\footnotesize}
+
+\linespread{1.5}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin[document]
+\begin{document}
+\title{\textbf{Impact of Imperfect CSI on scheme performances}}
+\author{Sidney Golstein}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% abstract
+
+\textcolor{red}{REMARQUES PHILIPPE/ JULIEN/FRANCOIS SUR PRESENTATION PPT 26/11/2020:
+\begin{itemize}
+		\item Modele de l'erreur: cela peut être Eve qui rajoute du bruit si on considère que l'erreur est une erreur du type bruit thermique et non une erreur dûe à la réciprocité du schéma TDD;
+		\item Bob pourrait matched filter le signal reçu et diminuer l'effet du mauvais precoding
+		\item fig p7 presentation: axe y in dB
+		\item Si Alice connait la variance de l'erreur: precodage plus robuste possible?
+		\item Lien entre $\alpha$ et $\sigma$
+		\item p8: $\sigma$ a mettre en dB comme ça on peut avoir un lien direct avec le SNR
+		\item une des figures: c'est pas en $\%$ l'axe y
+		\item Interprétation des formules: déevloppement première ordre pour $\sigma \to 1$ et voir si ça permet de faire des simplifications (asymptotes)
+		\item courbe $\sigma_{\text{max}}$: quand $\Delta \to 0$, normalement l'erreur max devrait tendre vers 1 (asymptote verticale attendue normalement).
+\end{itemize}}
+
+
+\begin{equation}
+   \mat{\tilde{H}}_B = \sqrt{1-\sigma} \mat{H}_B  + \sqrt{\sigma} \Delta \mat{H}_B  
+\end{equation}
+
+\begin{itemize}
+	\item  $\mat{H}_B = \mat{H}_{B,x} + j\mat{H}_{B,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+	\item  $\Delta\mat{H}_B = \Delta\mat{H}_{B,x} + j\Delta\mat{H}_{B,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+	\item $h_{B,i} \indep h_{B,j}, \forall i \neq j$
+	\item $\Delta h_{B,i} \indep \Delta h_{B,j}, \forall i \neq j$
+	\item $\Delta h_{B,i} \indep h_{B,j}, \forall i,j$
+\end{itemize}
+
+
+\begin{equation}
+	\begin{split}
+	\mat{y}_B^H &= \sqrt{\alpha} \mat{S}^H \mat{H}_B \mat{\tilde{H}}_B^* \mat{S} \mat{x} + \mat{S}^H \mat{v}_B + \mat{S}^H \mat{H}_B \mat{w} \\
+	&=\sqrt{\alpha} \mat{S}^H \mat{H}_B \left[ \sqrt{1-\sigma} \mat{H}_B^*  + \sqrt{\sigma} \Delta \mat{H}_B^*   \right]\mat{S} \mat{x} + \mat{S}^H \mat{v}_B + \mat{S}^H \mat{H}_B \mat{w} \\
+	&=\sqrt{\alpha(1-\sigma)} \mat{S}^H \left|\mat{H}_B\right|^2 \mat{S} \mat{x}   + \sqrt{\alpha\sigma} \mat{S}^H  \mat{H}_B \Delta \mat{H}_B^*  \mat{x} + \mat{S}^H \mat{v}_B + \mat{S}^H \mat{H}_B \mat{w}
+	\end{split}
+\end{equation}
+with:
+\begin{equation}
+\mat{S}^H \mat{H}_B \mat{w} \neq 0 
+\end{equation}
+since AN designed to be in the null space of $\mat{\tilde{H}}_B^*$
+
+
+\begin{equation}
+	\EX{\| \text{data} \|^2} = \frac{\alpha\left[ (U+1)(1-\sigma) + \sigma \right]}{U}
+\end{equation}
+
+\begin{equation}
+\EX{\| \text{noise} \|^2} = \sigma^2_{B}
+\end{equation}
+
+\begin{equation}
+\EX{\| \text{AN} \|^2} =\frac{(1-\alpha)\sigma}{U}
+\end{equation}
+
+
+\begin{equation}
+\EX{\gamma_{B,n}} =\frac{\alpha\left[ (U+1)(1-\sigma) + \sigma \right]}{ U\sigma^2_{B}  + (1-\alpha)\sigma}
+\end{equation}
+
+MF DECODER:
+\begin{equation}
+	R_s^{MF} \approx \log_2 \left( 1 +  \frac{\alpha\left[ (U+1)(1-\sigma) + \sigma \right]}{ U\sigma^2_{B}  + (1-\alpha)\sigma}\right) - \log_2\left( 1 +  \frac{\alpha \frac{U+3}{U}}{\sigma^2_{\text{V,E}} + \frac{1-\alpha}{U+1}}\right)
+\end{equation}
+
+\begin{equation}
+	\sigma_{\text{max}} = \frac{\alpha(U+1)-U\sigma_B^2 \gamma_{E,n}}{(1-\alpha)\gamma_{E,n} + \alpha U}
+\end{equation}
+
+
+\begin{equation}
+	\delta_{B,\infty} =  10 \log_{10} \left[\frac{\alpha(U+2^\Delta) + U(2^\Delta-1)}{\alpha^2(2^\Delta B\sigma-U(U+1)(1-\sigma)) + \alpha(2^\Delta U \sigma - \sigma 2^\Delta B + (U+1)(1-\sigma)U-\sigma U) + \sigma U (1-2^\Delta)} \right]
+\end{equation}
+\begin{equation}
+	B = U^2  + 3U + 3
+\end{equation}
+\begin{equation}
+	\sigma_{\text{max},\infty} = \frac{U(U+1)}{2^\Delta B +NoEveNoise_ U(U+1)}
+\end{equation}
+\paragraph*{Hypothesis}
+\begin{itemize}
+	\item $Q$ subcarriers, back off rate $= U$, $N = Q/U$ symbols sent per OFDM block
+	\item  $\mat{H}_B = \mat{H}_{B,x} + j\mat{H}_{B,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+	\item  $\mat{H}_E = \mat{H}_{E,x} + j\mat{H}_{E,y} \sim \mathcal{CN}(0,1) \sim \mathcal{N}(0,\frac{1}{2}) + j \mathcal{N}(0,\frac{1}{2}) $
+	\item $h_{B,i} \indep h_{B,j}, \forall i \neq j$
+	\item $h_{E,i} \indep h_{E,j}, \forall i \neq j$
+	\item $h_{B,i} \indep h_{E,j}, \forall i,j$
+\end{itemize}
+
+\paragraph*{AN derivation}
+We want to compute the mean energy per symbol received at Eve for the articial noise (AN) component when she performs a matched filtering. The AN term at Eve is given by:
+\begin{align}
+	\vect{v}&=	\mat{S}^H \mat{H}_B |\mat{H}_E|^2 \vect{w}\\
+	&=\mat{A} |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\\
+	&= \mat{U} \begin{pmatrix}
+	\mat{\Sigma} & \mat{0}_{N-Q\times N}
+	\end{pmatrix}  \begin{pmatrix}
+	\mat{V}_1^H\\
+	\mat{V}_2^H
+	\end{pmatrix} |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\\
+	&=\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'
+\end{align}
+where:
+\begin{itemize}
+	\item $\mat{U}$ is a $N \times N$ unitary matrix, i.e., $\mat{U}^H \mat{U} = \mat{I}_N$, its columns form an orthonormal basis of $\mathcal{C}^N$ and are the left singular vectors of each singular value of $\mat{A}$;
+	\item $\mat{\Sigma}$ is a $N \times N$ diagonal matrice containing the singular values of $\mat{A}$ in the descending order, i.e., $\sigma_i = \mat{\Sigma}_{i,i}$;
+	\item $\mat{V}_1$ is a $Q \times N$ complex matrix that contains the right singular vectors associated to the non-zero singular values;
+	\item $\mat{V}_2$ is a $Q \times Q-N$ complex matrix that contains the right singular vectors associated to the zeroes singular values, i.e., that span the right null-space of $\mat{A}$;
+	\item $\mat{V} = \left(\mat{V}_1 \; \mat{V}_2\right)$ is a $Q \times Q$ unitary matrix, i.e., $\mat{V}^H \mat{V} = \mat{I}_Q$, its columns form an orthonormal basis of $\mathcal{C}^Q$ and are the right singular vectors of each singular value of $\mat{A}$;
+	\item $\vect{w'}$ is a $Q-N \times 1$ complex normal random variable such that $\vect{w'} \sim \mathcal{CN}(0,1)$
+\end{itemize} 
+
+
+Let us now look at the covariance matrix
+\begin{align}
+	\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\right)^H\right)\\
+	&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \vect{w}'\vect{w}'^H\mat{V}_2^H|\mat{H}_E|^2\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align}
+Note that $\vect{w}'$ is independent of other random variable and has a unit covariance matrix. We can thus put the expectation inside to get
+\begin{align}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H |\mat{H}_E|^2 \mat{V}_2 \mat{V}_2^H|\mat{H}_E|^2\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align}
+We rewrite $|\mat{H}_E|^2=\sum_{q=1}^Q|H_{E,q}|^2 \vect{e}_q \vect{e}_q^T $ where $\vect{e}_q$ is an all zero vector except a $1$ at row $q$ to isolate the independent random variable $H_E$
+\begin{align}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\sum_{q=1}^Q\sum_{q'=1}^Q\mathbb{E}(|H_{E,q}|^2|H_{E,q'}|^2)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}(|H_{E,q}|^4)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\sum_{q=1}^Q\sum_{q'\neq q}^Q\mathbb{E}(|H_{E,q}|^2|H_{E,q'}|^2)\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=2\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\sum_{q=1}^Q\sum_{q'\neq q}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&+\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H \sum_{q=1}^Q \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \sum_{q'=1}^Q\vect{e}_{q'} \vect{e}_{q'}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)\\
+&=\sum_{q=1}^Q\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)+\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \mat{V}_2 \mat{V}_2^H \mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align}
+Using the fact that $\mat{V}_2^H \mat{V}_1=\mat{0}$, the second term cancels and
+\begin{align}
+\mathbb{E}\left(\vect{v}\vect{v}^H\right)&=\mathbb{E}\left(\mat{U} \mat{\Sigma}\mat{V}_1^H  \sum_{q=1}^Q\left(\vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\right)\mat{V}_1 \mat{\Sigma}^H   \mat{U}^H\right)
+\end{align}
+
+Since all elements of $\vect{v}$ have same variance, we can compute it as
+\begin{align}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\mathbb{E}\ \tr\left(\vect{v}\vect{v}^H\right)\\
+&=\frac{1}{N}\mathbb{E} \ \tr\left( \mat{\Sigma}^2\mat{V}_1^H  \sum_{q=1}^Q\left(\vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\right)\mat{V}_1 \right)
+\end{align}
+Let us rewrite $\mat{V}_1=\sum_{l}\vect{e}_{l}\vect{v}_{1,l}^H$ where $\vect{v}_{1,l}^H$ is the $l$-th row of $\mat{V}_1$ (of dimension $N\times 1$) with only one nonzero element.
+\begin{align}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\sum_{q=1}^Q\sum_{l}\sum_{l'}\mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,l}\vect{e}_{l'}^T  \vect{e}_q \vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{e}_{q}^T\vect{e}_{l}\vect{v}_{1,l}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q\sum_{l}\sum_{l'}\delta_{l'-q}\delta_{l-q} \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,l}\vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{v}_{1,l}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{e}_q^T \mat{V}_2 \mat{V}_2^H \vect{e}_{q} \vect{v}_{1,q}^H \right)
+\end{align}
+Let us rewrite $\mat{V}_2=\sum_{l}\vect{e}_{l}\vect{v}_{2,l}^H$ where $\vect{v}_{2,l}^H$ is the $l$-th row of $\mat{V}_2$ (of dimension $Q-N\times 1$) with $U-1$ nonzero elements
+\begin{align}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N}\sum_{q=1}^Q\sum_l\sum_{l'} \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{e}_q^T \vect{e}_{l}\vect{v}_{2,l}^H \vect{v}_{2,l'} \vect{e}_{l'}^T \vect{e}_{q} \vect{v}_{1,q}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \ \tr\left( \mat{\Sigma}^2\vect{v}_{1,q}\vect{v}_{2,q}^H \vect{v}_{2,q} \vect{v}_{1,q}^H \right)\\
+&=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \left( \| \vect{v}_{2,q}\|^2\vect{v}_{1,q}^H\mat{\Sigma}^2\vect{v}_{1,q}  \right)
+\end{align}
+where $\vect{v}_{1,q}^H \mat{\Sigma}^2 \vect{v}_{1,q} \coloneqq  \| \vect{v}_{1,q}\|^2 \sigma_n^2$ is a scalar. Therefore, we obtain:
+
+\begin{align}
+	\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right) &=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \left( \| \vect{v}_{2,q}\|^2 \| \vect{v}_{1,q}\|^2 \sigma_n^2  \right)
+\end{align}
+
+
+Since $\mat{V}$ forms an orthonormal basis, i.e., $\mat{V}^H \mat{V} = \mat{I}_Q$, we have $ \| \vect{v}_{1,q}\|^2 +  \| \vect{v}_{2,q}\|^2 = 1$. We then have:
+\begin{align}
+	\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right) &=\frac{1}{N}\sum_{q=1}^Q \mathbb{E} \left[ \left( \| \vect{v}_{1,q}\|^2 - \| \vect{v}_{1,q}\|^4 \right) \sigma_n^2  \right]
+	\label{eq:v_1}
+\end{align}
+
+To determine eq.\ref{eq:v_1}, we need to know the transformations performed by the singular value decomposition on the input matrix $\mat{A}$ to obtain $\vect{v}_{1,q}$ and $\sigma^2_n$, i.e., we have to find an analytic expression of $\vect{v}_{1,q}$ and $\sigma^2_n$. We know that:
+
+\begin{equation}
+\mat{A} = \mat{S}^H\mat{H}_B = 
+\begin{bmatrix}
+z_1 & 0 & \hdots & 0 & z_2 & 0 & \hdots & 0 & \hdots & z_U & 0 & \hdots & 0\\
+0 & z_{U+1} & \hdots & 0 & 0 & z_{U+2} & \hdots & 0 & \hdots &0 & z_{2U} & \hdots & 0 \\
+\vdots & & \ddots & \vdots &\vdots & &\ddots & \vdots & \hdots & \vdots &  & \ddots & \vdots \\
+0 & 0 & \hdots & z_{(N-1)U+1} & 0 & 0 & \hdots & z_{(N-1)U+2}&  \hdots &0 &0 &\hdots & z_Q
+\end{bmatrix}
+\end{equation}
+where $\mat{A} \in \mathcal{C}^{N\times Q}$ and $z_i  = z_{i,x} + jz_{i,y} \sim \mathcal{CN}(0,\frac{1}{U}) \sim \mathcal{N}(0,\frac{1}{2U}) + j \mathcal{N}(0,\frac{1}{2U})$. After singular value decomposition, we obtain:
+
+\begin{equation}
+	\mat{\Sigma} =
+	\begin{bmatrix}
+		\sigma_1 & 0 &\hdots & 0 \\
+		0 & \sigma_2 & \hdots & 0 \\
+		\vdots &  &\ddots &  \vdots \\
+		0 & 0 & \hdots & \sigma_N
+	\end{bmatrix}
+\end{equation}
+where $\sigma_n = \sqrt{\sum_{i=1}^{U} \left| z_{(n-1)U+i}\right|^2} \; , n = 1...N$
+\begin{equation}
+	\mat{V}_1 = 
+	\begin{bmatrix}
+		v_1  & 0 & \hdots & 0 \\
+		0 & v_{U+1} &  \hdots & 0 \\
+		\vdots & & \ddots &  \vdots \\
+		0 & 0 & \hdots & v_{(U-1)N+1} \\
+		v_2 & 0 & \hdots & 0 \\
+		0  & v_{U+2} & \hdots & 0\\
+		\vdots & &\ddots &  \vdots\\
+		0 & 0 & \hdots & v_{(U-1)N+2} \\
+		\vdots & \vdots & &  \vdots\\	
+		v_U  & 0 & \hdots & 0 \\
+		0 & v_{2U} & \hdots & 0 \\
+		\vdots &  & \ddots & \vdots\\
+		0 & 0  & \hdots & v_Q
+	\end{bmatrix}
+\end{equation}
+where $v_i  = \frac{z_i^*}{\sigma_k}, \; i = 1..Q \; , \; k = 1...N$ represents the column of $\mat{V}_1$ where $v_i$ belongs. \\
+From that, we obtain:
+\begin{align}
+	\mathbb{E} \left[\sigma_n^2 \right] &= \mathbb{E}\left[ \sum_{i=1}^{U} \left| z_{(n-1)U+i}\right|^2 \right]  \\
+	 & = U \mathbb{E} \left[ \left| z_{(n-1)U+i}\right|^2 \right] \\
+	 &= U \frac{1}{U} \\
+	 & = 1
+\end{align}
+Without loss of generality, we  compute $\mathbb{E} \left[ \| v_1\|^2 \right]$ and $\mathbb{E} \left[ \| v_1\|^4 \right]$ since all components of $\mat{V}_1$ are identically distributed:
+\begin{align}
+\mathbb{E} \left[ \| v_1\|^2 \right] &= \mathbb{E}\left[ \left| \frac{z_1^*}{\sigma_1}\right|^2\right]  \\
+& =  \mathbb{E} \left[ \frac{\left| z_1 \right|^2 }{\sigma_1^2} \right] \\
+&=  \mathbb{E} \left[   \frac{\left| z_1 \right|^2 }{  \sum_{i=1}^{U} \left| z_i\right|^2 }  \right] \\
+& = \mathbb{E} \left[   \frac{\left| z_1 \right|^2 }{  U \left| z_1 \right|^2 }  \right] \\
+& = \frac{1}{U}
+\end{align}
+
+For the moment of order 4, we note that $\mathbb{E}\left[ \left| z_i \right|^4\right] = \frac{2}{U^2}$, cfr \textit{"Momentum of complex normal  random variables"} pdf.
+\begin{align}
+\mathbb{E} \left[ \| v_1\|^4 \right] &= \mathbb{E}\left[ \left| \frac{z_1^*}{\sigma_1}\right|^4\right] \\
+& =  \mathbb{E} \left[ \frac{\left| z_1 \right|^4 }{\sigma_1^4} \right] \\
+&=  \mathbb{E} \left[   \frac{\left| z_1 \right|^4 }{  \left( \sum_{i=1}^{U} \left| z_i\right|^2 \right)^2 }  \right] \label{eq:moment_4_1} \\
+&= \mathbb{E} \left[   \frac{\left| z_1 \right|^4 }{  \sum_{i=1}^{U} \left| z_i\right|^4 + 2 \sum_{i=1}^{U} \sum_{j<i} \left|z_i\right|^2 \left|z_j\right|^2 }  \right] \label{eq:moment_4_2}\\
+&= \mathbb{E} \left[   \frac{\left| z_1 \right|^4 }{ U \left| z_1\right|^4 + 2 \frac{(U-1)U}{2} \left|z_i\right|^2 \left|z_j\right|^2 }  \right] \\
+& = \frac{\frac{2}{U^2}}{U\frac{2}{U^2} + 2 \frac{(U-1)U}{2} \frac{1}{U} \frac{1}{U}} \\
+& =  \frac{\frac{2}{U^2}}{\frac{U+1}{U}} \\
+&= \frac{2}{U(U+1)}
+\end{align}
+The double sum on the denominator of eq.\ref{eq:moment_4_2} contains $\frac{(U-1)U}{2}$ double products.\\
+
+Finally, we can compute eq.\ref{eq:v_1} as:
+\begin{align}
+\frac{1}{N}\mathbb{E}\left(\|\vect{v}\|^2\right)&=\frac{1}{N} \sum_{q=1}^{Q} \left[ \left( \frac{1}{U} - \frac{2}{U(U+1)} \right) 1\right] \\
+&= \frac{1}{N} Q \frac{U-1}{U(U+1)} \\
+&= \frac{U-1}{U+1}
+\end{align}
+which is the mean energy per symbol of the AN component when Eve implements a matched filtering. It is exactly what we observe in the simulations.
+
+\begin{equation}
+	\mathbb{E} \left[  \gamma_{E,n}  \right] = \frac{\alpha(U+1)(U+3)}{U\left[ (U+1)\sigma^2_E + (1-\alpha)\right]}
+\end{equation}
+
+
+\begin{equation}
+C_s = \log_2\left( 1 + \frac{\alpha (U+1)}{U \sigma^2_B}\right) - \log_2\left(1+\frac{\alpha(U+1)(U+3)}{U\left[ (U+1)\sigma^2_E + (1-\alpha)\right]}\right)
+\end{equation}
+
+
+\end{document}

@@ -1,5 +1,5 @@
 clear all;
-close all;
+% close all;
 
 set(0,'defaulttextinterpreter','latex')
 set(0,'defaultAxesFontSize',32)
@@ -59,7 +59,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 500;                               % number of experiments
+nb_run = 1;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
@@ -67,8 +67,8 @@ alpha_step = 2;                           % Percentage between subsequent alpha 
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 64;
-U = 4;
+Q = 16;
+U = 2;
 N = Q./U;
 
 M = 4;
@@ -90,7 +90,10 @@ sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
-delta_f_n = linspace(0,5*delta_f_c,10);                    % subcarrier BW from 0 to 5 times the coherence BW of the system. 
+coef_freq = [1:10].*N/6;
+
+delta_f_n = coef_freq.*delta_f_c;   
+
 b_subcar = delta_f_n./N;
 x_axis  = delta_f_n./delta_f_c;
 for dd = 1:length(b_subcar)

@@ -87,7 +87,7 @@ end
 
 % Kronecker channel
 for ii = 1:Q
-    H_space(:,:,ii) = sqrtm(T_space_RX)*H_no_corr(:,:,ii)*sqrtm(T_space_TX);
+    H_space(:,:,ii) = sqrtm(T_space_RX)*H_no_corr(:,:,ii)*sqrtm(T_space_TX);    % Spatial correlation
     %*H_space_B(:,:,ii) = tmp*sqrtm(T_space_A);
 end
 
@@ -95,7 +95,7 @@ end
 
 %% Frequency correlation
 
-rho_freq = sigma_tau ./ ( 1 + 1i * 2 * pi * delta_f * sigma_tau ) ;         % Frequency variation of the correlation (first line of the covaraince matrix)
+rho_freq = sigma_tau ./ ( 1 + 1i * 2 * pi * delta_f * sigma_tau ) ;         % Frequency variation of the correlation (first line of the covariance matrix)
 rho_freq = rho_freq ./ max( abs( rho_freq ) ) ;                             % Normalization
 RHO_freq = toeplitz( rho_freq ) ;                                           % Covariance matrix
 rho_freq = abs(RHO_freq);
@@ -105,8 +105,8 @@ T_freq = cholcov( RHO_freq ) ;
 
 for ii = 1 : N_RX
     for jj = 1:N_TX
-        H(ii,jj,:) = squeeze(H_space(ii,jj,:)).'*T_freq;
-        H_freq(ii,jj,:) = squeeze(H_no_corr(ii,jj,:)).'*T_freq;
+        H(ii,jj,:) = squeeze(H_space(ii,jj,:)).'*T_freq;                    % Freq + spatial correlation
+        H_freq(ii,jj,:) = squeeze(H_no_corr(ii,jj,:)).'*T_freq;             % Freq correlation
     end
 end
 

@@ -15,8 +15,8 @@ set(0,'DefaultLineMarkerSize',15);
 set(0, 'defaultFigurePosition',  [-1267  44   1256    872])
 
 
-N_A = 2;     % nb of TX antennas
-N_B = 3;     % nb of RX antennas @Bob
+N_A = 20;     % nb of TX antennas
+N_B = 32;     % nb of RX antennas @Bob
 N_E = 4;     % nb of RX antennas @Eve
 
 
@@ -38,13 +38,13 @@ delta_f_c = 1 / 2 / pi / sigma_tau ;                                        % Ap
 
 
 % Spatial parameters
-coef_space_A = 0.001;                                                         % Spacement between antennas in lambda_c         
+coef_space_A = 0.3;                                                         % Spacement between antennas in lambda_c         
 coef_space_B = 0.01 ;
 coef_space_E = 0.1;
 
 
 % frequency parameters
-coef_freq_B = N/6;                                                            % Subcarrier spacement in fraction of delta_fc for AB channel
+coef_freq_B = 5*N/2;                                                            % Subcarrier spacement in fraction of delta_fc for AB channel
 coef_freq_E = N;
 
 

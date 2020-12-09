@@ -1,0 +1,348 @@
+%%%%%%%%%%%%%%%%
+%%% Packages %%%
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+%%% Général %%%
+%%%%%%%%%%%%%%%
+\renewcommand{\baselinestretch}{1.2} 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage{lmodern}
+\usepackage{courier}
+
+% \usepackage{graphics} % DEPRECATED
+\usepackage{graphicx}
+\usepackage{longtable}
+% \usepackage{subfigure} % DEPRECATED
+\usepackage{subcaption}
+
+%%%%%%%%%%
+% Autres %
+%%%%%%%%%%
+%\usepackage{layout}
+%\usepackage{geometry}
+%\usepackage{setspace}
+
+\usepackage[normalem]{ulem}
+%\usepackage{eurosym}
+%\usepackage{bookman}
+%\usepackage{charter}
+%\usepackage{newcent}
+%\usepackage{lmodern}
+%\usepackage{mathpazo}
+%\usepackage{mathptmx}
+%\usepackage{moreverb}
+%\usepackage{fancyhdr}
+%\usepackage{color}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{nomencl}
+\usepackage{makeidx}
+\usepackage{fullpage}
+\usepackage{verbatim}
+\usepackage{titlesec}
+\usepackage[english]{minitoc}
+\usepackage[hyphens]{url}       %pour créer des url
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{lscape}
+\usepackage{supertabular}
+\usepackage{wrapfig}
+%\usepackage{rotating}          %rotation d'une page
+%\usepackage{eurosym}            %symbole euro
+\usepackage{colortbl}
+%\usepackage[table]{xcolor}
+\usepackage{cancel}
+
+
+
+\usepackage[font={footnotesize}]{caption}
+
+\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{microtype}
+\usepackage{epstopdf}
+\usepackage[scaled]{beramono}
+\usepackage{gensymb}
+
+\usepackage{pbox}
+
+\usepackage[final]{pdfpages} %pour insérer des pdf dans le latex
+
+
+
+
+
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+
+%%%%% Counter
+\setcounter{MaxMatrixCols}{20}
+\setcounter{secnumdepth}{4}
+
+
+%% ----------------------------------------------------------------
+% package titres
+%% ----------------------------------------------------------------
+\usepackage{titlesec}
+%%%% Format titre  %%%%
+\titleformat{\chapter}[display]{\sf\LARGE}
+{\vspace{-01ex}
+\filleft{\chaptertitlename}~\Huge\thechapter}
+{4ex}{\titlerule\vspace{2ex}\filright}[\vspace{2ex}\titlerule]
+
+
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%%%% Format titre  %%%%
+
+%\titleformat{\chapter}[display]{\sf\bfseries\LARGE}
+%{\vspace{-10ex}
+%\filleft\MakeUppercase{\chaptertitlename}~\Huge\thechapter}
+%{4ex}{\titlerule\vspace{2ex}\filright}[\vspace{2ex}\titlerule]
+%{\vspace{-15ex}}
+
+
+
+
+
+% Table of contents %
+
+%\setcounter{tocdepth}{3}            %niveau jusqu'où ça s'affiche dans la tdm
+%\setcounter{secnumdepth}{4}         %niveau pour afficher les numéros
+%\renewcommand{\thesubsubsection}{\roman{subsubsection}}
+%\renewcommand{\thechapter}{\Roman{chapter}} 
+%\renewcommand{\thesubsubsection}{\alph{subsubsection})}         %subsubsection numérotées avec des lettres
+
+
+%%% Mise en forme du code Matlab %%%
+
+\usepackage{listings}
+\usepackage{listingsutf8}
+
+\definecolor{orange}{HTML}{FFCC66}
+\definecolor{mygreen}{RGB}{0,153,51}
+\definecolor{mylilas}{RGB}{170,55,241}
+\definecolor{mygrey}{RGB}{160,160,160}
+
+\usepackage{amsmath,amssymb}
+\DeclareRobustCommand{\bbone}{\text{\usefont{U}{bbold}{m}{n}1}}
+
+
+
+
+
+
+
+\lstset{
+    frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{mygrey}\hookrightarrow\space}},
+    %inputencoding=utf8/latin1,
+}
+
+\lstset{language=Matlab,%
+    %basicstyle=\color{red},
+    breaklines=true,
+    keywordstyle=\color{blue},
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+}
+
+
+
+%%% Tableau %%%
+\usepackage{tabularx} %Permet d'auto dimensionner les tableaux
+
+
+
+
+%%% Graphiques %%%
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{circuitikz}
+\usepackage{sidecap}
+\usepackage[font=footnotesize]{caption}
+
+
+%%% Mise en page %%%
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[tt]{titlepic}% Centre le titre
+\usepackage{fancyhdr}   % Permet de modifier l'entête & footer
+%\usepackage{caption}     % Permet d'ajouter des légendes en images sans les mettre en float + dans la marge
+\usepackage{wrapfig}
+\usepackage{fullpage}
+\usepackage{multicol}   % pour les liste sur plusieurs colonnes
+\usepackage{float}      %permet de mettre du texte entre les figures grace a [H]. Génial! 
+\usepackage{eso-pic}    % Fond d'écran page de garde
+\usepackage{adjustbox}  % Empêche les box de sortir de la page
+\usepackage[subnum]{cases}
+\usepackage[margin=.75in]{geometry}
+
+
+
+%%% Math %%%
+\usepackage{delarray} % Belles matrices
+\usepackage{siunitx}
+%\sisetup{locale = FR,detect-all}
+% Pour mettre siunitx en mode français (virgule plutôt que point etc.)
+
+%%% Codes %%%
+\usepackage{listings}
+
+%% Reference
+\usepackage{hyperref}
+\renewcommand*{\figureautorefname}{fig.}
+\def\appendixautorefname{annexe}
+\def\tableautorefname{tab.}
+\renewcommand*{\chapterautorefname}{ch.}
+
+
+
+%%%%%%%%%%%%%%%%%
+%%% Commandes %%%
+%%%%%%%%%%%%%%%%%
+
+%%% Physique %%%
+\newcommand{\vect}[1]{\boldsymbol{\mathrm{#1}}}
+\newcommand{\mat}[1]{\boldsymbol{\mathrm{#1}}}
+%\newcommand{\vect}[1]{\underline{\mathrm{#1}}}
+%\newcommand{\mat}[1]{\underline{\underline{\mathrm{#1}}}}
+\newcommand{\MSE}{\mathrm{MSE}}
+\newcommand{\tr}{\text{tr}}
+\newcommand{\diag}{\text{diag}}
+\newcommand{\vecop}{\text{vec}}
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+\newcommand{\CP}{L}
+\newcommand\coolover[2]{\mathrlap{\smash{\overbrace{\phantom{%
+					\begin{matrix} #2 \end{matrix}}}^{\mbox{$#1$}}}}#2}
+\newcommand\coolunder[2]{\mathrlap{\smash{\underbrace{\phantom{%
+					\begin{matrix} #2 \end{matrix}}}_{\mbox{$#1$}}}}#2}
+\newcommand\coolleftbrace[2]{%
+	#1\left\{\vphantom{\begin{matrix} #2 \end{matrix}}\right.}
+\newcommand\coolrightbrace[2]{%
+	\left.\vphantom{\begin{matrix} #1 \end{matrix}}\right\}#2}
+\newcommand\scalemath[2]{\scalebox{#1}{\mbox{\ensuremath{\displaystyle #2}}}}
+\newcommand{\cst}{\text{cst}}
+\newcommand{\E}{\vec E}
+\newcommand{\B}{\vec B}
+\newcommand{\F}{\vec F}
+\newcommand{\module}[1]{\left|#1\right|}
+\newcommand{\EX}[1]{\mathbb{E} \left[#1\right]}% expected value
+\newcommand{\HE}{\textbf{H}_{\text{E}}}
+\newcommand{\HB}{\textbf{H}_{\text{B}}}
+\newcommand{\vb}{\textbf{v}_{\text{B}}}
+\newcommand{\ve}{\textbf{v}_{\text{E}}}
+\newcommand{\spread}{\textbf{S}}
+\newcommand{\SH}{\textbf{S}^H}
+\newcommand{\w}{\textbf{w}}
+
+%%% Math %%%
+\newcommand{\oiint}{\int\!\!\!\!\!\!\! \:\!\subset\!\!\supset\!\!\!\!\!\!\!\int}
+\newcommand{\rot}{\text{rot}\,}
+\newcommand{\divv}{\text{div}\,}
+\newcommand{\phas}[1]{\underline{#1}}
+\newcommand{\RE}{\text{Re}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\usepackage{xfrac}
+\newcommand\independent{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}
+
+\renewcommand{\d}[1]{\ensuremath{\operatorname{d}\!{#1}}}
+
+%% Box %%
+\newcommand{\theor}[1]{\adjustbox{minipage=\linewidth-2\fboxsep-2\fboxrule,fbox}{\textsc{Théorème : }#1}}
+\newcommand{\retenir}[1]{\adjustbox{minipage=\linewidth-2\fboxsep-2\fboxrule,fbox}{\textbf{\textit{\textsc{A retenir} : }}#1}}
+\newcommand{\corollaire}[1]{\ \\\begin{tabular}{|c}
+    \begin{minipage}{\textwidth}
+      \textsc{Corollaire : } \textit{#1}
+    \end{minipage}
+    \end{tabular}}
+
+%% Matter (main, front, back) %%%
+
+\makeatletter
+
+\newcommand\frontmatter{%
+    \cleardoublepage
+  %\@mainmatterfalse
+  \pagenumbering{arabic}}
+
+\newcommand\mainmatter{%
+    \cleardoublepage
+ % \@mainmattertrue
+  \pagenumbering{arabic}}
+  %\usepackage{lastpage}
+
+\newcommand\backmatter{%
+  \if@openright
+    \cleardoublepage
+  \else
+    \clearpage
+  \fi
+ % \@mainmatterfalse
+   }
+
+\makeatother
+
+
+
+
+%% ----------------------------------------------------------------
+% package acronymes et glossaire
+%% ----------------------------------------------------------------
+\usepackage[savewrites,nopostdot,toc,acronym,nogroupskip]{glossaries}
+\renewcommand{\glsnamefont}[1]{\textbf{#1}}
+\setlength\LTleft{0pt}
+\setlength\LTright{0pt}
+\setlength\glsdescwidth{0.85\hsize}
+\makeglossaries
+%\loadglsentries{glossary}
+
+
+
+%% ----------------------------------------------------------------
+% package biblio
+%% ----------------------------------------------------------------
+\usepackage[
+    %backend=biber, 
+    natbib=true,
+    style=numeric,
+    sorting=none
+]{biblatex}
+
+\addbibresource{Bibliography.bib}
+\bibliographystyle{ieeetr}
+\bibliography{bibliography}
+
+
+
+
+
+%% ----------------------------------------------------------------
+% package appendixes
+%% ----------------------------------------------------------------
+\usepackage{appendix}
+\usepackage{lscape}
