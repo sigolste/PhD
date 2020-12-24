@@ -59,12 +59,12 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1;                               % number of experiments
+nb_run = 1000;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
 alpha_step = 2;                           % Percentage between subsequent alpha values
-alpha = 0:alpha_step/100:1;         
+alpha = .5; %0:alpha_step/100:1;         
 
 % Communication parameters
 Q = 16;
@@ -77,7 +77,7 @@ nb_bit = k.*N;
 
 % AWGN parameters
 EbN0_b = 10; % energy per bit over noise psd @Bob - dB
-EbN0_e = [5]; % energy per bit over noise psd @Eve - dB
+EbN0_e = [10]; % energy per bit over noise psd @Eve - dB
 snr_b  = EbN0_b + 10*log10(k);  % SNR @Bob
 snr_e  = EbN0_e + 10*log10(k);  % SNR @Eve
 
@@ -90,7 +90,7 @@ sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
-coef_freq = [1:10].*N/6;
+coef_freq = [1,200].*N/6;
 
 delta_f_n = coef_freq.*delta_f_c;   
 
@@ -159,7 +159,7 @@ for dd = 1:length(b_subcar)
 %channel generation
 Hb_TX = diag(squeeze(H1(iter,:,dd)).');
 Hb_RX = ctranspose(Hb_TX);
-He_TX = diag(squeeze(H2(iter,:,dd)).');
+He_TX = diag(squeeze(H2(iter,:,dd)).'); %channelRayleigh(Q, mu , sigma); %diag(squeeze(H2(iter,:,dd)).');
 He_RX = ctranspose(He_TX);
 
 %% Encoder
@@ -313,6 +313,16 @@ sinr2_e = e_sym_decod2_e./e_denom_decod2_e;
 sinr3_e = e_sym_decod3_e./e_denom_decod3_e;
 sinr4_e = e_sym_decod4_e./e_denom_decod4_e;
 sinr5_e = e_sym_decod5_e./e_denom_decod5_e;
+
+
+sinr1_b_avg = squeeze(mean(sinr1_b,1));
+sinr1_e_avg = squeeze(mean(sinr1_e,1));
+sinr2_e_avg = squeeze(mean(sinr2_e,1));
+sinr3_e_avg = squeeze(mean(sinr3_e,1));
+sinr4_e_avg = squeeze(mean(sinr4_e,1));
+sinr5_e_avg = squeeze(mean(sinr5_e,1));
+
+
 
 
 % instantaneous Secrecy capacity

@@ -1,4 +1,4 @@
-function [ H , abs_rho] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_realizations )
+function [ H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_realizations )
 
 %**************************************************************************
 %	Function that generates correlated complex normal distributed 
@@ -38,12 +38,14 @@ function [ H , abs_rho] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_re
         + 1i * randn( nb_realizations , size( T , 1 ) ) )  ;             % nb_subca correlated RV
     H = (ctranspose(T)*(Hw).').';
     abs_rho = abs(rho);
-    %% Plot the frequency variation of the correlation 
+    T = ctranspose(T);
+    %H = ones(nb_realizations, size(T,1));
+    % Plot the frequency variation of the correlation 
 %     figure
 %     plot( delta_f , abs( rho ) )
 %     xlabel('Frequency spacing')
 %     ylabel('correlation \rho')
-    
+%     
 %     %% Verification
 %     RHO_matrix_calculated = corrcoef( H ) ;                               % Should be identical to RHO matrix if enough realizations
      

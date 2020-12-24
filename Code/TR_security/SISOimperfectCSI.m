@@ -25,7 +25,7 @@ alpha = 0:alpha_step/100:1;
 sigma_tilde = 0.3868;    % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
 
 % Communication parameters
-Q = 128;
+Q = 32;
 U = [4];
 N = Q./U;
 
