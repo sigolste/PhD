@@ -1,3 +1,18 @@
+%
+%
+%
+%
+%   Created 12.01.2021
+%   Correct new approx for Bob capa and Eve capa with SDS decoder when  no
+%   frequency correlation between Bob's subcarriers. 
+%   See SISOfrequencyCorrelationTEST.m to  
+%
+%
+%
+%
+%
+%   © SIDNEY GOLSTEIN
+
 clear all;
 % close all;
 
@@ -24,8 +39,8 @@ alpha_step = 5;                           % Percentage between subsequent alpha 
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 32;
-U = 8;
+Q = 4;
+U = 2;
 N = Q./U;
 
 M = 4;
@@ -35,8 +50,8 @@ nb_bit = k.*N;
 % AWGN parameters
 % EbN0_b = 10; % energy per bit over noise psd @Bob - dB
 % EbN0_e = [0]; % energy per bit over noise psd @Eve - dB
-snr_b  = 6;%EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = 50;%EbN0_e + 10*log10(k);  % SNR @Eve
+snr_b  = 10;%EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = 10;%EbN0_e + 10*log10(k);  % SNR @Eve
 
 % Noise energy
 sigma_b = 1./U/10^(snr_b/10);    % expected noise energy @Bob
@@ -414,9 +429,9 @@ A = 1+sinr1_correl_b;
 B = sinr1_correl_b; 
 C = log2(1+sinr1_correl_b);
 
-E = 1+sinr2_e;
-F = sinr2_e; 
-G = log2(1+sinr2_e);
+E = 1+sinr1_e;
+F = sinr1_e; 
+G = log2(1+sinr1_e);
 
 
 TESTA = log2(squeeze(mean(A)));   % log2(E[1+sinr]) --> not computed 

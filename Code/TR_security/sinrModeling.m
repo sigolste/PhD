@@ -1,7 +1,7 @@
 function sinr = sinrModeling(alpha,U,snr_b,snr_e,Na,Nb,Ne,type)
 
 sigma_b = 1./U/10^(snr_b/10);    % expected noise energy @Bob
-sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Bob
+sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Eve
 % sigma_an = 1./U;
 
 alpha = alpha.';

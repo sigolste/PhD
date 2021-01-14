@@ -67,7 +67,7 @@ alpha_step = 2;                           % Percentage between subsequent alpha 
 alpha = .5; %0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 16;
+Q = 64;
 U = 2;
 N = Q./U;
 

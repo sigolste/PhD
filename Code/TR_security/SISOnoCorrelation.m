@@ -5,7 +5,7 @@
 
 
 clear all;
-close all;
+% close all;
 
 set(0,'defaulttextinterpreter','latex')
 set(0,'defaultAxesFontSize',32)
@@ -24,8 +24,8 @@ alpha_step = 1;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 16;
-U = [2];
+Q = 4;
+U = [4];
 N = Q./U;
 
 M = 4;
@@ -125,6 +125,7 @@ sym_e = He_RX*sym_precoded_TX;
 % Noise symbol
 [noise_b, ~ ] = addNoise(sym_b , snr_b, energy(sym_precoded_TX+an_TX));     %addNoise(sym_b , snr_b, energy(sym_RX_b)); 
 [noise_e, e_noise_e ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
+Y(:,iter,aa) = noise_b;
 
 % AN symbol
 an_e = He_RX*an_TX; % Only @Eve since no AN effect after decod1 @Bob
@@ -149,6 +150,8 @@ sym_decod4_e = decod4*sym_e;
 sym_decod5_e = decod5*sym_e;
 
 noise_decod1_b = decod1*noise_b;
+Z(:,iter,aa) = noise_decod1_b;
+
 noise_decod1_e = decod1*noise_e;
 noise_decod2_e = decod2*noise_e;
 noise_decod3_e = decod3*noise_e;

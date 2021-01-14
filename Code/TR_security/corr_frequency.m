@@ -39,6 +39,7 @@ function [ H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau , nb
     H = (ctranspose(T)*(Hw).').';
     abs_rho = abs(rho);
     T = ctranspose(T);
+    
     %H = ones(nb_realizations, size(T,1));
     % Plot the frequency variation of the correlation 
 %     figure

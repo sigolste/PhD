@@ -22,7 +22,7 @@ h = waitbar(0,'Simulation Progression...');
 nb_run = 1000;              % number of experiments
 alpha_step = 2;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;  
-sigma_tilde = 0.3868;    % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
+sigma_tilde = 0;    % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
 
 % Communication parameters
 Q = 32;
@@ -295,7 +295,7 @@ sr5_avg = squeeze(mean(sr5,1));
 
 %% SINR modeling: % PCSI : perfect CSI / ICSI : imperfect CSI
 
-sinr1_PCSI_model_b = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"bob_decod1");
+sinr1_PCSI_model_b = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"bob_decod1");              
 sinr1_ICSI_model_b = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"bob_decod1");
 sinr1_ICSI_model_e = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"eve_decod1");
 sinr2_ICSI_model_e = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"eve_decod2");

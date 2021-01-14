@@ -18,6 +18,7 @@ noise_PSD = symb_energy/10^(snr/10); % power spectral density
 noise = sqrt(noise_PSD/2).*(randn(size(symb,1),size(symb,2))...
         + 1j*randn(size(symb,1),size(symb,2)));
 
+%noise = noise/sqrt(energy(noise))*sqrt(sigma);
 % symb_noisy = symb + noise;
 noise_energy = energy(noise);
 
