@@ -1,4 +1,4 @@
-function [ H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_realizations )
+function [ Hw , H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau , nb_realizations )
 
 %**************************************************************************
 %	Function that generates correlated complex normal distributed 
@@ -33,7 +33,6 @@ function [ H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau , nb
     RHO = toeplitz( rho ) ;                                                 % Covariance matrix
    
     T = cholcov( RHO ) ;                                                    % Choleski decomposition
-    T_sqrt = sqrtm(RHO);
     Hw = 1/sqrt(2)*( randn( nb_realizations , size( T , 1 ) ) ...
         + 1i * randn( nb_realizations , size( T , 1 ) ) )  ;             % nb_subca correlated RV
     H = (ctranspose(T)*(Hw).').';

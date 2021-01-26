@@ -172,24 +172,6 @@ for ii = 0:U-1
         for kk = 1:1+ii*N
             for ll = 1:1+ii*N
                 if ll ~= kk
-                    for mm = 1:1+jj*N
-                        tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
-                        abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(T(1+jj*N,mm))^4*abs(Hw_TX(mm,mm))^4;
-                    end
-                end
-            end
-        end
-    end
-end
-term22_tmp1_tmp3(iter,dd) = tmp;
-
-
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            for ll = 1:1+ii*N
-                if ll ~= kk
                     tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
                         abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(Hb_TX(1+jj*N,1+jj*N))^4;
                 end
@@ -456,10 +438,6 @@ for ii = 0:U-1
                             tmp3 = tmp3 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^4;
                             tmp4 = tmp4 + 4*abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,ll))^2*abs(T(1+jj*N,mm))^2;
                             for nn = 1:1+jj*N
-                                if (ll ~= nn) && (kk ~= nn) && (mm ~= nn)
-                                    tmp5 = tmp5 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^2*abs(T(1+jj*N,nn))^2;
-                                end
-                            end
                         end
                     end
                 end
@@ -467,11 +445,10 @@ for ii = 0:U-1
         end
     end
 end
-TERM22_test = 4*(tmp1+tmp2+tmp3+tmp4+tmp5);
+TERM22_test = 4*(tmp1+tmp2+tmp3+tmp4);
 TERM22 = mean(term22);
 
-TERM22_TMP1_TMP3 = mean(term22_tmp1_tmp3);
-TERM22_TMP1_TMP3_TEST = 4*(tmp1+tmp3);
+
 
 
 %%%%%%%
