@@ -46,8 +46,8 @@ switch type
 
         sum_double_square = 2*(term_exponent_4 + term_exponent_2 + term_indep);       %2* tout ca           % ∑_i ∑_{j!=i}  |h_i|^2 |h_j|^2
         sum_fourth = 2*U;
-        energy_data_correl = alpha./(U^2)*(sum_fourth + sum_double_square);
-        sinr = energy_data_correl./sigma_b;
+        e_sym = alpha./(U^2)*(sum_fourth + sum_double_square);
+        sinr = e_sym./sigma_b;
         
     case "eve_decod1_correl"
         sinr = alpha./(U.*sigma_e + (1-alpha));

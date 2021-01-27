@@ -1,3 +1,18 @@
+%
+%
+%
+%
+%   Created 12.01.2021
+%   Correct new approx for Bob capa and Eve capa with SDS decoder when  no
+%   frequency correlation between Bob's subcarriers. 
+%   See SISOfrequencyCorrelationTEST.m to  
+%
+%
+%
+%
+%
+%   © SIDNEY GOLSTEIN
+
 clear all;
 % close all;
 
@@ -24,8 +39,8 @@ alpha_step = 5;                           % Percentage between subsequent alpha 
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 4;
-U = 2;
+Q = 32;
+U = 16;
 N = Q./U;
 
 M = 4;
@@ -347,7 +362,7 @@ sr2_avg = squeeze(mean(sr2));%capa1_b_correl_avg - capa2_e_avg;
 %%%%%%%
 %%%%%%%
 %%%%%%%
-%% TEST SECTION CAPA AT BOB WHEN NO CORRELATION
+%% TEST SECTION (CETTE PARTIE PEUT ETRE SUPPRIMEE)
 
 % No correlation: 
 % Approximation of E[ 1+ log(X) ] = log(1 + E[X]) - var(X)/( 2( 1+E[X] )^2 )
@@ -358,7 +373,7 @@ sr2_avg = squeeze(mean(sr2));%capa1_b_correl_avg - capa2_e_avg;
 % 1.1.1 E[ | S^H |Hb|^2 S |^4  ]
 
 sym_b_TEST = mean(squeeze(mean(abs(sym_b_test).^4,2)),1);
-SYM_B_TEST = alpha.^2./U^4.*(24.*U + 36*U.*(U-1) + 12*U.*(U-1).*(U-2) + U.*(U-1).*(U-2).*(U-3));  %-> OK si no correl
+SYM_B_TEST = alpha.^2./U^4*(24*U + 36*U*(U-1) + 12*U*(U-1)*(U-2) + U*(U-1)*(U-2)*(U-3));  %-> OK si no correl
 % figure;
 % plot(sym_b_TEST); hold on; plot(SYM_B_TEST,'o');
 % legend('Bob square energy symbol simu','Bob square energy symbol analytic')

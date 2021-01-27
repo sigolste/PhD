@@ -31,7 +31,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 3000;                               % number of experiments
+nb_run = 1500;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
@@ -39,7 +39,7 @@ alpha_step = 5;                           % Percentage between subsequent alpha 
 alpha = 1;%0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 8;
+Q = 16;
 U = 4;
 N = Q./U;
 
@@ -131,7 +131,11 @@ He_RX = ctranspose(He_TX);
 %                                                                           %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% ∑_i |hb|^8
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%              ∑_i |hb|^8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tmp = 0;
 for ii = 0:U-1
     tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^8;
@@ -139,7 +143,9 @@ end
 h8h8(iter,dd) = tmp;
 
 
-%% ∑_i ∑_j~=i |hb_i|^2 |Hb_j|^6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%          ∑_i ∑_j~=i |hb_i|^2 |Hb_j|^6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tmp = 0;
 for ii = 0:U-1
     for jj = 0:U-1
@@ -151,53 +157,67 @@ end
 h2h6(iter,dd) = tmp;
 
 
-%% ∑_i ∑_j~=i |hb_i|^4 |Hb_j|^4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%          ∑_i ∑_j~=i |hb_i|^4 |Hb_j|^4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% First term of |hb_i|^4 with |hb_j|^4 --> term4
 tmp = 0;
 for ii = 0:U-1
     for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            tmp = tmp + abs(T(1+ii*N,kk))^4*abs(Hw_TX(kk,kk))^4*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+        if ii~= jj
+            tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^4*abs(Hb_TX(1+jj*N,1+jj*N))^4;
         end
     end
 end
-term4(iter,dd) = tmp;
+h4h4(iter,dd) = 2*tmp;
 
 
-% Third term of |hb_i|^4 with |hb_j|^4 --> term22
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ∑_i ∑_j~=i ∑_k ~= i,j |=hb_i|^2 |Hb_j|^2 |Hb_k|^4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 tmp = 0;
 for ii = 0:U-1
     for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            for ll = 1:1+ii*N
-                if ll ~= kk
-                    for mm = 1:1+jj*N
-                        tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
-                        abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(T(1+jj*N,mm))^4*abs(Hw_TX(mm,mm))^4;
+        for kk = 0:U-1
+            if (ii~= jj) && (ii~= kk) && (kk ~= jj)
+                tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^2*abs(Hb_TX(1+kk*N,1+kk*N))^4;
+            end
+        end
+        
+    end
+end
+h4h2h2(iter,dd) = 2*tmp;
+
+
+tmp1 = 0;
+tmp2 = 0;
+tmp3 = 0;
+for ii = 0:U-1
+    for jj = ii+1:U-1
+        for zz = 0:U-1
+            for kk = 1:1+ii*N
+                tmp1 = tmp1 + abs(T(1+ii*N,kk))^2*abs(T(1+jj*N,kk))^2*abs(Hw_TX(kk,kk))^4*abs(Hb_TX(1+zz*N,1+zz*N))^4;
+                for ll = 1:1+jj*N
+                    if ll ~= kk
+                        tmp2 = tmp2 + abs(T(1+ii*N,kk))^2*abs(T(1+jj*N,ll))^2*abs(Hw_TX(kk,kk))^2*abs(Hw_TX(ll,ll))^2*abs(Hb_TX(1+zz*N,1+zz*N))^4;
                     end
                 end
             end
-        end
-    end
-end
-term22_tmp1_tmp3(iter,dd) = tmp;
-
-
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            for ll = 1:1+ii*N
-                if ll ~= kk
-                    tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
-                        abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+            for kk = 1:1+ii*N
+                for ll = kk+1:1+ii*N
+                    tmp3 = tmp3 + 2*real(conj(T(1+ii*N,kk))*T(1+jj*N,kk)*T(1+ii*N,ll)*conj(T(1+jj*N,ll)))...
+                           *abs(Hw_TX(kk,kk))^2*abs(Hw_TX(ll,ll))^2*abs(Hb_TX(1+zz*N,1+zz*N))^4;
                 end
             end
         end
     end
 end
-term22(iter,dd) = tmp;
+h4h2h2_bis(iter,dd) = 2*(tmp1+tmp2+tmp3);
+
+
+
 
 
 
@@ -385,8 +405,8 @@ sr1_avg = squeeze(mean(sr1));%capa1_b_correl_avg - capa1_e_avg;
 %                                                                           %
 %                                                                           %
 %                                                                           %    
-%%                         MODEL SECTION                                    %   
-%                                                                           %
+%%                         MODELIZATION SECTION                             %   
+%                           E[X^2] at Bob                                   %
 %                                                                           %
 %                                                                           %
 %                                                                           %
@@ -407,72 +427,127 @@ H2H6_model = modelCorrelH2H6(N,U,T);
 
 % 3. ∑_i ∑_j~=i |hb_{n+iN}|^4 * |hb_{n+jN}|^4 
 
-% 3.1 First term of hb_i^4 (with h^4) multiplied by hb_j^4 -> term4
-% Derivation cf FC26 verso
 
-tmp1 = 0;
-tmp2 = 0;
-tmp3 = 0;
-tmp4 = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            tmp1 = tmp1 + 6*abs(T(1+ii*N,kk))^4*abs(T(1+jj*N,kk))^4;
-            for ll = 1:1+jj*N
-                if ll ~= kk
-                    tmp2 = tmp2 + abs(T(1+ii*N,kk))^4*abs(T(1+jj*N,ll))^4;
-                    tmp3 = tmp3 + 6*abs(T(1+ii*N,kk))^4*abs(T(1+jj*N,kk))^2*abs(T(1+jj*N,ll))^2;
-                    for mm = 1:1+jj*N
-                        if (ll ~= mm) && (kk ~= mm)
-                            tmp4 = tmp4 + abs(T(1+ii*N,kk))^4*abs(T(1+jj*N,ll))^2*abs(T(1+jj*N,mm))^2;
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-TERM4_test = 4*(tmp1+tmp2+tmp3+tmp4);
-TERM4 = mean(term4);
+H4H4_simu = mean(h4h4);
+H4H4_model  = modelCorrelH4H4(N,U,T);
 
 
-% 3.2 First term of hb_i^4 (with h^4) multiplied by hb_j^4 -> term4
-% Derivation cf FC26 verso
+% 4. ∑_i ∑_j~=i ∑_k~=i,j |hb_{n+iN}|^4 * |hb_{n+jN}|^2 * |hb_{n+kN}|^2
+H4H2H2 = mean(h4h2h2)
 
-tmp1 = 0;
-tmp2 = 0;
-tmp3 = 0;
-tmp4 = 0;
-tmp5 = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = 1:1+ii*N
-            for ll = 1:1+ii*N
-                if ll ~= kk
-                    tmp1 = tmp1 + 6*abs(T(1+ii*N,kk))^2*abs(T(1+jj*N,kk))^4*abs(T(1+ii*N,ll))^2;
-                    tmp2 = tmp2 + 4*abs(T(1+ii*N,kk))^2*abs(T(1+jj*N,kk))^2*abs(T(1+jj*N,ll))^2*abs(T(1+ii*N,ll))^2;
-                    for mm = 1:1+jj*N
-                        if (ll ~= mm) && (kk ~= mm)
-                            tmp3 = tmp3 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^4;
-                            tmp4 = tmp4 + 4*abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,ll))^2*abs(T(1+jj*N,mm))^2;
-                            for nn = 1:1+jj*N
-                                if (ll ~= nn) && (kk ~= nn) && (mm ~= nn)
-                                    tmp5 = tmp5 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^2*abs(T(1+jj*N,nn))^2;
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-TERM22_test = 4*(tmp1+tmp2+tmp3+tmp4+tmp5);
-TERM22 = mean(term22);
 
-TERM22_TMP1_TMP3 = mean(term22_tmp1_tmp3);
-TERM22_TMP1_TMP3_TEST = 4*(tmp1+tmp3);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%                                                                           %    
+%%                         MODELIZATION SECTION                             %   
+%                            Variance at Bob                                %
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+% First term of |hb_i|^4 with |hb_j|^4 --> term4
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = 1:1+ii*N
+%             tmp = tmp + abs(T(1+ii*N,kk))^4*abs(Hw_TX(kk,kk))^4*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+%         end
+%     end
+% end
+% term4(iter,dd) = tmp;
+% 
+% 
+% % Third term of |hb_i|^4 with |hb_j|^4 --> term22
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = 1:1+ii*N
+%             for ll = 1:1+ii*N
+%                 if ll ~= kk
+%                     tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
+%                         abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+%                 end
+%             end
+%         end
+%     end
+% end
+% term22(iter,dd) = tmp;
+% 
+% % tmp = 0;
+% % for ii = 0:U-1
+% %     for jj = ii+1:U-1
+% %         for kk = 1:1+ii*N
+% %             for ll = 1:1+ii*N
+% %                 if ll ~= kk
+% %                     for mm = 1:1+jj*N
+% %                         tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
+% %                         abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*abs(T(1+jj*N,mm))^4*abs(Hw_TX(mm,mm))^4;
+% %                     end
+% %                 end
+% %             end
+% %         end
+% %     end
+% % end
+% % term22_tmp1_tmp3(iter,dd) = tmp;
+% % 
+% % tmp = 0;
+% % for ii = 0:U-1
+% %     for jj = ii+1:U-1
+% %         for kk = 1:1+ii*N
+% %             for ll = 1:1+ii*N
+% %                 if ll ~= kk
+% %                     for mm = 1:1+jj*N
+% %                         for nn = 1:1+jj*N
+% %                             if mm ~= nn
+% %                                 tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
+% %                                 abs(T(1+ii*N,ll))^2*abs(Hw_TX(ll,ll))^2*...
+% %                                 2*abs(T(1+jj*N,mm))^2*abs(Hw_TX(mm,mm))^2*abs(T(1+jj*N,nn))^2*abs(Hw_TX(nn,nn))^2;
+% %                             end
+% %                         end
+% %                     end
+% %                 end
+% %             end
+% %         end
+% %     end
+% % end
+% % term22_tmp2_tmp4_tmp5(iter,dd) = tmp;
+% 
+% 
+% % Fourth term of  |hb_i|^4 with |hb_j|^4 --> term211
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = 1:1+ii*N
+%             for ll = 1:1+ii*N
+%                 for mm = 1:1+ii*N
+%                     if (mm ~= ll) && (mm ~= kk) && (kk ~= ll)
+%                         tmp = tmp + 2*abs(T(1+ii*N,kk))^2*abs(Hw_TX(kk,kk))^2*...
+%                         conj(T(1+ii*N,ll))*Hw_RX(ll,ll)*T(1+ii*N,mm)*Hw_TX(mm,mm)*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+%                     end
+%                 end
+%             end
+%         end
+%     end
+% end
+% term211(iter,dd) = tmp;
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
 
 %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

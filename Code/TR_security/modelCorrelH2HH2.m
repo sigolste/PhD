@@ -1,9 +1,9 @@
-function H4H4 = modelCorrelH4H4(N,U,T)
+function H4H2H2 = modelCorrelH2HH2(N,U,T)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Modelization of ∑_i ∑j!=i |Hb,n+iN|^4 |Hb,n+jN|^4 when frequency 
-% correlation at Bob is introduced
+% Modelization of ∑_i ∑j!=i ∑k!=i,j |Hb,n+iN|^4 |Hb,n+jN|^2 |Hb,n+kN|^2 
+% when frequency correlation at Bob is introduced
 % This term is needed for the determination of E[|SINR_b|^2]. In
 % particular, this term is used for the computation of the variance of Bob
 % SINR in order to better approximate the capacity at Bob when frequency
@@ -19,7 +19,7 @@ function H4H4 = modelCorrelH4H4(N,U,T)
 %
 %
 %
-% Code started : 21.01.2021
+% Code started : 26.01.2021
 % Last update  : 26.01.2021
 %
 % © Sidney Golstein

@@ -24,17 +24,17 @@ function [ Hw , H , abs_rho, T] = corr_frequency( nb_subca , b_subca , sigma_tau
 %
 %   by Julien Sarrazin
 %**************************************************************************
-%
+
 
     ind_subca = 0 : 1 : nb_subca - 1 ;                                      % Sub-carrier index
-    delta_f = ind_subca .* b_subca ;                                         % Frequency separation between the first subcarrier and the others
+    delta_f = ind_subca .* b_subca ;                                        % Frequency separation between the first subcarrier and the others
     rho = sigma_tau ./ ( 1 + 1i * 2 * pi * delta_f * sigma_tau ) ;          % Frequency variation of the correlation (first line of the covaraince matrix)
     rho = rho ./ max( abs( rho ) ) ;                                        % Normalization     Revient a avoir au final : rho = 1/(1+2pi j sigma_tau delta_f) car max(abs(rho)) = sigma_tau 
     RHO = toeplitz( rho ) ;                                                 % Covariance matrix
    
     T = cholcov( RHO ) ;                                                    % Choleski decomposition
     Hw = 1/sqrt(2)*( randn( nb_realizations , size( T , 1 ) ) ...
-        + 1i * randn( nb_realizations , size( T , 1 ) ) )  ;             % nb_subca correlated RV
+         + 1i * randn( nb_realizations , size( T , 1 ) ) )  ;               % nb_subca correlated RV
     H = (ctranspose(T)*(Hw).').';
     abs_rho = abs(rho);
     T = ctranspose(T);
