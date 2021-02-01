@@ -78,7 +78,7 @@ for ii = 0:U-1
                     for mm = 1:1+jj*N
                         if (ll ~= mm) && (kk ~= mm)
                             tmp3 = tmp3 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^4;
-                            tmp4 = tmp4 + 4*abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,ll))^2*abs(T(1+jj*N,mm))^2;
+                            tmp4 = tmp4 + 16*abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,ll))^2*abs(T(1+jj*N,mm))^2;
                             for nn = 1:1+jj*N
                                 if (ll ~= nn) && (kk ~= nn) && (mm ~= nn)
                                     tmp5 = tmp5 + abs(T(1+ii*N,kk))^2*abs(T(1+ii*N,ll))^2*abs(T(1+jj*N,mm))^2*abs(T(1+jj*N,nn))^2;
@@ -92,11 +92,11 @@ for ii = 0:U-1
     end
 end
 TERM22_test = 4*(tmp1+tmp2+tmp3+tmp4+tmp5);
-% Need some corrections maybe.
+% Need some corrections maybe --> OK CFR F29 RECTO ET FC26 VERSO
 
 
 
-% 2 Fourth term of hb_i^4 (with h^2 h h^*) multiplied by hb_j^4 -> term211
+% 3 Fourth term of hb_i^4 (with h^2 h h^*) multiplied by hb_j^4 -> term211
 % Derivation cf FC27 verso but may need some change
 
 tmp1 = 0;

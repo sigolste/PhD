@@ -1,4 +1,4 @@
-function H4H2H2 = modelCorrelH2HH2(N,U,T)
+function H4H2H2 = modelCorrelH4H4H2(N,U,T)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
