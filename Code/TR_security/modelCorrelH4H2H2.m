@@ -161,7 +161,7 @@ TERM22_bis_test = 8*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7);
 
 
 % 4 Fourth term of hb_i^2 hb_j^2 (with h h^* h h^*) multiplied 
-% by hb_k^4  -> term22_bis 
+% by hb_k^4  -> term1111 
 % Derivation FC29 vero.
 tmp = 0;
 for ii = 0:U-1

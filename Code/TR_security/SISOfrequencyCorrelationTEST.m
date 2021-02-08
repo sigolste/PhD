@@ -25,7 +25,7 @@ alpha = 0:alpha_step/100:1;
 
 % Communication parameters
 Q = 4;
-U = 2;
+U = 4;
 N = Q./U;
 
 M = 4;
@@ -50,16 +50,16 @@ mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
-coef_freq = [10000].*N/6;
+coef_freq = [100000].*N/6;
 delta_f_n = coef_freq.*delta_f_c;   
 b_subcar = delta_f_n./N;                                    % Bandwidth of each subcarrier
 x_axis  = delta_f_n./delta_f_c;
 for dd = 1:length(b_subcar)
-    [H1(:,:,dd), abs_rho(:,dd), T(:,:,dd)] = corr_frequency( Q , b_subcar(dd) , sigma_tau , nb_run ) ;
+    [~, H1(:,:,dd), abs_rho(:,dd), T(:,:,dd)] = corr_frequency( Q , b_subcar(dd) , sigma_tau , nb_run ) ;
 end
 
 %% Energy matrix instantiation
-e_noise_e = zeros(nb_run,length(alpha),length(U),length(b_subcar));
+e_noise_e                   = zeros(nb_run,length(alpha),length(U),length(b_subcar));
 
 e_an_correl_TX              = zeros(nb_run,length(alpha),length(U),length(b_subcar));
 e_an_decorrel_TX            = zeros(nb_run,length(alpha),length(U),length(b_subcar));
@@ -96,15 +96,8 @@ sym_TX = qammod(msg_TX,M,'gray','UnitAveragePower',true, 'InputType', 'bit');  %
 for dd = 1:length(b_subcar)
 %channel generation
 Hb_TX = diag(squeeze(H1(iter,:,dd)).');
-% Hb_TX= Hb_TX./sqrt(energy(Hb_TX));
 Hb_RX = ctranspose(Hb_TX);
-% H_decorrel_TX = channelRayleigh(Q, mu , sigma);   % @E: frequency uncorrelated channel  %diag(squeeze(H2(iter,:,dd)).');
-% H_decorrel_RX = ctranspose(H_decorrel_TX);
 
-% %
-% d(iter) = energy(Hb_RX);
-% e(iter) = energy(H_decorrel_RX);
-% %
 
 
 He_TX = channelRayleigh(Q, mu , sigma);             % Assumption: uncorrelated subcarrier for Eve channel
@@ -121,7 +114,7 @@ sym_precoded_correl = Hb_TX*sym_spread;
 % sym_precoded_decorrel = H_decorrel_TX*sym_spread;
 
 % AN generation
-[an_correl,V1_correl(:,:,iter),S_correl(:,:,iter)] = generateAN_TEST(Hb_RX,Q,U(bb),matrix_despread,energy(sym_precoded_correl),"svd");% % Qx1, not weighted 
+[an_correl,V1_correl(:,:,iter),S_correl(:,:,iter)] = generateAN_TEST(Hb_RX,Q,U(bb),matrix_despread,1/U(bb),"svd");% % Qx1, not weighted 
 % [an_decorrel,V1_decorrel(:,:,iter),S_decorrel(:,:,iter)]= generateAN_TEST(H_decorrel_RX,Q,U(bb),matrix_despread,energy(sym_precoded_decorrel),"svd"); % Qx1, not weighted
 % 
 % v1_correl = sum(V1_correl(:,:,iter),2);
@@ -357,7 +350,7 @@ sr2_avg = squeeze(mean(sr2));%capa1_b_correl_avg - capa2_e_avg;
 % E[X^2] = E[ |S^H |Hb|^2 S|^4 / |S^H v_b|^4 ]
 % 1.1.1 E[ | S^H |Hb|^2 S |^4  ]
 
-sym_b_TEST = mean(squeeze(mean(abs(sym_b_test).^4,2)),1);
+sym_b_TEST =squeeze(mean(abs(sym_b_test).^4,2))
 SYM_B_TEST = alpha.^2./U^4.*(24.*U + 36*U.*(U-1) + 12*U.*(U-1).*(U-2) + U.*(U-1).*(U-2).*(U-3));  %-> OK si no correl
 % figure;
 % plot(sym_b_TEST); hold on; plot(SYM_B_TEST,'o');
@@ -376,7 +369,6 @@ SINRsquareb = SINRb.^2;
 
 % --> variance @Bob : var(X) = E[X^2] - (E[X])^2
 varTESTb = SYM_B_TEST./NOISE_B_TEST - SINRsquareb;
-
 % 1.2 New capa approximation New approx:
 TESTcapab = log2(1+SINRb) - varTESTb./(2*(1+SINRb).^2); % New approx of Bob capa 
 
@@ -407,6 +399,12 @@ varTESTe1 = SYM_E_TEST1./DENOM_E_TEST1 - SINRsquare_e1;
 TESTcapae1 = log2(1+SINRe1) - varTESTe1./(2*(1+SINRe1).^2); % New approx of Bob capa 
 
 
+for dd = 1:length(b_subcar)
+sinr1_correl_model_b(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,squeeze(T(:,:,dd)),snr_b,snr_e,"bob_correl")
+
+sinr1_model_e(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"eve_decod1_correl");
+sinr2_model_e(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"eve_decod2_correl");
+end
 
 
 % 3. Test different capacity approximation
@@ -420,11 +418,11 @@ G = log2(1+sinr1_e);
 
 
 TESTA = log2(squeeze(mean(A)));   % log2(E[1+sinr]) --> not computed 
-TESTB = log2(1+squeeze(mean(B))); % log2(1+E[sinr]) --> Jensen's aproximation
+TESTB = log2(1+sinr1_correl_model_b); % log2(1+E[sinr]) --> Jensen's aproximation
 TESTC = squeeze(mean(C));         % E[log2(1+sinr)] --> exact ergodic capa
 
 TESTE = log2(squeeze(mean(E)));   % log2(E[1+sinr]) --> not computed
-TESTF = log2(1+squeeze(mean(F))); % log2(1+E[sinr]) --> Jensen's aproximation
+TESTF = log2(1+sinr1_model_e); % log2(1+E[sinr]) --> Jensen's aproximation
 TESTG = squeeze(mean(G));         % E[log2(1+sinr)] --> exact ergodic capa
 
 
@@ -553,12 +551,12 @@ end
 % legend('correl simu','no correl simu','correl model','no correl model')
 % 
 % 
-% % 1: Check Bob SINR
-% figure;
-% plot(sinr1_b_correl_avg,'-o'); hold on;
-% plot(energy_data_correl./sigma_b); hold on
-% title('Bob SINR')
-% legend('correl simu','no correl simu','correl model','no correl model')
+% 1: Check Bob SINR
+figure;
+plot(sinr1_b_correl_avg,'-o'); hold on;
+plot(energy_data_correl./sigma_b); hold on
+title('Bob SINR')
+legend('correl simu','no correl simu','correl model','no correl model')
 % 
 % 
 % 

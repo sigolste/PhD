@@ -2,7 +2,8 @@ function H2H2H2H2 = modelCorrelH2H2H2H2(N,U,T)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Modelization of   
+% Modelization of ∑_i ∑j!=i ∑k!=i,j ∑l!=i,j,k |Hb,n+iN|^2 |Hb,n+jN|^2 
+%                                             |Hb,n+kN|^2 |Hb,n+lN|^2  
 % when frequency correlation at Bob is introduced                         
 % This term is needed for the determination of E[|SINR_b|^2]. In          
 % particular, this term is used for the computation of the variance of Bob 
@@ -22,7 +23,7 @@ function H2H2H2H2 = modelCorrelH2H2H2H2(N,U,T)
 %
 %
 % Code started : 28.01.2021
-% Last update  : 28.01.2021
+% Last update  : 02.02.2021
 %
 % © Sidney Golstein
 %
@@ -189,7 +190,11 @@ TERM22_test = 24*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 +
 
 % 3 Third term of hb_i^2 hb_j^2 (with conj(t t^* t t^*) h^2 h^2) multiplied
 % by hb_k^2 hb_l^2  -> term22_bis
-% Computation cfr FC32 recto
+% Computation cfr FC32 recto (idem as second term with factor 48 in front of
+% the formula instead of 24, nn = mm+1:n+iN instead of nn = 1:n+iN and
+% replacing |t_{n+i*N,n}|^2*|t_{n+j*N,m}|^2 by 
+% Re[t_{n+i*N,m} t_{n+j*N,m}^* t_{n+i*N,n}^* t_{n+j*N,n}]
+
 tmp1 = 0;
 tmp2 = 0;
 tmp3 = 0;
@@ -269,10 +274,154 @@ for ii = 0:U-1
     end
 end
 
-TERM22_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13);
+TERM22_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + ...
+                      tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13);
+
+
+% 4 Fourth term of hb_i^2 hb_j^2 (with h h^* h h^*) multiplied 
+% by hb_k^2 hb_l^2  -> term1111 
+% Derivation FC32 recto.
+tmp = 0;
+for ii = 0:U-1
+    for jj = ii+1:U-1
+        for kk = jj+1:U-1
+            for ll = kk+1:U-1   %%%%%%%%
+                for mm = 1:1+ii*N
+                    for nn = mm+1:1+ii*N
+                        for oo = 1:1+jj*N
+                            if (oo ~= nn) && (oo ~= mm)
+                                for pp = oo+1:1+jj*N
+                                    if (pp ~= nn) && (pp ~= mm)
+                                        tmp = tmp + real(conj(T(1+ii*N,mm))*T(1+kk*N,mm)*T(1+ii*N,nn)*conj(T(1+kk*N,nn))* ... 
+                                                         conj(T(1+jj*N,oo))*T(1+ll*N,oo)*T(1+jj*N,pp)*conj(T(1+ll*N,pp)));
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+TERM1111_test = 16*24*tmp;
+
+% 5 Fifth term of hb_i^2 hb_j^2 (with h^2 h^* h) multiplied  
+% by hb_k^2 hb_l^2  -> term211
+% Derivation FC32 recto&verso
+tmp1 = 0;
+tmp2 = 0;
+tmp3 = 0;
+tmp4 = 0;
+for ii = 0:U-1
+    for jj = ii+1:U-1
+        for kk = jj+1:U-1
+            for ll = kk+1:U-1   %%%%%%%%
+                
+                for mm = 1:1+ii*N
+                    for nn = 1:1+jj*N
+                        for oo = nn+1:1+jj*N
+                            if (oo ~= mm) && (nn ~= mm)
+                                tmp1 = tmp1 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+kk*N,mm))^2* ... 
+                                       real(conj(T(1+jj*N,nn)) * T(1+ll*N,nn) * T(1+jj*N,oo) * conj(T(1+ll*N,oo)));
+                            end
+                        end
+                    end
+                    for nn = 1:1+kk*N
+                        for oo = 1:1+jj*N
+                            for pp = oo+1:1+jj*N
+                               if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+                                   tmp2 = tmp2 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+kk*N,nn))^2* ... 
+                                       real(conj(T(1+jj*N,oo)) * T(1+ll*N,oo) * T(1+jj*N,pp) * conj(T(1+ll*N,pp)));
+                               end
+                            end
+                        end
+                    end
+                    for nn = 1:1+jj*N
+                        for oo = nn+1:1+jj*N
+                            if (oo ~= mm) && (nn ~= mm)
+                                tmp3 = tmp3 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+ll*N,mm))^2* ... 
+                                       real(conj(T(1+jj*N,nn)) * T(1+kk*N,nn) * T(1+jj*N,oo) * conj(T(1+kk*N,oo)));
+                            end
+                        end
+                    end
+                    for nn = 1:1+ll*N
+                        for oo = 1:1+jj*N
+                            for pp = oo+1:1+jj*N
+                               if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+                                   tmp4 = tmp4 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+ll*N,nn))^2* ... 
+                                       real(conj(T(1+jj*N,oo)) * T(1+kk*N,oo) * T(1+jj*N,pp) * conj(T(1+kk*N,pp)));
+                               end
+                            end
+                        end
+                    end
+                end
+                
+            end
+        end
+    end
+end
+TERM211_test = 48*(tmp1 + tmp2 + tmp3 + tmp4);
+
+% 6 Sixth term of hb_i^2 hb_j^2 (with h^2 h^* h) multiplied  
+% by hb_k^2 hb_l^2  -> term211_bis 
+
+tmp1 = 0;
+tmp2 = 0;
+tmp3 = 0;
+tmp4 = 0;
+for ii = 0:U-1
+    for jj = ii+1:U-1
+        for kk = jj+1:U-1
+            for ll = kk+1:U-1   %%%%%%%%T(1+ii*N,nn)*conj(T(1+ii*N,oo))
+                
+                for mm = 1:1+jj*N
+                    for nn = 1:1+ii*N
+                        for oo = nn+1:1+ii*N
+                            if (oo ~= mm) && (nn ~= mm)
+                                tmp1 = tmp1 + 4*abs(T(1+jj*N,mm))^2*abs(T(1+kk*N,mm))^2* ... 
+                                       real(conj(T(1+ii*N,nn)) * T(1+ll*N,nn) * T(1+ii*N,oo) * conj(T(1+ll*N,oo)));
+                            end
+                        end
+                    end
+                    for nn = 1:1+kk*N
+                        for oo = 1:1+ii*N
+                            for pp = oo+1:1+ii*N
+                               if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+                                   tmp2 = tmp2 + 2*abs(T(1+jj*N,mm))^2*abs(T(1+kk*N,nn))^2* ... 
+                                       real(conj(T(1+ii*N,oo)) * T(1+ll*N,oo) * T(1+ii*N,pp) * conj(T(1+ll*N,pp)));
+                               end
+                            end
+                        end
+                    end
+                    for nn = 1:1+ii*N
+                        for oo = nn+1:1+ii*N
+                            if (oo ~= mm) && (nn ~= mm)
+                                tmp3 = tmp3 + 4*abs(T(1+jj*N,mm))^2*abs(T(1+ll*N,mm))^2* ... 
+                                       real(conj(T(1+ii*N,nn)) * T(1+kk*N,nn) * T(1+ii*N,oo) * conj(T(1+kk*N,oo)));
+                            end
+                        end
+                    end
+                    for nn = 1:1+ll*N
+                        for oo = 1:1+ii*N
+                            for pp = oo+1:1+ii*N
+                               if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+                                   tmp4 = tmp4 + 2*abs(T(1+jj*N,mm))^2*abs(T(1+ll*N,nn))^2* ... 
+                                       real(conj(T(1+ii*N,oo)) * T(1+kk*N,oo) * T(1+ii*N,pp) * conj(T(1+kk*N,pp)));
+                               end
+                            end
+                        end
+                    end
+                end
+                
+            end
+        end
+    end
+end
+TERM211_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4);
 
 
 % --> ∑_i ∑j!=i ∑k!=i,j ∑l!=i,j,k |Hb,n+iN|^2 |Hb,n+jN|^2 |Hb,n+kN|^2 
 %                                                         |Hb,n+lN|^2
-% cf FC30 recto
+% cf FC33 recto
 H2H2H2H2 = (TERM4_test + TERM22_test + TERM22_bis_test + TERM1111_test + TERM211_test + TERM211_bis_test );

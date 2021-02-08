@@ -1,20 +1,22 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %
 %
-%
-%   Created 12.01.2021
-%   Correct new approx for Bob capa and Eve capa with SDS decoder when  no
-%   frequency correlation between Bob's subcarriers. 
-%   See SISOfrequencyCorrelationTEST.m to  
+%   Implementation of new approx for Bob capa and Eve capa with SDS/MF/OC 
+%   decoders when  frequency corrleation among Bob's subcarriers is  
+%   introduced.
 %
 %
 %
-%
+%   Code Started:   12.01.2021
+%   Last Update:    05.02.2021
 %
 %   © SIDNEY GOLSTEIN
-
+% 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all;
-% close all;
+%close all;
 
 % PROBLEME APPARENT: MODELE NE CHANGE PAS TELLEMENT AVEC LA CORRELATION!
 % TESTER CHAQUE TERME SEPAREMENT
@@ -31,16 +33,16 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 2000;                               % number of experiments
+nb_run = 3000;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
 alpha_step = 5;                           % Percentage between subsequent alpha values
-alpha = 1;%0:alpha_step/100:1;         
+alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 16;
-U = 16;
+Q = 4;
+U = 4;
 N = Q./U;
 
 M = 4;
@@ -49,8 +51,8 @@ nb_bit = k.*N;
 
 % AWGN parameters
 
-snr_b  = 10;  % SNR @Bob
-snr_e  = 10;  % SNR @Eve
+snr_b  = -5;  % SNR @Bob
+snr_e  = 30;  % SNR @Eve
 
 % Noise energy
 sigma_b = 1./U/10^(snr_b/10);    % expected noise energy @Bob
@@ -64,7 +66,7 @@ mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
-coef_freq = [1].*N/6;
+coef_freq = [100000].*N/6;
 delta_f_n = coef_freq.*delta_f_c;   
 b_subcar = delta_f_n./N;                                    % Bandwidth of each subcarrier
 x_axis  = delta_f_n./delta_f_c;
@@ -73,7 +75,8 @@ for dd = 1:length(b_subcar)
 end
 
 %% Energy matrix instantiation
-e_noise_e = zeros(nb_run,length(alpha),length(U),length(b_subcar));
+e_noise_e            = zeros(nb_run,length(alpha),length(U),length(b_subcar));
+e_noise_b            = zeros(nb_run,length(alpha),length(U),length(b_subcar));
 e_an_TX              = zeros(nb_run,length(alpha),length(U),length(b_subcar));
 
 e_sym_decod1_b       = zeros(nb_run,length(alpha),length(U),length(b_subcar));
@@ -116,158 +119,142 @@ He_RX = ctranspose(He_TX);
 
 
 
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %                                                                           %
+% %                                                                           %
+% %                                                                           %
+% %                                                                           %
+% %                                                                           %    
+% %%                         TEST SECTION                                     %   
+% %                                                                           %
+% %                                                                           %
+% %                                                                           %
+% %                                                                           %
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%              ∑_i |hb|^8
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% tmp = 0;
+% for ii = 0:U-1
+%     tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^8;
+% end
+% h8h8(iter,dd) = tmp;
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%          ∑_i ∑_j~=i |hb_i|^2 |Hb_j|^6
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = 0:U-1
+%         if ii~= jj
+%             tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^6;
+%         end
+%     end
+% end
+% h2h6(iter,dd) = tmp;
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%          ∑_i ∑_j~=i |hb_i|^4 |Hb_j|^4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         if ii~= jj
+%             tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^4*abs(Hb_TX(1+jj*N,1+jj*N))^4;
+%         end
+%     end
+% end
+% h4h4(iter,dd) = 2*tmp;
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% ∑_i ∑_j~=i ∑_k ~= i,j |=hb_i|^2 |Hb_j|^2 |Hb_k|^4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = 0:U-1
+%             if (ii~= jj) && (ii~= kk) && (kk ~= jj)
+%                 tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^2*abs(Hb_TX(1+kk*N,1+kk*N))^4;
+%             end
+%         end
+%         
+%     end
+% end
+% h4h2h2(iter,dd) = 2*tmp;
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% ∑_i ∑_j~=i ∑_k ~= i,j |=hb_i|^2 |Hb_j|^2 |Hb_k|^4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^2*abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%             end
+%         end
+%         
+%     end
+% end
+% h2h2h2h2(iter,dd) = 24*tmp;
+% 
+% 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                           %
-%                                                                           %
-%                                                                           %
-%                                                                           %
-%                                                                           %    
-%%                         TEST SECTION                                     %   
-%                                                                           %
-%                                                                           %
-%                                                                           %
-%                                                                           %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%              ∑_i |hb|^8
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tmp = 0;
-for ii = 0:U-1
-    tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^8;
-end
-h8h8(iter,dd) = tmp;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%          ∑_i ∑_j~=i |hb_i|^2 |Hb_j|^6
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tmp = 0;
-for ii = 0:U-1
-    for jj = 0:U-1
-        if ii~= jj
-            tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^6;
-        end
-    end
-end
-h2h6(iter,dd) = tmp;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%          ∑_i ∑_j~=i |hb_i|^4 |Hb_j|^4
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        if ii~= jj
-            tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^4*abs(Hb_TX(1+jj*N,1+jj*N))^4;
-        end
-    end
-end
-h4h4(iter,dd) = 2*tmp;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% ∑_i ∑_j~=i ∑_k ~= i,j |=hb_i|^2 |Hb_j|^2 |Hb_k|^4
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = 0:U-1
-            if (ii~= jj) && (ii~= kk) && (kk ~= jj)
-                tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^2*abs(Hb_TX(1+kk*N,1+kk*N))^4;
-            end
-        end
-        
-    end
-end
-h4h2h2(iter,dd) = 2*tmp;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% ∑_i ∑_j~=i ∑_k ~= i,j |=hb_i|^2 |Hb_j|^2 |Hb_k|^4
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1
-                tmp = tmp + abs(Hb_TX(1+ii*N,1+ii*N))^2*abs(Hb_TX(1+jj*N,1+jj*N))^2*abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
-            end
-        end
-        
-    end
-end
-h2h2h2h2(iter,dd) = 24*tmp;
-
-
-% First term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term4
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1
-                for mm = 1:1+ii*N
-                    tmp = tmp + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2 *abs(Hw_TX(mm,mm))^4* ...
-                          abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
-                end
-            end
-        end
-        
-    end
-end
-term4(iter,dd) = 24*tmp;
-
-
-% Second term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term22
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1
-                for mm = 1:1+ii*N
-                    for nn = 1:1+jj*N
-                        if nn ~= mm
-                            tmp = tmp + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*abs(Hw_TX(mm,mm))^2*abs(Hw_TX(nn,nn))^2* ...
-                            abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
-                        end
-                    end
-                end
-            end
-        end
-        
-    end
-end
-term22(iter,dd) = 24*tmp;
-
-
-% Second term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term22
-tmp = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1
-                for mm = 1:1+ii*N
-                    for nn = mm+1:1+ii*N
-                            tmp = tmp + real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                abs(Hw_TX(mm,mm))^2*abs(Hw_TX(nn,nn))^2* ...
-                                abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
-                    end
-                end
-            end
-        end
-        
-    end
-end
-term22_bis(iter,dd) = 48*tmp;
-
-
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% ∑_i |=hb_i|^4 |He_i|^4
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%
+% tmp = 0;
+% for ii = 0:U-1
+%     tmp = tmp + abs(He_RX(1+ii*N,1+ii*N))^4*abs(Hb_RX(1+ii*N,1+ii*N))^4;
+% end
+% h4h4(iter,dd) = tmp;
+% 
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = 0:U-1
+%         if ii ~= jj
+%             tmp = tmp + abs(He_RX(1+ii*N,1+ii*N))^2*abs(He_RX(1+jj*N,1+jj*N))^2* ... 
+%                         abs(Hb_RX(1+ii*N,1+ii*N))^2*abs(Hb_RX(1+jj*N,1+jj*N))^2;
+%         end
+%     end
+% end
+% h2h2(iter,dd) = tmp;
+% 
+% %%%
+% tmp = 0;
+% tmp1 = 0;
+% tmp2 = 0;
+% for ii = 0:U-1
+%     tmp1 = tmp + abs(He_RX(1+ii*N,1+ii*N))^4*abs(Hb_RX(1+ii*N,1+ii*N))^4;
+%     for jj = 0:U-1
+%         if jj ~= ii 
+%                 tmp2 = tmp2 + 2*abs(He_RX(1+ii*N,1+ii*N))^2*abs(He_RX(1+jj*N,1+jj*N))^2* ... 
+%                         abs(Hb_RX(1+ii*N,1+ii*N))^2*abs(Hb_RX(1+jj*N,1+jj*N))^2;
+%         end
+%     end
+% end
+% abs4_test(iter,dd ) = 1./U.^4 * (tmp1+tmp2);
+% 
+% 
+% for ii = 0:U-1
+%     tmp = tmp + He_RX(1+ii*N,1+ii*N).*Hb_TX(1+ii*N,1+ii*N);
+% end
+% abs4(iter,dd)  = abs(tmp)^4./U.^4;
+% 
+% 
 
 
 
@@ -285,7 +272,7 @@ sym_precoded = Hb_TX*sym_spread;
 
 
 % AN generation
-[an,V1_correl(:,:,iter),S_correl(:,:,iter)] = generateAN_TEST(Hb_RX,Q,U(bb),matrix_despread,energy(sym_precoded),"svd");% % Qx1, not weighted 
+[an,V1_correl(:,:,iter),S_correl(:,:,iter)] = generateAN_TEST(Hb_RX,Q,U(bb),matrix_despread,1/U(bb),"svd");% % Qx1, not weighted 
 
 
 for aa = 1:length(alpha)
@@ -308,9 +295,9 @@ sym_e = He_RX*sym_precoded_TX;
 
 
 % Noise symbol
-[noise_b, e_noise_b(iter,aa,bb,dd) ] = addNoise(sym_b , snr_b, energy(sym_precoded_TX+an_TX));
+[noise_b, e_noise_b(iter,aa,bb,dd) ] = addNoise(sym_b , snr_b, 1/U(bb));
 
-[noise_e, e_noise_e(iter,aa,bb,dd)  ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX));
+[noise_e, e_noise_e(iter,aa,bb,dd) ] = addNoise(sym_e , snr_e, 1/U(bb));
 
 % AN symbol
 an_e = He_RX*an_TX; % Only @Eve since no AN effect after decod1 @Bob
@@ -327,10 +314,13 @@ decod2 = matrix_despread*Hb_RX*He_TX;                 % matched filter
 % 
 sym_decod1_b = decod1*sym_b;
 sym_decod1_e = decod1*sym_e;
+sym_b_test(:,iter,aa,bb,dd) = sym_decod1_b; 
+sym_decod1_e_test(:,iter,aa,bb,dd) = sym_decod1_e; 
 
 % 
 noise_decod1_b = decod1*noise_b;
 noise_decod1_e = decod1*noise_e;
+noise_b_test(:,iter,aa,bb,dd) = noise_decod1_b; 
 
 noise_decod2_e = decod2*noise_e;
 % noise_decod3_e = decod3*noise_e;
@@ -339,6 +329,8 @@ noise_decod2_e = decod2*noise_e;
 % 
 an_decod1_e = decod1*an_e;
 an_decod2_e = decod2*an_e;
+
+denom_decod1_e(:,iter,aa,bb,dd) = noise_decod1_e + an_decod1_e;
 
 % an_decod3_e = decod3*an_e;
 % an_decod4_e = decod4*an_e;
@@ -440,7 +432,7 @@ sinr1_e_avg = squeeze(mean(sinr1_e,1));
 % Ergodic capacity
 capa1_b_avg = squeeze(mean(capa1_b,1)); 
 
-capa1_e_avg = squeeze(mean(capa1_e));
+capa1_e_avg = squeeze(mean(capa1_e,1));
 % capa2_e_avg = squeeze(mean(capa2_e));
 
 % Ergodic Secrecy Rate
@@ -449,6 +441,7 @@ sr1_avg = squeeze(mean(sr1));%capa1_b_correl_avg - capa1_e_avg;
 
 
 
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                           %
 %                                                                           %
@@ -462,274 +455,160 @@ sr1_avg = squeeze(mean(sr1));%capa1_b_correl_avg - capa1_e_avg;
 %                                                                           %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Correlation introduced
 
-% % 1. ∑_i |hb_{n+iN}|^8 
-% H8H8_simu = mean(h8h8);
-% H8H8_model = modelCorrelH8(U);
-% 
-% 
-% % 2. ∑_i ∑_j~=i |hb_{n+iN}|^2 * |hb_{n+jN}|^6 
-% H2H6_simu = mean(h2h6);
+% % %% Correlation introduced 
+% % 
+% % % 1. ∑_i |hb_{n+iN}|^8 
+% % % H8H8_simu = mean(h8h8)
+% H8_model = modelCorrelH8(U);
+% % 
+% % % 2. ∑_i ∑_j~=i |hb_{n+iN}|^2 * |hb_{n+jN}|^6 
+% % % H2H6_simu = mean(h2h6)
 % H2H6_model = modelCorrelH2H6(N,U,T);
-% 
-% 
-% 
-% % 3. ∑_i ∑_j~=i |hb_{n+iN}|^4 * |hb_{n+jN}|^4 
-% H4H4_simu = mean(h4h4);
+% % 
+% % % 3. ∑_i ∑_j~=i |hb_{n+iN}|^4 * |hb_{n+jN}|^4 
+% % % H4H4_simu = mean(h4h4)
 % H4H4_model  = modelCorrelH4H4(N,U,T);
-% 
-% 
-% % 4. ∑_i ∑_j~=i ∑_k~=i,j |hb_{n+iN}|^4 * |hb_{n+jN}|^2 * |hb_{n+kN}|^2
-% H4H2H2_simu = mean(h4h2h2);
+% % 
+% % % 4. ∑_i ∑_j~=i ∑_k~=i,j |hb_{n+iN}|^4 * |hb_{n+jN}|^2 * |hb_{n+kN}|^2
+% % % H4H2H2_simu = mean(h4h2h2)
 % H4H2H2_model = modelCorrelH4H2H2(N,U,T);
+% % 
+% % % 5. ∑_i ∑_j~=i ∑_k~=i,j ∑_l~=i,j,k |hb_{n+iN}|^2 * |hb_{n+jN}|^2 * |hb_{n+kN}|^2 * |hb_{n+lN}|^2
+% % % H2H2H2H2_simu = mean(h2h2h2h2)
+% H2H2H2H2_model = modelCorrelH2H2H2H2(N,U,T);
 
-% 4. ∑_i ∑_j~=i ∑_k~=i,j ∑_l~=i,j,k |hb_{n+iN}|^2 * |hb_{n+jN}|^2 * |hb_{n+kN}|^2 * |hb_{n+lN}|^2
-
-% First term of hb_i^2 hb_j^2 (with h^4) multiplied by hb_k^2 hb_l^2  
-% -> term4
-
-tmp1 = 0;
-tmp2 = 0;
-tmp3 = 0;
-tmp4 = 0;
-tmp5 = 0;
-tmp6 = 0;
-tmp7 = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1   %%%%%%%%
-                
-                for mm = 1:1+ii*N
-                    tmp1 = tmp1 + 12*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                     abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
-                    for nn = 1:1+kk*N
-                        if nn ~= mm
-                            tmp2 = tmp2 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                            abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
-                            tmp3 = tmp3 + 3*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                            abs(T(1+ll*N,mm))^2*abs(T(1+kk*N,nn))^2;
-                            for oo = 1:1+ll*N
-                                if (oo ~= nn) && (oo ~= mm)
-                                    tmp4 = tmp4 + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                                  abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
-                                end
-                            end
-                            for oo = nn+1:1+kk*N
-                                if oo ~= mm
-                                    tmp7 = tmp7 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                                    real(T(1+kk*N,nn)*conj(T(1+ll*N,nn))*conj(T(1+kk*N,oo))*T(1+ll*N,oo));
-                                end
-                            end
-                        end
-                    end
-                    for nn = 1:1+ll*N
-                        if nn ~= mm
-                            tmp5 = tmp5 + 3*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                            abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
-                        end
-                    end
-                    for nn = mm+1:1+kk*N
-                        tmp6 = tmp6 + 12*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
-                                         real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
-                    end
-                  
-                end             %%%%%%%%
-             end
-        end
-        
-    end
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%                                                                           %    
+%%                         MODELIZATION SECTION                             %   
+%                           E[X^2] at Eve                                   %
+%                                                                           %
+%                                                                           %
+%                                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1 SDS DECODER. 
+% 1 ∑_i |hb_{n+iN}|^4 * |he_{n+iN}|^4
+% 
+% H4H4 = mean(h4h4); % OK
+H4H4_test = 2*U; % OK
+% % 
+% % % 2 ∑_i ∑_j!=i   |hb_{n+iN}|^2*|he_{n+iN}|^2*|hb_{n+jN}|^2*|he_{n+jiN}|^2
+% H2H2 = mean(h2h2); % OK
+for dd = 1:length(b_subcar)
+H2H2_test(:,dd) = modelCorrelH2H2(N,U,T(:,:,dd)); % Ok
 end
+% 
 
-TERM4_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7)  % 24x2 --> looks ok
-TERM4 = mean(term4)
 
-% Second term of hb_i^2 hb_j^2 (with h^2 h^2) multiplied by hb_k^2 hb_l^2  
-% -> term22
+% 
+% e_sym_e_square_model = 2*alpha.'.^2./U^4.*(H4H4_test + H2H2_test); % OK
+% e_sym_e_square_simu = squeeze(mean(squeeze(mean(abs(sym_decod1_e_test).^4,2)))); % OK
+% 
+% 
+% figure;
+% subplot(1,2,1)
+% plot(e_sym_e_square_simu,'b'); hold on;
+% plot(e_sym_e_square_model,'r'); hold on;
+% legend('simu correl','simu no correl', 'model correl', 'model no correl')
+% title('Data @E')
+% 
+% 
+% 
+% 
+% e_denom_decod1_e_square_simu = squeeze(mean(squeeze(mean(abs(denom_decod1_e).^4,2)),1)) % OK
+% e_denom_decod1_e_square_model = 1./U*(2*sigma_e^2 + 4./U^2.*(1-alpha).^2 + 2*(U-1)*sigma_e^2 ...
+%                 + 2./U^2.*(1-alpha).^2.*(U-1)+4./U.*(1-alpha).*sigma_e ...
+%                 + 8./U.*(1-alpha).*(U-1).*sigma_e).'
+% 
+% subplot(1,2,2);
+% plot(e_denom_decod1_e_square_simu,'b'); hold on;
+% plot(e_denom_decod1_e_square_model,'r'); hold on;
+% legend('simu','model')
+% title('Denominator @E')
 
-tmp1 = 0;
-tmp2 = 0;
-tmp3 = 0;
-tmp4 = 0;
-tmp5 = 0;
-tmp6 = 0;
-tmp7 = 0;
-tmp8 = 0;
-tmp9 = 0;
-tmp10 = 0;
-tmp11 = 0;
-tmp12 = 0;
-tmp13 = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1   %%%%%%%%
-                
-                for mm = 1:1+ii*N
-                    for nn = 1:1+jj*N
-                        if nn ~= mm
-                            tmp1 = tmp1 + 6*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                            abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
-                            tmp2 = tmp2 + 6*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                            abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
-                            tmp3 = tmp3 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                            abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
-                           
-                            for oo = 1:1+kk*N
-                               if (oo ~= nn) && (oo ~= mm)
-                                   tmp4 = tmp4 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                   abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,oo))^2;
-                                   tmp5 = tmp5 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                   abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
-                                   tmp6 = tmp4;
-                                   for pp = 1:1+ll*N
-                                       if (pp ~= oo) && (pp ~= nn) && (pp ~= mm)
-                                           tmp9 = tmp9 + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                         abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,pp))^2;
-                                       end
-                                   end
-                                   for pp = oo+1:1+kk*N
-                                       tmp12 = tmp12 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                        real(T(1+kk*N,oo)*conj(T(1+ll*N,oo))*conj(T(1+kk*N,pp))*T(1+ll*N,pp));
-                                   end
-                               end
-                            end
-                            for oo = 1:1+ll*N
-                                if (oo ~= nn) && (oo ~= mm)
-                                    tmp7 = tmp7 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                    abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
-                                    tmp8 = tmp8 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                    abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
-                                end
-                            end
-                        end
-                        if nn ~= mm
-                            for oo = mm+1:1+kk*N
-                                if oo ~= nn
-                                    tmp10 = tmp10 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                real(conj(T(1+kk*N,mm))*T(1+ll*N,mm)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
-                                end
-                            end
-                            for oo = nn+1:1+kk*N
-                                if oo ~= mm
-                                    tmp11 = tmp11 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                                real(conj(T(1+kk*N,nn))*T(1+ll*N,nn)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
-                                end
-                            end
-                        end
-                    end
-                    for nn = mm+1:1+jj*N
-                        tmp13 = tmp13 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
-                                        real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
-                    end
-              
-                end             %%%%%%%%
-             end
-        end
-        
-    end
+%% New approx of capa 
+% e_sym_b_square_simu = squeeze(mean(abs(sym_b_test).^4,2))
+% e_sym_b_square_model = alpha.^2./U.^4.*(H8_model + 4*H2H6_model + 3*H4H4_model + 6*H4H2H2_model + H2H2H2H2_model)
+% e_noise_b_square_simu = mean(squeeze(mean(abs(noise_b_test).^4,2)),1)
+% e_noise_b_square_model = 2*sigma_b^2
+% 
+% sinr_b_square_model = sinr_b_model.^2;
+% 
+% var_b_model = e_sym_b_square_model/e_noise_b_square_model - sinr_b_square_model
+% 
+% 
+for dd = 1:length(b_subcar)   
+sinr_b_model(:,dd)    = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"bob_correl").';
+var_b_model(:,dd)     = modelVariance(alpha,N,U,T(:,:,dd),sinr_b_model(:,dd),snr_b,snr_e,"bob_correl");
+capa_b_jensen(:,dd)       = log2(1+sinr_b_model(:,dd));
+capa_b_new_approx(:,dd)   = log2(1+sinr_b_model(:,dd)) - 1/2*var_b_model(:,dd)./((1+sinr_b_model(:,dd)).^2);
 end
+capa_b_ergodic      = capa1_b_avg;
 
-TERM22_test = 24*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13)
-
-TERM22 = mean(term22)
-
-
-% Second term of hb_i^2 hb_j^2 (with conj(t t^* t t^*) h^2 h^2) multiplied
-% by hb_k^2 hb_l^2 -> term22_bis
-
-tmp1 = 0;
-tmp2 = 0;
-tmp3 = 0;
-tmp4 = 0;
-tmp5 = 0;
-tmp6 = 0;
-tmp7 = 0;
-tmp8 = 0;
-tmp9 = 0;
-tmp10 = 0;
-tmp11 = 0;
-tmp12 = 0;
-tmp13 = 0;
-for ii = 0:U-1
-    for jj = ii+1:U-1
-        for kk = jj+1:U-1
-            for ll = kk+1:U-1   %%%%%%%%
-                
-                for mm = 1:1+ii*N
-                    for nn = mm+1:1+ii*N
-                            tmp1 = tmp1 + 6*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                            abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
-                            tmp2 = tmp2 + 6*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                            abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
-                            tmp3 = tmp3 + 4*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                            abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
-                           
-                            for oo = 1:1+kk*N
-                               if (oo ~= nn) && (oo ~= mm)
-                                   tmp4 = tmp4 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                   abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,oo))^2;
-                                   tmp5 = tmp5 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                   abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
-                                   tmp6 = tmp4;
-                                   for pp = 1:1+ll*N
-                                       if (pp ~= oo) && (pp ~= nn) && (pp ~= mm)
-                                           tmp9 = tmp9 + real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                         abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,pp))^2;
-                                       end
-                                   end
-                                   for pp = oo+1:1+kk*N
-                                       tmp12 = tmp12 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                        real(T(1+kk*N,oo)*conj(T(1+ll*N,oo))*conj(T(1+kk*N,pp))*T(1+ll*N,pp));
-                                   end
-                               end
-                            end
-                            for oo = 1:1+ll*N
-                                if (oo ~= nn) && (oo ~= mm)
-                                    tmp7 = tmp7 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                    abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
-                                    tmp8 = tmp8 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                    abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
-                                end
-                            end
-                            for oo = mm+1:1+kk*N
-                                if oo ~= nn
-                                    tmp10 = tmp10 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                real(conj(T(1+kk*N,mm))*T(1+ll*N,mm)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
-                                end
-                            end
-                            for oo = nn+1:1+kk*N
-                                if oo ~= mm
-                                    tmp11 = tmp11 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                                real(conj(T(1+kk*N,nn))*T(1+ll*N,nn)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
-                                end
-                            end
-                    end
-                    for nn = mm+1:1+ii*N
-                        tmp13 = tmp13 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
-                                        real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
-                    end
-              
-                end             %%%%%%%%
-             end
-        end
-        
-    end
+figure; 
+plot(capa_b_ergodic, 'Marker', 'square'); 
+hold on; plot(capa_b_jensen, 'Marker', 'o') ; 
+plot(capa_b_new_approx, 'Marker', 'v');
+if length(b_subcar) == 2
+legend('Ergodic capacity: $E[\log_2(1+X)]$, correl','Ergodic capacity: $E[\log_2(1+X)]$, no correl', ...
+        'Jensen inequality: $\log_2(1+E[X])$, correl', 'Jensen inequality: $\log_2(1+E[X])$, no correl',...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$, correl', ...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$, no correl','location','best')
+else
+    legend('Ergodic capacity: $E[\log_2(1+X)]$', ...
+        'Jensen inequality: $\log_2(1+E[X])$',...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$','location','best')
 end
+title('BOB')
+   
+%% Eve Decoder 1
+for dd = 1:length(b_subcar)   
+sinr1_e_model(:,dd)    = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"eve_decod1_correl").';
+var1_e_model(:,dd)     = modelVariance(alpha,N,U,T(:,:,dd),sinr1_e_model(:,dd),snr_b,snr_e,"eve_decod1_correl");
+capa1_e_jensen(:,dd)       = log2(1+sinr1_e_model(:,dd));
+capa1_e_new_approx(:,dd)   = log2(1+sinr1_e_model(:,dd)) - 1/2*var1_e_model(:,dd)./((1+sinr1_e_model(:,dd)).^2);
+end
+capa1_e_ergodic      = capa1_e_avg;
 
-TERM22_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13)
-TERM22_bis = mean(term22_bis)
+figure; 
+plot(capa1_e_ergodic, 'Marker', 'square'); 
+hold on; plot(capa1_e_jensen, 'Marker', 'o') ; 
+plot(capa1_e_new_approx, 'Marker', 'v');
+if length(b_subcar) == 2
+legend('Ergodic capacity: $E[\log_2(1+X)]$, correl','Ergodic capacity: $E[\log_2(1+X)]$, no correl', ...
+        'Jensen inequality: $\log_2(1+E[X])$, correl', 'Jensen inequality: $\log_2(1+E[X])$, no correl',...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$, correl', ...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$, no correl','location','best')
+else
+    legend('Ergodic capacity: $E[\log_2(1+X)]$', ...
+        'Jensen inequality: $\log_2(1+E[X])$',...
+       'New approx: $\log_2(1+E[X]) - \frac{var(X)}{2(1+E[X])^2}$','location','best')
+end   
+title('EVE')
+sr1_jensen = capa_b_jensen - capa1_e_jensen;
+sr1_new_approx = capa_b_new_approx - capa1_e_new_approx;
+sr1_ergodic = capa_b_ergodic - capa1_e_ergodic;
 
-
-
-H2H2H2H2_simu = mean(h2h2h2h2)
-
-
-
-
-
-
+figure; 
+plot(sr1_ergodic,'Marker', 'square'); 
+hold on; plot(sr1_jensen, 'Marker', 'o') ; 
+plot(sr1_new_approx,'Marker', 'v');
+if length(b_subcar) == 2
+legend('Ergodic SR, correl','Ergodic SR, no correl', ...
+        'Jensen inequality SR correl', 'Jensen inequality SR, no correl',...
+       'New approx SR, correl', ...
+       'New approx SR, no correl','location','best')
+else
+    legend('Ergodic SR', ...
+        'Jensen inequality SR',...
+       'New approx SR','location','best')
+end
+   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                           %
 %                                                                           %
@@ -1129,6 +1008,529 @@ H2H2H2H2_simu = mean(h2h2h2h2)
 % end
 % h4h2h2_bis(iter,dd) = 2*(tmp1+tmp2+tmp3);
 % 
+
+
+
+% % FOR H2H2H2H2
+% % First term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term4
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 for mm = 1:1+ii*N
+%                     tmp = tmp + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2 *abs(Hw_TX(mm,mm))^4* ...
+%                           abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                 end
+%             end
+%         end
+%         
+%     end
+% end
+% term4(iter,dd) = 24*tmp;
+% 
+% 
+% % Second term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term22
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 for mm = 1:1+ii*N
+%                     for nn = 1:1+jj*N
+%                         if nn ~= mm
+%                             tmp = tmp + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*abs(Hw_TX(mm,mm))^2*abs(Hw_TX(nn,nn))^2* ...
+%                             abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                         end
+%                     end
+%                 end
+%             end
+%         end
+%         
+%     end
+% end
+% term22(iter,dd) = 24*tmp;
+% 
+% 
+% % Third term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term22_bis
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 for mm = 1:1+ii*N
+%                     for nn = mm+1:1+ii*N
+%                             tmp = tmp + real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                 abs(Hw_TX(mm,mm))^2*abs(Hw_TX(nn,nn))^2* ...
+%                                 abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                     end
+%                 end
+%             end
+%         end
+%         
+%     end
+% end
+% term22_bis(iter,dd) = 48*tmp;
+% 
+% 
+% 
+% 
+% % Fourth term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term1111
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 for mm = 1:1+ii*N
+%                     for nn = 1:1+ii*N
+%                         for oo= 1:1+jj*N
+%                             for pp = 1:1+jj*N
+%                                 if (pp ~= oo) && (pp ~= nn) && (pp ~= mm) && (oo ~= nn) && (oo ~= mm) && (mm ~= nn)
+%                                     tmp = tmp + conj(T(1+ii*N,mm))*T(1+ii*N,nn)*conj(T(1+jj*N,oo))*T(1+jj*N,pp)*...
+%                                         Hw_RX(mm,mm)*Hw_TX(nn,nn)*Hw_RX(oo,oo)*Hw_TX(pp,pp)* ...
+%                                         abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                                 end
+%                             end
+%                         end
+%                     end
+%                 end
+%             end
+%         end
+%     end
+% end
+% term1111(iter,dd) = 24*tmp; 
+% 
+% 
+% % Fith term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term211
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 
+%                 for mm = 1:1+ii*N
+%                     for nn = 1:1+jj*N
+%                         for oo= 1:1+jj*N
+%                             if (oo ~= nn) && (oo ~= mm) && (mm ~= nn)
+%                                 tmp = tmp + abs(T(1+ii*N,mm))^2*abs(Hw_TX(mm,mm))^2* ...
+%                                     T(1+jj*N,nn)*conj(T(1+jj*N,oo))*Hw_RX(nn,nn)*Hw_TX(oo,oo)* ...
+%                                     abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                             end
+%                         end
+%                     end
+%                 end
+%                 
+%             end
+%         end
+%     end
+% end
+% term211(iter,dd) = 24*tmp; 
+% 
+% 
+% % Fith term of hb_i^2 hb_j^2 with hb_k^2 hb_l^2 --> term211_bis
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1
+%                 
+%                 for mm = 1:1+jj*N
+%                     for nn = 1:1+ii*N
+%                         for oo= 1:1+ii*N
+%                             if (oo ~= nn) && (oo ~= mm) && (mm ~= nn)
+%                                 tmp = tmp + abs(T(1+jj*N,mm))^2*abs(Hw_TX(mm,mm))^2* ...
+%                                     T(1+ii*N,nn)*conj(T(1+ii*N,oo))*Hw_RX(nn,nn)*Hw_TX(oo,oo)* ...
+%                                     abs(Hb_TX(1+kk*N,1+kk*N))^2*abs(Hb_TX(1+ll*N,1+ll*N))^2;
+%                             end
+%                         end
+%                     end
+%                 end
+%                 
+%             end
+%         end
+%     end
+% end
+% term211_bis(iter,dd) = 24*tmp; 
+%
+% % First term of hb_i^2 hb_j^2 (with h^4) multiplied by hb_k^2 hb_l^2  
+% % -> term4
+% 
+% tmp1 = 0;
+% tmp2 = 0;
+% tmp3 = 0;
+% tmp4 = 0;
+% tmp5 = 0;
+% tmp6 = 0;
+% tmp7 = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%
+%                 
+%                 for mm = 1:1+ii*N
+%                     tmp1 = tmp1 + 12*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                      abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
+%                     for nn = 1:1+kk*N
+%                         if nn ~= mm
+%                             tmp2 = tmp2 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                             abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
+%                             tmp3 = tmp3 + 3*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                             abs(T(1+ll*N,mm))^2*abs(T(1+kk*N,nn))^2;
+%                             for oo = 1:1+ll*N
+%                                 if (oo ~= nn) && (oo ~= mm)
+%                                     tmp4 = tmp4 + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                                   abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
+%                                 end
+%                             end
+%                             for oo = nn+1:1+kk*N
+%                                 if oo ~= mm
+%                                     tmp7 = tmp7 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                                     real(T(1+kk*N,nn)*conj(T(1+ll*N,nn))*conj(T(1+kk*N,oo))*T(1+ll*N,oo));
+%                                 end
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+ll*N
+%                         if nn ~= mm
+%                             tmp5 = tmp5 + 3*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                             abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
+%                         end
+%                     end
+%                     for nn = mm+1:1+kk*N
+%                         tmp6 = tmp6 + 12*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,mm))^2*...
+%                                          real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
+%                     end
+%                   
+%                 end             %%%%%%%%
+%              end
+%         end
+%         
+%     end
+% end
+% 
+% TERM4_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7);  % 24x2 --> looks ok
+% TERM4 = mean(term4);
+% 
+% % Second term of hb_i^2 hb_j^2 (with h^2 h^2) multiplied by hb_k^2 hb_l^2  
+% % -> term22
+% 
+% tmp1 = 0;
+% tmp2 = 0;
+% tmp3 = 0;
+% tmp4 = 0;
+% tmp5 = 0;
+% tmp6 = 0;
+% tmp7 = 0;
+% tmp8 = 0;
+% tmp9 = 0;
+% tmp10 = 0;
+% tmp11 = 0;
+% tmp12 = 0;
+% tmp13 = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%
+%                 
+%                 for mm = 1:1+ii*N
+%                     for nn = 1:1+jj*N
+%                         if nn ~= mm
+%                             tmp1 = tmp1 + 6*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                             abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
+%                             tmp2 = tmp2 + 6*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                             abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
+%                             tmp3 = tmp3 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                             abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
+%                            
+%                             for oo = 1:1+kk*N
+%                                if (oo ~= nn) && (oo ~= mm)
+%                                    tmp4 = tmp4 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                    abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,oo))^2;
+%                                    tmp5 = tmp5 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                    abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
+%                                    tmp6 = tmp4;
+%                                    for pp = 1:1+ll*N
+%                                        if (pp ~= oo) && (pp ~= nn) && (pp ~= mm)
+%                                            tmp9 = tmp9 + abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                          abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,pp))^2;
+%                                        end
+%                                    end
+%                                    for pp = oo+1:1+kk*N
+%                                        tmp12 = tmp12 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                         real(T(1+kk*N,oo)*conj(T(1+ll*N,oo))*conj(T(1+kk*N,pp))*T(1+ll*N,pp));
+%                                    end
+%                                end
+%                             end
+%                             for oo = 1:1+ll*N
+%                                 if (oo ~= nn) && (oo ~= mm)
+%                                     tmp7 = tmp7 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                     abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
+%                                     tmp8 = tmp8 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                     abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
+%                                 end
+%                             end
+%                         end
+%                         if nn ~= mm
+%                             for oo = mm+1:1+kk*N
+%                                 if oo ~= nn
+%                                     tmp10 = tmp10 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                 real(conj(T(1+kk*N,mm))*T(1+ll*N,mm)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
+%                                 end
+%                             end
+%                             for oo = nn+1:1+kk*N
+%                                 if oo ~= mm
+%                                     tmp11 = tmp11 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                                 real(conj(T(1+kk*N,nn))*T(1+ll*N,nn)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
+%                                 end
+%                             end
+%                         end
+%                     end
+%                     for nn = mm+1:1+jj*N
+%                         tmp13 = tmp13 + 8*abs(T(1+ii*N,mm))^2*abs(T(1+jj*N,nn))^2*...
+%                                         real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
+%                     end
+%               
+%                 end             %%%%%%%%
+%              end
+%         end
+%         
+%     end
+% end
+% 
+% TERM22_test = 24*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13);
+% 
+% TERM22 = mean(term22);
+% 
+% 
+% % Third term of hb_i^2 hb_j^2 (with conj(t t^* t t^*) h^2 h^2) multiplied
+% % by hb_k^2 hb_l^2 -> term22_bis
+% 
+% tmp1 = 0;
+% tmp2 = 0;
+% tmp3 = 0;
+% tmp4 = 0;
+% tmp5 = 0;
+% tmp6 = 0;
+% tmp7 = 0;
+% tmp8 = 0;
+% tmp9 = 0;
+% tmp10 = 0;
+% tmp11 = 0;
+% tmp12 = 0;
+% tmp13 = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%
+%                 
+%                 for mm = 1:1+ii*N
+%                     for nn = mm+1:1+ii*N
+%                             tmp1 = tmp1 + 6*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                             abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,mm))^2;
+%                             tmp2 = tmp2 + 6*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                             abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,nn))^2;
+%                             tmp3 = tmp3 + 4*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                             abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,nn))^2;
+%                            
+%                             for oo = 1:1+kk*N
+%                                if (oo ~= nn) && (oo ~= mm)
+%                                    tmp4 = tmp4 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                    abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,oo))^2;
+%                                    tmp5 = tmp5 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                    abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
+%                                    tmp6 = tmp4;
+%                                    for pp = 1:1+ll*N
+%                                        if (pp ~= oo) && (pp ~= nn) && (pp ~= mm)
+%                                            tmp9 = tmp9 + real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                          abs(T(1+kk*N,oo))^2*abs(T(1+ll*N,pp))^2;
+%                                        end
+%                                    end
+%                                    for pp = oo+1:1+kk*N
+%                                        tmp12 = tmp12 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                         real(T(1+kk*N,oo)*conj(T(1+ll*N,oo))*conj(T(1+kk*N,pp))*T(1+ll*N,pp));
+%                                    end
+%                                end
+%                             end
+%                             for oo = 1:1+ll*N
+%                                 if (oo ~= nn) && (oo ~= mm)
+%                                     tmp7 = tmp7 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                     abs(T(1+kk*N,mm))^2*abs(T(1+ll*N,oo))^2;
+%                                     tmp8 = tmp8 + 2*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                     abs(T(1+kk*N,nn))^2*abs(T(1+ll*N,oo))^2;
+%                                 end
+%                             end
+%                             for oo = mm+1:1+kk*N
+%                                 if oo ~= nn
+%                                     tmp10 = tmp10 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                 real(conj(T(1+kk*N,mm))*T(1+ll*N,mm)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
+%                                 end
+%                             end
+%                             for oo = nn+1:1+kk*N
+%                                 if oo ~= mm
+%                                     tmp11 = tmp11 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                                 real(conj(T(1+kk*N,nn))*T(1+ll*N,nn)*T(1+kk*N,oo)*conj(T(1+ll*N,oo)));
+%                                 end
+%                             end
+%                     end
+%                     for nn = mm+1:1+ii*N
+%                         tmp13 = tmp13 + 8*real(T(1+ii*N,mm)*conj(T(1+jj*N,mm))*conj(T(1+ii*N,nn))*T(1+jj*N,nn))*...
+%                                         real(T(1+kk*N,mm)*conj(T(1+ll*N,mm))*conj(T(1+kk*N,nn))*T(1+ll*N,nn));
+%                     end
+%               
+%                 end             %%%%%%%%
+%              end
+%         end
+%         
+%     end
+% end
+% 
+% TERM22_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4 + tmp5 + tmp6 + tmp7 + tmp8 + tmp9 + tmp10 + tmp11 + tmp12 + tmp13);
+% TERM22_bis = mean(term22_bis);
+% 
+% 
+% % 4 Fourth term of hb_i^2 hb_j^2 (with h h^* h h^*) multiplied 
+% % by hb_k^2 hb_l^2  -> term1111
+% tmp = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%
+%                 for mm = 1:1+ii*N
+%                     for nn = mm+1:1+ii*N
+%                         for oo = 1:1+jj*N
+%                             if (oo ~= nn) && (oo ~= mm)
+%                                 for pp = oo+1:1+jj*N
+%                                     if (pp ~= nn) && (pp ~= mm)
+%                                         tmp = tmp + real(conj(T(1+ii*N,mm))*T(1+kk*N,mm)*T(1+ii*N,nn)*conj(T(1+kk*N,nn))* ... 
+%                                                          conj(T(1+jj*N,oo))*T(1+ll*N,oo)*T(1+jj*N,pp)*conj(T(1+ll*N,pp)));
+%                                     end
+%                                 end
+%                             end
+%                         end
+%                     end
+%                 end
+%             end
+%         end
+%     end
+% end
+% TERM1111_test = 16*24*tmp;
+% TERM1111 = mean(term1111);
+% 
+% 
+% % 5 Fifth term of hb_i^2 hb_j^2 (with h^2 h^* h) multiplied 
+% % by hb_k^2 hb_l^2  -> term211
+% tmp1 = 0;
+% tmp2 = 0;
+% tmp3 = 0;
+% tmp4 = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%
+%                 
+%                 for mm = 1:1+ii*N
+%                     for nn = 1:1+jj*N
+%                         for oo = nn+1:1+jj*N
+%                             if (oo ~= mm) && (nn ~= mm)
+%                                 tmp1 = tmp1 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+kk*N,mm))^2* ... 
+%                                        real(conj(T(1+jj*N,nn)) * T(1+ll*N,nn) * T(1+jj*N,oo) * conj(T(1+ll*N,oo)));
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+kk*N
+%                         for oo = 1:1+jj*N
+%                             for pp = oo+1:1+jj*N
+%                                if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+%                                    tmp2 = tmp2 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+kk*N,nn))^2* ... 
+%                                        real(conj(T(1+jj*N,oo)) * T(1+ll*N,oo) * T(1+jj*N,pp) * conj(T(1+ll*N,pp)));
+%                                end
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+jj*N
+%                         for oo = nn+1:1+jj*N
+%                             if (oo ~= mm) && (nn ~= mm)
+%                                 tmp3 = tmp3 + 4*abs(T(1+ii*N,mm))^2*abs(T(1+ll*N,mm))^2* ... 
+%                                        real(conj(T(1+jj*N,nn)) * T(1+kk*N,nn) * T(1+jj*N,oo) * conj(T(1+kk*N,oo)));
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+ll*N
+%                         for oo = 1:1+jj*N
+%                             for pp = oo+1:1+jj*N
+%                                if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+%                                    tmp4 = tmp4 + 2*abs(T(1+ii*N,mm))^2*abs(T(1+ll*N,nn))^2* ... 
+%                                        real(conj(T(1+jj*N,oo)) * T(1+kk*N,oo) * T(1+jj*N,pp) * conj(T(1+kk*N,pp)));
+%                                end
+%                             end
+%                         end
+%                     end
+%                 end
+%                 
+%             end
+%         end
+%     end
+% end
+% TERM211_test = 48*(tmp1 + tmp2 + tmp3 + tmp4);
+% TERM211 = mean(term211);
+% 
+% % 6 Sixth term of hb_i^2 hb_j^2 (with h^2 h^* h) multiplied 
+% % by hb_k^2 hb_l^2  -> term211_bis
+% tmp1 = 0;
+% tmp2 = 0;
+% tmp3 = 0;
+% tmp4 = 0;
+% for ii = 0:U-1
+%     for jj = ii+1:U-1
+%         for kk = jj+1:U-1
+%             for ll = kk+1:U-1   %%%%%%%%T(1+ii*N,nn)*conj(T(1+ii*N,oo))
+%                 
+%                 for mm = 1:1+jj*N
+%                     for nn = 1:1+ii*N
+%                         for oo = nn+1:1+ii*N
+%                             if (oo ~= mm) && (nn ~= mm)
+%                                 tmp1 = tmp1 + 4*abs(T(1+jj*N,mm))^2*abs(T(1+kk*N,mm))^2* ... 
+%                                        real(conj(T(1+ii*N,nn)) * T(1+ll*N,nn) * T(1+ii*N,oo) * conj(T(1+ll*N,oo)));
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+kk*N
+%                         for oo = 1:1+ii*N
+%                             for pp = oo+1:1+ii*N
+%                                if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+%                                    tmp2 = tmp2 + 2*abs(T(1+jj*N,mm))^2*abs(T(1+kk*N,nn))^2* ... 
+%                                        real(conj(T(1+ii*N,oo)) * T(1+ll*N,oo) * T(1+ii*N,pp) * conj(T(1+ll*N,pp)));
+%                                end
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+ii*N
+%                         for oo = nn+1:1+ii*N
+%                             if (oo ~= mm) && (nn ~= mm)
+%                                 tmp3 = tmp3 + 4*abs(T(1+jj*N,mm))^2*abs(T(1+ll*N,mm))^2* ... 
+%                                        real(conj(T(1+ii*N,nn)) * T(1+kk*N,nn) * T(1+ii*N,oo) * conj(T(1+kk*N,oo)));
+%                             end
+%                         end
+%                     end
+%                     for nn = 1:1+ll*N
+%                         for oo = 1:1+ii*N
+%                             for pp = oo+1:1+ii*N
+%                                if  (nn ~= mm) && (oo ~= mm) && (oo ~= nn) && (pp ~= mm) && (pp ~= nn)
+%                                    tmp4 = tmp4 + 2*abs(T(1+jj*N,mm))^2*abs(T(1+ll*N,nn))^2* ... 
+%                                        real(conj(T(1+ii*N,oo)) * T(1+kk*N,oo) * T(1+ii*N,pp) * conj(T(1+kk*N,pp)));
+%                                end
+%                             end
+%                         end
+%                     end
+%                 end
+%                 
+%             end
+%         end
+%     end
+% end
+% TERM211_bis_test = 48*(tmp1 + tmp2 + tmp3 + tmp4);
+% TERM211_bis = mean(term211_bis);
+
 
 
 

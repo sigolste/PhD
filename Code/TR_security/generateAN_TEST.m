@@ -85,11 +85,8 @@ switch type
         
     case "svd"
         A = despread_matrix*diag(Hb);
-        [U,S,V] = svd(A);
+        [~,S,V] = svd(A);
         S = S(1:N,1:N);         % Non zeroes singular values
-%         [b cc d] = svd(A); 
-%         ccc = cc(1:N,1:N);
-%         cccc = energy(ccc);
         V2 = null(A);
         W_tilde = 1/sqrt(2)*(randn(Q-N,1) + 1j*randn(Q-N,1));
         W = V2*W_tilde;
