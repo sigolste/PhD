@@ -7,9 +7,9 @@ sigma_e = 1./U/10^(snr_e/10);    % expected noise energy @Eve
 alpha = alpha.';
 switch type 
     case "bob_correl"
-        H2H2 = modelCorrelH2H2(N,U,T)
-        H4 = modelCorrelH4(U)
-        e_sym = alpha./(U^2)*(H4 + H2H2)
+        H2H2 = modelCorrelH2H2(N,U,T);
+        H4 = modelCorrelH4(U);
+        e_sym = alpha./(U^2)*(H4 + H2H2);
         e_noise = sigma_b;
         sinr = e_sym./e_noise;
         
