@@ -1,0 +1,345 @@
+\documentclass[12pt]{article}
+\input{preambule.tex}
+
+%\newcommand{\bibfont}{\footnotesize}
+
+\linespread{1.0}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin[document]
+\begin{document}
+\title{\textbf{Introducing Correlation amongs subcarriers\\}}
+\author{Sidney Golstein}
+\maketitle
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% abstract
+\section{Short Reminder}
+We consider that we have $Q$ channel subcarriers, that we spread (via $\spread$) our symbols  $\textbf{x}$ by a factor $U$ called back-off rate (BOR). We send $N = Q/U$ symbols per OFDM block. At the transmitter side, we precode the data by the complex conjugate version of Bob's channel frequency response ($\HB^H$). We add an artifical noise signal ($\textbf{w}$) which lies in Bob null space, i.e., $\spread^H \HB \textbf{w} = \textbf{0}$. At the receiver side, we despread the received sequence at Bob via $\spread^H$, and we decode the received sequence with a particular decoding structure $\textbf{G}$ at Eve. The communication scheme is presented below:
+
+\tikzstyle{block} = [draw, fill=gray!20, rectangle, 
+minimum height=2em, minimum width=2.5em]
+\tikzstyle{sum} = [draw, fill=gray!20, circle, node distance=.1cm,inner sep=0pt]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+
+\begin{tikzpicture}[auto, node distance=2cm,>=latex']
+\label{TR_secure}
+% We start by placing the blocks
+\node [input, name=symbol] {};
+\node [block, right of=symbol] (spreading) {\footnotesize Spreading : $\spread$};
+\node [block, right of=spreading, node distance=3.5cm] (precoding){\footnotesize Precoding : $\HB^H$};
+
+\node [sum, right of=precoding, pin={[pinstyle]below: \footnotesize $\textbf{w}$},
+node distance=2.5cm] (sum) {\footnotesize$+$};
+
+\node [block, right of= sum,node distance=2cm] (channel_bob) {\footnotesize $\HB$};
+
+\node [sum, right of=channel_bob, pin={[pinstyle]below:\footnotesize $\textbf{v}_\text{B}$},
+node distance=2cm] (sum2) {\footnotesize$+$};
+
+\node [block, below of=channel_bob] (channel_eve) {\footnotesize$\HE$};
+
+\node [sum, right of=channel_eve, pin={[pinstyle]below:$\textbf{v}_\text{E}$},
+node distance=2cm] (sum3) {\footnotesize$+$};
+
+\node [block, right of= sum2,node distance=2cm,fill=blue!20] (despread_bob) {\footnotesize $\spread^H$};
+
+\node [block, right of= sum3,node distance=2cm,fill=red!70] (filt_eve) {\footnotesize  $\textbf{G}$};
+
+\node [output, right of=despread_bob] (outputb) {};
+
+\node [output, right of=filt_eve] (outpute) {};
+
+%\node [block, right of=channel, pin={[pinstyle]above:Disturbances},
+%        node distance=3cm] (system) {System};
+% We draw an edge between the controller and system block to 
+% calculate the coordinate u. We need it to place the measurement block. 
+%\draw [->] (precoding) -- node[name=y] {$\underline{Y}$} (sum);
+%\node [output, right of=system] (output) {};
+%\node [block, below of=u] (measurements) {Measurements};
+
+% Once the nodes are placed, connecting them is easy. 
+\draw [draw,->] (symbol) -- node {\footnotesize$\textbf{x}$} (spreading);
+
+
+\draw [->] (spreading) -- node [name = spread]{} (precoding);
+
+\draw [->] (precoding) -- node [name = sum_an] {} (sum);
+\draw [->] (sum) -- node [name = to_bob] {} (channel_bob);
+
+
+\draw [->] (to_bob) |- (channel_eve);
+
+
+\draw [->] (channel_bob) -- node [name = noise_bob] {} (sum2);
+
+
+\draw [->] (channel_eve) -- node [name = noise_eve] {} (sum3);
+
+
+\draw [->] (sum2) -- node [name = dspr_eve] {} (despread_bob);
+
+
+\draw [->] (sum3) -- node [name = dspr_eve] {} (filt_eve);
+
+
+\draw [draw = blue,->] (despread_bob) -- node [name = eq_bob1] {\footnotesize$\textbf{y}_{\text{B}}^{H}$} (outputb);
+
+
+\draw [draw = red,->] (filt_eve) -- node [name = eq_eve1] {\footnotesize$\textbf{y}_{\text{E}}^{H}$} (outpute);
+\end{tikzpicture}
+
+
+
+
+%%%%%%%%%%%%%%%%
+\section{Problem Statement}
+We want to analyze the effect of introducing correlation among channel subcarriers, i.e., the effect of frequency correlation in our system. \\
+In the time-domain, we modelize the channel thanks to $L$ taps:
+\begin{equation}
+	h = [h_1 ... h_L]^T
+	\label{eq:channel_TD}
+\end{equation}
+The time-domain correlation function is given by:
+\begin{equation}
+	\EX{h h^H} := C_h(\tau) = \text{diag}(p_1 ... p_L)
+	\label{eq:corr_fct_TD}
+\end{equation}
+where $(p_1 ... p_L) := P(\tau)$ is the power delay profile (PDP). It gives the power density (per delay unit) incident onto a local area as a function of the propagation delay $\tau$. The Fourrier transform of the PDP is the correlation function in the frequency domain:
+\begin{equation}
+ C_H(\Delta f) = \int_{-\infty}^{\infty} P(\tau) e^{-j 2\pi \Delta f \tau} d\tau
+\label{eq:corr_fct_FD}
+\end{equation}
+where $\Delta f$ is the frequency difference between two particular subcarriers. The PDP $P(\tau)$ is often assumed to follow an exponential model:
+\begin{equation}
+	P(\tau) = P_0 \; e^{-\tau/\sigma_\tau}  \; \; , \; \tau \geq 0
+	\label{eq:PDP_model}
+\end{equation}
+where $\sigma_\tau$ is the delay spread which characterizes the PDP duration and depends on the physical environment.\\
+From (\ref{eq:corr_fct_FD}) and (\ref{eq:PDP_model}), we obtain the frequency-domain correlation function as:
+\begin{equation}
+	C_H(\Delta f) = \frac{P_0 \sigma_\tau}{1+ 2\pi j \sigma_\tau \Delta f}
+	\label{eq:correl_fct}
+\end{equation}
+Another parameter that characterizes the environment is the coherence bandwidth ($\Delta f_C$) which is defined as the bandwidth over which the correlation is above a certain threshold (typically 0.7):
+\begin{equation}
+	\Delta f_C \approx \frac{1}{2\pi\sigma_\tau}
+	\label{eq:coherence_bw}
+\end{equation}
+In the simulation, we consider a normalized frequency-domain correlation function, i.e. $P_0 \sigma_\tau = 1$. If we have Q channel subcarriers, we create a correlation matrix given by:
+\begin{equation}
+\textbf{C}_H = 
+\begin{bmatrix}
+	1 & c_{1,2} & \hdots & c_{1,Q}  \\
+	c_{1,2}^* & 1 & \hdots & c_{2,Q} \\
+	\vdots & & \ddots & \vdots \\
+	c_{1,Q}^* & c_{2,Q}^* & \hdots & 1
+\end{bmatrix}
+\label{eq:correl_mat}
+\end{equation}
+Due to the spreading, there is a spacing of $N$ subcarriers between two symbol components.  If we denote by $\Delta f_{k}$ the frequency spacing between k subcarriers, we have $\Delta f_{k} = k \Delta f_N$, where $\Delta f_N$ is the subcarrier bandwidth. The subcarrier bandwidth is a fraction, depending on $N$, of the channel coherence bandwidth:
+\begin{equation}
+	\Delta f_N = \frac{\beta}{N} \Delta f_C \; \; , \; \beta \in \mathbb{R}^+
+	\label{eq:subcar_BW}
+\end{equation}
+From this, if $\beta/N << 1$, the channel is highly correlated, i.e., the frequency spacing between two subsequent symbol components is smaller than the channel coherence bandwidth. If $\beta/N >> 1$, the channel is strongly uncorrelated, i.e., the frequency spacing between two subsequent symbol components is larger than the channel coherence bandwidth.
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.65\linewidth]{img/channelComparaison.eps}
+\caption{Correlated channel ($\beta/N = 1/6$) ; Uncorrelated channel ($\beta/N = 100$)}
+\label{fig:channel}
+\end{figure} 
+In order to generate a correlated channel, we will perform a Choleski decomposition of the correlation matrix. It decomposes a square, symmetric and positive semi-definite matrix into an unique product of a lower triangular matrix and its hermitian, such that:
+\begin{equation}
+	\textbf{C}_H = \textbf{T T}^H
+\end{equation}
+where
+\begin{equation}
+	\textbf{T} = 
+	\begin{bmatrix}
+	t_{1,1} & 0 & \hdots & 0 \\
+	t_{2,1} & t_{2,2} & \hdots & 0 \\
+	\vdots & & \ddots & \vdots \\
+	t_{Q,1} & t_{Q,2} & \hdots & t_{Q,Q}
+	\end{bmatrix}
+\end{equation}
+The Choleski coefficients can be computed in a recursive way thanks to the Cholski algorithm. So, for a given PDP model and delay spread, we can determine the coefficients of the Choleski matrix The diagonal elements are also positive. Bob correlated channel ($\HB$) will then be the product of the Choleski matrix $\textbf{T}$ with an uncorrelated channel ($\textbf{H}$), i.e., $\HB = \textbf{T H}$. A a consequence, a particular channel component will be a weighted sum depending on the previous ones:
+\begin{equation}
+ 	h_{\text{B},j} = \sum_{k = 1}^{j} t_{j,k} h_k
+ 	\label{eq:corr_channel}
+\end{equation}
+Note that for an uncorrelated channel, $\textbf{T} = \textbf{I}_Q$ is the identity matrix. In doing so, each subcarrier is independant from the others. We also have:
+\begin{equation}
+	\sum_{k = 1}^{j} \left| t_{j,k}\right|^2 = 1
+	\label{eq:chol_properties}
+\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{SINR Modeling}
+In this section, we introduce correlation among Bob's subcarriers only. We consider that Eve channel is uncorrelated. \textcolor{red}{Au début, je pensais intuitivement que ne pas mettre de la corrélation chez Eve était le worst case scénario en terme de sécurité (que ça maximisait la capacité à Eve). Ca s'est avéré ne pas être vrai (cfr plus bas). Mais du coup, je n'ai fait les calculs qu'en considérant de la corrélation à Bob.}. As a reminder, the ergodic SINR is modelized in order to find an approximation of the ergodic capacity using the Jensen's innequality:
+\begin{equation}
+	\EX{\log_2(1+X)} \leq \log_2(1+\EX{X}) 
+	\label{eq:jensen_innequality}
+\end{equation}
+where $X$ is Bob/Eve SINR. When no correlation was introduced, the innequality bound was tight such that it was used as an approximation. \\
+As a reminder, Bob and Eve are spatially uncorrelated. 
+\subsection{Bob SINR}
+At Bob, the received signal is given by:
+\begin{equation}
+\textbf{y}_{\text{B}}^H = \sqrt{\alpha}\spread^H  \module{\HB}^2\spread\; \textbf{x} +  \spread^H \textbf{v}_\text{B} 
+\label{eq:rx_bob}
+\end{equation}
+The ergodic SINR is then:
+\begin{equation}
+	\EX{\gamma_B} = \frac{\alpha\EX{\left| \spread^H  \module{\HB}^2\spread\ \right|^2}}{ \EX{\left|  \spread^H \textbf{v}_\text{B}\right|^2}}
+	\label{eq:expected_sinrb}
+\end{equation}
+For a particular symbol $n$, the expected value of the data component is:
+\begin{equation}
+\begin{split}
+\EX{\left| \text{data}\right|^2} &=  \frac{\alpha}{U^2} \EX{\left|\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2\right|^2} \\
+&=  \frac{\alpha}{U^2} \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^4  + \sum_{i=0}^{U-1}\sum_{j \neq i}^{U-1} \left|h_{B,n+iN}\right|^2  \left|h_{B,n+jN}\right|^2 }
+\label{eq:data_b_determination}
+\end{split}
+\end{equation}
+We can show that:
+\begin{equation}
+	 \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^4} = 2U
+	 \label{eq:data_b_determination_1}
+\end{equation}
+Also:
+\begin{equation}
+\begin{split}
+\EX{\sum_{i=0}^{U-1}\sum_{j \neq i}^{U-1} \left|h_{B,n+iN}\right|^2  \left|h_{B,n+jN}\right|^2} =& \sum_{i=0}^{U-1} \sum_{j>i}^{U-1} \Bigg(\sum_{k=1}^{n+iN} 2 \module{t_{n+iN,k}}^2   \module{t_{n+jN,k}}^2 + \\
+& \sum_{k=1}^{n+iN} \sum_{k'\neq k}^{n+jN} \module{t_{n+iN,k}}^2   \module{t_{n+jN,k'}}^2 +\\
+& \sum_{k=1}^{n+iN} \sum_{k'>k}^{n+jN} 2 R [ t_{n+iN,k} t_{n+iN,k'}^* t_{n+jN,k}^* t_{n+jN,k'}] \Bigg)
+\label{eq:data_b_determination_2}
+\end{split}
+\end{equation}
+For the noise component: 
+\begin{equation}
+	\EX{\left| \text{noise}\right|^2} = \sigma^2_{B}
+	\label{eq:noise_b_determination}
+\end{equation}
+The SINR is simply the ratio between eq.(\ref{eq:data_b_determination_2}) and (\ref{eq:noise_b_determination})
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.88\linewidth]{img/bob_sinr_terms_fit.eps}
+	\caption{Bob SINR terms fiting, modelization vs simulation}
+	\label{fig:SINR_terms_fits}
+\end{figure} \\
+From Fig.\ref{fig:SINR_terms_fits}, we observe that the analytic expressions (\ref{eq:data_b_determination_2}) and (\ref{eq:noise_b_determination}) well fit the simulation results. In particular, we remark that the received data energy increases when the correlation increases. 
+
+
+\subsection{Eve SINR}
+\paragraph*{SDS Decoding Structure}
+When Eve simply despread the received signal, we have
+\begin{equation}
+\textbf{y}_{\text{E}}^{SDS} = \sqrt{\alpha}\spread^H  \HB^H \HE \spread\; \textbf{x} +  \spread^H \textbf{v}_\text{E} + \sqrt{1-\alpha} \spread^H \HE\textbf{w}
+\label{eq:rx_SDS_eve}
+\end{equation}
+The ergodic SINR is then:
+\begin{equation}
+\EX{\gamma_E^{SDS}} = \frac{\alpha\EX{\left| \spread^H  \HE\HB^H\spread\ \right|^2}}{ \EX{\left|  \spread^H \textbf{v}_\text{E}\right|^2 + (1-\alpha)  \left| \spread^H  \HE \textbf{w} \right|^2 }} \\
+\label{eq:expected_sinr_SDS_e}
+\end{equation}
+For a particular symbol $n$, the ergodic data component energy is:
+\begin{equation}
+\begin{split}
+\EX{\left| \text{data}\right|^2} &=  \frac{\alpha}{U^2} \EX{\left|\sum_{i=0}^{U-1} h^*_{B,n+iN}h_{E,n+iN}\right|^2} \\
+&=  \frac{\alpha}{U^2} \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2 \left|h_{E,n+iN}\right|^2 + \sum_{i=0}^{U-1}\sum_{j \neq i}^{U-1} h^*_{B,n+iN}  h_{B,n+jN} h_{E,n+iN}  h^*_{E,n+jN} } \\
+&= \frac{\alpha}{U^2} \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2 .1} = \frac{\alpha}{U}
+\label{eq:data_E_SDS_determination}
+\end{split}
+\end{equation}
+Eq.(\ref{eq:data_E_SDS_determination}) gives the same result as if no correlation was introduced at Bob. Obviously the AN and noise terms will not depend on Bob correlation. 
+For the noise component: 
+\begin{equation}
+\EX{\left| \text{noise}\right|^2} = \sigma^2_{E}
+\label{eq:noise_e_SDS_determination}
+\end{equation}
+For the AN component:
+\begin{equation}
+\EX{\left| \text{AN}\right|^2} = \frac{(1-\alpha)}{U} \sigma_{AN}^2 = (1-\alpha)
+\label{eq:noise_an_SDS_determination}
+\end{equation}
+The SINR is therefore identical as in the case where Bob channel is uncorrelated.\\
+
+\textcolor{red}{Je montre pas les calculs pour le matched filter ni le own channel decoder parce que le problème qui suit aparaît déjà pour la capacité à Bob. Mais, les mêmes soucis apparaissent pour toutes les structures de décodage à Eve}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Jensen's innequality issue}
+In the past works, the Jensen innequality was used as a good approximation when no correlation was introduced among Bob's subcarriers. When correlation is present, the approximation does not hold anymore, as seen in Fig(\ref{fig:capaB_ergo_jensen}). In particular, we observe that, when $\Delta f_N / \Delta f_C = 100$, i.e., uncorrelated channel, the fit between analytic and simulation curves is almost perfect. However, when $\Delta f_N / \Delta f_C = 1/6$, i.e., highly correlated channel, the ergodic capacity decreases but the approximation suggests that it should increase. 
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.75\linewidth]{img/capaB_ergoVSjensen.eps}
+	\caption{Bob capacity, variable correlation, ergodic vs Jensen's innequality}
+	\label{fig:capaB_ergo_jensen}
+\end{figure} 
+In order to understand the behaviour of the analytic model of the capacity derived using the Jensen's innequality as an approximation, we will analyze eq.(\ref{eq:data_b_determination}). When Bob's channel is fully correlated, i.e., all subcarriers are an identical complex scalar, eq.(\ref{eq:data_b_determination}) becomes:
+\begin{equation}
+\begin{split}
+\EX{\left| \text{data}\right|^2} &=  \frac{\alpha}{U^2} \EX{\left|\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2\right|^2} \\
+&=  \frac{\alpha}{U^2} \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^4  + \sum_{i=0}^{U-1}\sum_{j \neq i}^{U-1} \left|h_{B,n+iN}\right|^2  \left|h_{B,n+jN}\right|^2 } \\
+&=  \frac{\alpha}{U^2} \left(2U + 2U(U-1) \right)= 2\alpha
+\label{eq:data_b_determination_fullCorrel}
+\end{split}
+\end{equation}
+When Bob's channel is totally uncorrelated, eq.(\ref{eq:data_b_determination}) becomes:
+\begin{equation}
+\begin{split}
+\EX{\left| \text{data}\right|^2} &=  \frac{\alpha}{U^2} \EX{\left|\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2\right|^2} \\
+&=  \frac{\alpha}{U^2} \EX{\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^4  + \sum_{i=0}^{U-1}\sum_{j \neq i}^{U-1} \left|h_{B,n+iN}\right|^2  \left|h_{B,n+jN}\right|^2 } \\
+&=  \frac{\alpha}{U^2} \left(2U + U(U-1) \right)= \frac{\alpha(U+1)}{U}
+\label{eq:data_b_determination_noCorrel}
+\end{split}
+\end{equation}
+Eq.(\ref{eq:data_b_determination_fullCorrel}) and (\ref{eq:data_b_determination_noCorrel}) suggest that Bob ergodic SINR increases when the correlation increases:
+\begin{equation}
+	\frac{\alpha(U+1)}{U \sigma_B^2}\Bigg|_{\text{no correl}} \leq \EX{\gamma_B} \leq \frac{2\alpha}{\sigma_B^2}\Bigg|_{\text{full correl}}
+\end{equation}
+This behaviour can be seen in Fig.(\ref{fig:sinr_capa_variableCorrelB}). This implies that the approximated capacity $\log_2{(1+\EX{\gamma_B})}$ should increase with an increase of the correlation. However, it is observed in Fig.(\ref{fig:sinr_capa_variableCorrelB}) that the ergodic capacity $\EX{\log_2{(1+\gamma_B)}}$ decreases with an increase of the correlation.
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.75\linewidth]{img/SINR_capa_variableCorrelB.eps}
+	\caption{Bob SINR/capacity as a function of the frequency  correlation}
+	\label{fig:sinr_capa_variableCorrelB}
+\end{figure}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Second order Taylor approximation of the capacity}
+New approximation cfr FC17 verso
+\begin{equation}
+	\EX{\log_2(1+X)} \approx \log_2(1+\EX{X}) - \frac{\text{var}(X)}{2(1+\EX{X})^2}
+	\label{eq:second_order_approx}
+\end{equation}
+
+
+Results avec 2e ordre approx:
+SINR modeles 1/2 1er et 2e ordre
+Capa modeles 1/2 1er et 2e ordre
+SR pour modele 1/2 1r et 2e ordre
+
+
+Montrer aussi les matrices d'erreurs\\
+
+
+
+\section{Simulation Results}
+
+
+\end{document}

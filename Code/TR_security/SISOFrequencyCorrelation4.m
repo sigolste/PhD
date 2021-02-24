@@ -9,8 +9,8 @@
 %   To ensure: i.e. No AWGN @E
 %
 %
-%   Code Started:   09.02.2021
-%   Last Update:    11.02.2021
+%   Code Started:   15.02.2021
+%   Last Update:    19.02.2021
 %
 %  
 %   Mathematical derivations: cfr FC35-36

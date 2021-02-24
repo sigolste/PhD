@@ -24,7 +24,7 @@ alpha_step = 5;                           % Percentage between subsequent alpha 
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 4;
+Q = 32;
 U = 4;
 N = Q./U;
 
@@ -50,7 +50,7 @@ mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
-coef_freq = [100000].*N/6;
+coef_freq = [1].*N/6;
 delta_f_n = coef_freq.*delta_f_c;   
 b_subcar = delta_f_n./N;                                    % Bandwidth of each subcarrier
 x_axis  = delta_f_n./delta_f_c;
@@ -350,7 +350,7 @@ sr2_avg = squeeze(mean(sr2));%capa1_b_correl_avg - capa2_e_avg;
 % E[X^2] = E[ |S^H |Hb|^2 S|^4 / |S^H v_b|^4 ]
 % 1.1.1 E[ | S^H |Hb|^2 S |^4  ]
 
-sym_b_TEST =squeeze(mean(abs(sym_b_test).^4,2))
+sym_b_TEST =squeeze(mean(abs(sym_b_test).^4,2));
 SYM_B_TEST = alpha.^2./U^4.*(24.*U + 36*U.*(U-1) + 12*U.*(U-1).*(U-2) + U.*(U-1).*(U-2).*(U-3));  %-> OK si no correl
 % figure;
 % plot(sym_b_TEST); hold on; plot(SYM_B_TEST,'o');
@@ -400,7 +400,7 @@ TESTcapae1 = log2(1+SINRe1) - varTESTe1./(2*(1+SINRe1).^2); % New approx of Bob 
 
 
 for dd = 1:length(b_subcar)
-sinr1_correl_model_b(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,squeeze(T(:,:,dd)),snr_b,snr_e,"bob_correl")
+sinr1_correl_model_b(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,squeeze(T(:,:,dd)),snr_b,snr_e,"bob_correl");
 
 sinr1_model_e(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"eve_decod1_correl");
 sinr2_model_e(:,dd) = sinrModelingFrequencyCorrelation(alpha,U,N,T(:,:,dd),snr_b,snr_e,"eve_decod2_correl");

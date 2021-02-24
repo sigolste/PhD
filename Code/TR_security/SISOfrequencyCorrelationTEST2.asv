@@ -540,10 +540,10 @@ plot(100*(1-alpha),capa1_b_avg,'Marker','o'); hold on;
 plot(100*(1-alpha),capa_b_jensen,'Marker','x'); hold on;
 legend('Ergodic capa : $\Delta f_N/\Delta f_C = 1/6$','Ergodic capa : $\Delta f_N/\Delta f_C = 100$', ...
     'Jensen innequality : $\Delta f_N/\Delta f_C = 1/6$', 'Jensen innequality : $\Delta f_N/\Delta f_C = 100$', 'location','bestoutside')
-title('Capa @B')
+title('Data Term @B')
 box on; grid on;
 xlabel('An energy injected ($\%$)')
-ylabel('Capacity (bit/channel use)')
+ylabel('Energy')
 
 
 
