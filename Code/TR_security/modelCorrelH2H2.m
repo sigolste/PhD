@@ -25,6 +25,11 @@ function H2H2 = modelCorrelH2H2(N,U,T)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% Preliminary:
+% ∑_i ∑_j!=i |Hb,n+iN|^2 |Hb,n+jN|^2 = 2 ∑_i ∑_j>i |Hb,n+iN|^2 |Hb,n+jN|^2
+% Computation cfr FC13 verso
+
+
 tmp1 = 0;    % |t_ik|^2 |t_jk|^2 |h_k|^4
 tmp2 = 0;    % |t_ik|^2 |t_jl|^2 |h_k|^2 |h_l|^2
 tmp3 = 0;         % t_ik t_il^* t_jk t_jl^* |h_k|^2 |h_l|^2

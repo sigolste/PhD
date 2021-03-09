@@ -10,7 +10,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% begin[document]
 \begin{document}
-\title{\textbf{Introducing Correlation amongs subcarriers\\}}
+\title{\textbf{Introducing Correlation among subcarriers\\}}
 \author{Sidney Golstein}
 \maketitle
 
@@ -100,7 +100,7 @@ node distance=2cm] (sum3) {\footnotesize$+$};
 
 %%%%%%%%%%%%%%%%
 \section{Problem Statement}
-We want to analyze the effect of introducing correlation among channel subcarriers, i.e., the effect of frequency correlation in our system. \\
+We want to analyze the effect of the introduction of correlation among channel subcarriers, i.e., the effect of frequency correlation in our system. \\
 In the time-domain, we modelize the channel thanks to $L$ taps:
 \begin{equation}
 	h = [h_1 ... h_L]^T
@@ -143,7 +143,7 @@ In the simulation, we consider a normalized frequency-domain correlation functio
 \end{bmatrix}
 \label{eq:correl_mat}
 \end{equation}
-Due to the spreading, there is a spacing of $N$ subcarriers between two symbol components.  If we denote by $\Delta f_{k}$ the frequency spacing between k subcarriers, we have $\Delta f_{k} = k \Delta f_N$, where $\Delta f_N$ is the subcarrier bandwidth. The subcarrier bandwidth is a fraction, depending on $N$, of the channel coherence bandwidth:
+where the $c_{i,j}$ coefficients are given by (\ref{eq:correl_fct}).  Due to the spreading, there is a spacing of $N$ subcarriers between two symbol components.  If we denote by $\Delta f_{k}$ the frequency spacing between k subcarriers, we have $\Delta f_{k} = k \Delta f_N$, where $\Delta f_N$ is the subcarrier bandwidth. The subcarrier bandwidth is a fraction, depending on $N$, of the channel coherence bandwidth:
 \begin{equation}
 	\Delta f_N = \frac{\beta}{N} \Delta f_C \; \; , \; \beta \in \mathbb{R}^+
 	\label{eq:subcar_BW}
@@ -171,7 +171,7 @@ where
 	t_{Q,1} & t_{Q,2} & \hdots & t_{Q,Q}
 	\end{bmatrix}
 \end{equation}
-The Choleski coefficients can be computed in a recursive way thanks to the Cholski algorithm. So, for a given PDP model and delay spread, we can determine the coefficients of the Choleski matrix The diagonal elements are also positive. Bob correlated channel ($\HB$) will then be the product of the Choleski matrix $\textbf{T}$ with an uncorrelated channel ($\textbf{H}$), i.e., $\HB = \textbf{T H}$. A a consequence, a particular channel component will be a weighted sum depending on the previous ones:
+The Choleski coefficients can be computed in a recursive way thanks to the Cholski algorithm. So, for a given PDP model and delay spread, we can determine the coefficients of the Choleski matrix The diagonal elements are also positive. Bob correlated channel ($\HB$) will then be the product of the Choleski matrix $\textbf{T}$ with an uncorrelated channel ($\textbf{H}$), i.e., $\HB = \textbf{T H}$. A a consequence, a particular channel component will be a weighted sum depending on the channel components:
 \begin{equation}
  	h_{\text{B},j} = \sum_{k = 1}^{j} t_{j,k} h_k
  	\label{eq:corr_channel}
@@ -191,7 +191,7 @@ In this section, we introduce correlation among Bob's subcarriers only. We consi
 	\label{eq:jensen_innequality}
 \end{equation}
 where $X$ is Bob/Eve SINR. When no correlation was introduced, the innequality bound was tight such that it was used as an approximation. \\
-As a reminder, Bob and Eve are spatially uncorrelated. 
+As a reminder, Bob and Eve channels are spatially uncorrelated. 
 \subsection{Bob SINR}
 At Bob, the received signal is given by:
 \begin{equation}
@@ -274,18 +274,18 @@ For the AN component:
 \end{equation}
 The SINR is therefore identical as in the case where Bob channel is uncorrelated.\\
 
-\textcolor{red}{Je montre pas les calculs pour le matched filter ni le own channel decoder parce que le problème qui suit aparaît déjà pour la capacité à Bob. Mais, les mêmes soucis apparaissent pour toutes les structures de décodage à Eve}
+\textcolor{red}{Je ne montre pas les calculs pour le matched filter ni le own channel decoder parce que le problème qui suit aparaît déjà pour la capacité à Bob. Mais, les mêmes soucis apparaissent aussi pour les structures de décodage à Eve.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Jensen's innequality issue}
-In the past works, the Jensen innequality was used as a good approximation when no correlation was introduced among Bob's subcarriers. When correlation is present, the approximation does not hold anymore, as seen in Fig(\ref{fig:capaB_ergo_jensen}). In particular, we observe that, when $\Delta f_N / \Delta f_C = 100$, i.e., uncorrelated channel, the fit between analytic and simulation curves is almost perfect. However, when $\Delta f_N / \Delta f_C = 1/6$, i.e., highly correlated channel, the ergodic capacity decreases but the approximation suggests that it should increase. 
+In the past works, the Jensen innequality was used as a good approximation when no correlation was introduced among Bob's subcarriers. When the correlation is introduced, the approximation does not hold anymore, as seen in Fig(\ref{fig:capaB_ergo_jensen}). In particular, we observe that, when $\Delta f_N / \Delta f_C = 100$, i.e., uncorrelated channel, the fit between analytic and simulation curves is almost perfect. However, when $\Delta f_N / \Delta f_C = 1/6$, i.e., highly correlated channel, the ergodic capacity decreases but the approximation suggests that it should increase. 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=.75\linewidth]{img/capaB_ergoVSjensen.eps}
 	\caption{Bob capacity, variable correlation, ergodic vs Jensen's innequality}
 	\label{fig:capaB_ergo_jensen}
 \end{figure} 
-In order to understand the behaviour of the analytic model of the capacity derived using the Jensen's innequality as an approximation, we will analyze eq.(\ref{eq:data_b_determination}). When Bob's channel is fully correlated, i.e., all subcarriers are an identical complex scalar, eq.(\ref{eq:data_b_determination}) becomes:
+In order to understand the behaviour of the analytic model of the capacity derived using the Jensen's innequality as an approximation, we will analyze eq.(\ref{eq:data_b_determination}). When Bob's channel is fully correlated, i.e., all subcarriers are an identical complex scalar, $h_{B,n+iN} = h_{B,n+jN}, \; \forall i,j$. Therefore, eq.(\ref{eq:data_b_determination}) becomes:
 \begin{equation}
 \begin{split}
 \EX{\left| \text{data}\right|^2} &=  \frac{\alpha}{U^2} \EX{\left|\sum_{i=0}^{U-1} \left|h_{B,n+iN}\right|^2\right|^2} \\
@@ -313,8 +313,9 @@ This behaviour can be seen in Fig.(\ref{fig:sinr_capa_variableCorrelB}). This im
 	\includegraphics[width=.75\linewidth]{img/SINR_capa_variableCorrelB.eps}
 	\caption{Bob SINR/capacity as a function of the frequency  correlation}
 	\label{fig:sinr_capa_variableCorrelB}
-\end{figure}
-
+\end{figure}\\
+\textcolor{red}{Je ne sais pas expliquer pourquoi l'ergodic capacité se comporte différemment que l'ergodic SINR... Any idea? J'ai lu qu'on pouvait peut-être estimer l'erreur provoquée par Jensen en calculant le \textit{Jensen's gap}. Mais ça ne m'a pas l'air trivial du tout...}\\
+Another approximation of the capacity is therefore needed.
 
 
 
@@ -322,24 +323,118 @@ This behaviour can be seen in Fig.(\ref{fig:sinr_capa_variableCorrelB}). This im
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Second order Taylor approximation of the capacity}
-New approximation cfr FC17 verso
+In order to better approximate the ergodic capacity, it was decided to  perform a second order Taylor expansion of $\EX{\log_2{(1+\gamma)}}$ around $x_0 = \EX{\gamma}$, where $\gamma$ represents Bob or Eve SINR, depending on the investigated scenario:
 \begin{equation}
-	\EX{\log_2(1+X)} \approx \log_2(1+\EX{X}) - \frac{\text{var}(X)}{2(1+\EX{X})^2}
+	\EX{\log_2(1+\gamma)} \approx \log_2(1+\EX{\gamma}) - \frac{\text{var}(\gamma)}{2(1+\EX{\gamma})^2}
 	\label{eq:second_order_approx}
+\end{equation}
+where $\text{var}(\gamma) = \EX{\gamma^2} - \left(\EX{\gamma}\right)^2$ is the SINR variance, which is quite complicated to derive.\\
+\textcolor{red}{Auriez-vous une idée pour une meilleure approximation?}
+
+
+
+
+\paragraph*{Bob variance derivation}
+The terme $\EX{\gamma_B^2}$ is difficult to derive. In fact:
+\begin{equation}
+	\EX{\gamma_B^2} = \left( \frac{\alpha\EX{\left| \spread^H  \module{\HB}^2\spread\ \right|^2}}{ \EX{\left|  \spread^H \textbf{v}_\text{B}\right|^2}}\right)^2 = \frac{\alpha^2 \EX{\left| \spread^H  \module{\HB}^2\spread\ \right|^4}}{\EX{\left|  \spread^H \textbf{v}_\text{B}\right|^4}}
+	\label{eq:sinrB_exp4}
+\end{equation} 
+Since $v_B \sim \mathbb{C}N(0,\sigma_B^2) \sim N(0,\sigma_B^2/2) + 1j N(0,\sigma_B^2/2)$, it is easy to show that \footnote{\textcolor{red}{Personnal note: cfr FC17 verso for the derivation}}:
+\begin{equation}
+	\EX{\left|  \spread^H \textbf{v}_\text{B}\right|^4} = 2(\sigma_B^2)^2
+	\label{eq:noisB_exp4}
+\end{equation}
+In what concerns the data term, for a particular symbol $n$, the derivation is quite long:
+\begin{equation}
+\begin{split}
+	\EX{\module{\text{data}}^4} = &\frac{\alpha^2}{U^4} \mathbb{E}\Bigg[ \module{\sum_{i=0}^{U-1}\module{h_{B,n+iN}}^2}^4\Bigg] \\
+	= &\frac{\alpha^2}{U^4} \mathbb{E}\Bigg[ \sum_{i=0}^{U-1} \module{h_{B,n+iN}}^8 + 4 \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \module{h_{B,n+iN}}^2\module{h_{B,n+jN}}^6 \\
+	& + 3 \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \module{h_{B,n+iN}}^4\module{h_{B,n+jN}}^4 + 6 \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \sum_{k \neq i,j}^{U-1} \module{h_{B,n+iN}}^4\module{h_{B,n+jN}}^2  \module{h_{B,n+kN}}^2 \\ 
+	& + \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \sum_{k \neq i,j}^{U-1}   \sum_{l \neq i,j,k}^{U-1} \module{h_{B,n+iN}}^2\module{h_{B,n+jN}}^2  \module{h_{B,n+kN}}^2   \module{h_{B,n+lN}}^2\Bigg] 
+\end{split}
+\label{eq:dataB_exp4}
+\end{equation}
+Knowing that:
+\begin{equation}
+	\begin{split}
+		&\EX{h_{B,i} h_{B,j} } \neq 0 \\
+		& h_{B,n+iN} = \sum_{k = 1}^{n+iN} t_{n+iN,k} h_k
+	\end{split}
+\end{equation}
+the resolution of eq(\ref{eq:dataB_exp4}) is tedious. \textcolor{red}{Par exemple le second terme en $h^2 h^6$ donne lieu à 10 termes à calculer. Chacun de ces 10 termes correspond à plusieurs lignes de calcul. Le dernier terme de (31) en $h^2h^2h^2h^2$ donne lieu au calcul de 6 termes, dont un fait 13 lignes de calculs... Néanmoins je les ai tous calculé et verifié un par un. Si tout est décorrélé, ce calcul est très simple car à ce moment l'expected value d'un produit est égal au produit des expected values. Il faut juste savoir que: $\EX{\module{h}^2} = 1$, $\EX{\module{h}^4} = 2$, $\EX{\module{h}^6} = 6$ et $\EX{\module{h}^8} = 24$. Après, je me rends compte que le calcul est ultra simple aussi dans le cas \textit{full correlated}. Dans le sens où on aurait plus que du $\EX{\module{h}^8}$ pour tous les termes car $h_{B,n+iN} = h_{B,n+jN}, \forall i,j$. Peut-être qu'alors l'approximation serait meilleure??? (voir la suite pour comprendre que l'approximation n'est pas top). Est-ce que vous désirez les calculs complets??}
+
+\paragraph*{Eve SDS decoder variance}
+Also derived but less complicated since:
+\begin{equation}
+\begin{split}
+\EX{\module{\text{data}}^4} = &\frac{\alpha^2}{U^4} \mathbb{E}\Bigg[ \module{\sum_{i=0}^{U-1}h^*_{B,n+iN} h_{E,n+iN}}^4\Bigg] \\
+= &\frac{\alpha^2}{U^4} \mathbb{E}\Bigg[ \sum_{i=0}^{U-1} \module{h_{B,n+iN}}^4   \module{h_{E,n+iN}}^4  +2 \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \module{h_{B,n+iN}}^2\module{h_{B,n+jN}}^2\module{h_{E,n+iN}}^2 \module{h_{E,n+jN}}^2 \Bigg] \\
+=& \frac{2\alpha^2}{U^4}   \mathbb{E}\Bigg[\sum_{i=0}^{U-1} \module{h_{B,n+iN}}^4  + \sum_{i=0}^{U-1} \sum_{j \neq i}^{U-1} \module{h_{B,n+iN}}^2\module{h_{B,n+jN}}^2  \Bigg] 
+\end{split}
+\label{eq:dataE_exp4}
 \end{equation}
 
 
-Results avec 2e ordre approx:
-SINR modeles 1/2 1er et 2e ordre
-Capa modeles 1/2 1er et 2e ordre
-SR pour modele 1/2 1r et 2e ordre
+
+\section{Results}
+\paragraph*{Approximation accuracy comparison}
 
 
-Montrer aussi les matrices d'erreurs\\
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.67\linewidth]{img/comparaisonApprox_highCorrel_16Q8U.eps}
+\caption{High correlation, $Q=16$, $U=8$, approximation comparaison}
+	\label{fig:approxComparaison}
+\end{figure}
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.67\linewidth]{img/comparaisonApprox_noCorrel_16Q8U.eps}
+	\caption{No correlation,  $Q=16$, $U=8$, approximation comparaisons}
+	\label{fig:approxComparaison2}
+\end{figure}
+Fig\ref{fig:approxComparaison} and \ref{fig:approxComparaison2} compare the accuracy of the two approximations (first order using Jensen, second order using Jensen plus the variance term) with the ergodic results, for 2 different environments, i.e., high correlation (fig\ref{fig:approxComparaison}) and low correlation (fig\ref{fig:approxComparaison2}). \\
+
+As expected, when no correlation is introduced, the first order approximation approximates well the ergodic curves. There is no need to use another approximation.  We also observe that the second order approximation is better than the first order approximation when the correlaton is introduced. However, the SR bound is not tight. Furthermore, it is an upper bound when we would be happier with a lower one in order to a priori know at least the rate at which to securely communicate. \\
+
+What is interesting though, is that the SR curves present the same concavity. In particular, the analytic determination of the optimal amount of data to inject (optimal $\alpha$) can be accurately found using the first order approximation \textcolor{red}{(I did it)}.\\
+
+Fig.\ref{fig:maxSR1_approxComparaison} shows the maximal SR value as a function of the amount of correlation at Bob. We observe that the first order approximation increases with an increase of the correlation, as already explained. The second order remains quasi constant. 
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=.7\linewidth]{img/maxSR1_noCorrelE_variableB_approx_Q32U4.eps}
+	\caption{Maximum of SR, SDS Decoder at Eve, variable correlation at Bob, $Q=32$, $U=4$, approximation comparaison}
+	\label{fig:maxSR1_approxComparaison}
+\end{figure}\\
+
+\textcolor{red}{Ici, les questions suivantes se posent:
+\begin{itemize}
+	\item L'approximation du second est-elle utilisable?
+	\item Y'a t'il une autre approximation qui pourrait être utilisée?
+\end{itemize}}
 
 
 
-\section{Simulation Results}
+
+
+
+\paragraph*{Other obtained results}
+\begin{itemize}
+	\item Determination of the optimal $\alpha$ to maximize the ergodic SR
+	\item First and second order approximations for Eve matched filter and own channel decoders
+	\item Required SNR at Bob in order to guarantee a given SR, i.e. SNR$= \infty$ at Eve. No analytic expression, only via simulations since the analytic approximations are not tight enough.
+	\item Simulations (no analytic model yet) with variable correlation among Eve's subcarriers, i.e., influence of Eve correlation on the performances. It seem that introducing correlatin at Eve decreases the SR performances
+\end{itemize}
+
+\textcolor{red}{\textbf{POUR CONCLURE:\\
+Je suis un peu embêté car je ne sais pas trop comment valoriser ces résultats. Est-ce que tout étudier via des simulations seulement est intéressant? Dans le sens où les formules dérivées ne sont pas terribles. Ca sera un peu bête de tout jeter...}}
+
+
+
+
+
+
+
 
 
 \end{document}

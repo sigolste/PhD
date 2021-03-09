@@ -2,7 +2,7 @@
 %
 %
 %
-%   Cpde to check and prove that Eve capa decreases when correlation is
+%   Code to check and prove that Eve capa decreases when correlation is
 %   introduced between her subcarriers. Not sure that it is the case. 
 %   Test here: 
 %   Variable correlation at Eve and Bob and show the evolution of the SR
@@ -39,7 +39,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 3500;                               % number of experiments
+nb_run = 1500;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
@@ -47,8 +47,8 @@ alpha_step = 2;                           % Percentage between subsequent alpha 
 alpha = 1;%0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 8;
-U = [4];
+Q = 16;
+U = [8];
 N = Q./U;
 
 M = 4;
@@ -74,7 +74,7 @@ sigma_tau = .5e-6 ;                                         % Delay spread (3us 
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
 % Correlation @ Bob
-coef_freq_b = [1:.2:12].*N.'/6;                              % From min/6 ∆fc to max/6 ∆fc, depending on N
+coef_freq_b = [1:.5:12].*N.'/6;                              % From min/6 ∆fc to max/6 ∆fc, depending on N
 delta_f_n_b = coef_freq_b.*delta_f_c;   
 b_subcar_b = delta_f_n_b./N.';                              % Bandwidth of each subcarrier
 
@@ -468,8 +468,6 @@ box on; grid on;
 xlim([min(a) max(a)])
 xlabel('Bob correlation: $\Delta f_N / \Delta f_C$');
 %title('Maxima')
-
-
 
 
 

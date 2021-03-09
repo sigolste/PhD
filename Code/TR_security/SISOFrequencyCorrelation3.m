@@ -36,16 +36,16 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 4000;                               % number of experiments
+nb_run = 2000;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
-alpha_step = 10;                           % Percentage between subsequent alpha values
+alpha_step = 5;                           % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 16;
-U = [2 4 8 16];
+Q = 32;
+U = [4]; % Make it variable
 N = Q./U;
 
 M = 4;
@@ -54,8 +54,8 @@ nb_bit = k.*N;
 
 % AWGN parameters
 
-snr_b  = [-5 0 5 10 15].';  % SNR @Bob
-snr_e  = [200];  % SNR @Eve
+snr_b  = [15].';  % SNR @Bob % Make it variable
+snr_e  = [15];  % SNR @Eve % Should be 200
 
 % Noise energy
 sigma_b = 1./U./10.^(snr_b/10);    % expected noise energy @Bob
@@ -69,7 +69,7 @@ mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 sigma_tau = .5e-6 ;                                         % Delay spread (3us = urban ,  .5us = suburban, .2us = open areas)
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
-coef_freq = [1 3 6 9 12 15 18 21 24].*N.'/6;                  % From 1/6 ∆fc to 4 ∆fc, depending on N
+coef_freq = [1:.5:12].*N.'/6;                  % From 1/6 ∆fc to 4 ∆fc, depending on N
 delta_f_n = coef_freq.*delta_f_c;   
 b_subcar = delta_f_n./N.';                                    % Bandwidth of each subcarrier
 x_axis  = b_subcar./delta_f_c;                              % number of coherence bandwidth where lies a subcarrier 
@@ -445,6 +445,18 @@ sr2_ergodic = sr2_avg;
 sr5_jensen = capa_b_jensen - capa5_e_jensen_simu;
 sr5_new_approx = capa_b_new_approx - capa5_e_new_approx_simu;
 sr5_ergodic = sr5_avg;
+%% TMP : max of SR as a function of Bob correl
+
+figure;
+plot(x_axis(1,:), max(sr1_jensen),'Marker','o'); hold on;
+plot(x_axis(1,:), max(sr1_new_approx),'Marker','square'); 
+plot(x_axis(1,:), max(sr1_avg),'Marker','v'); 
+xlim([min(x_axis(1,:)) max(x_axis(1,:))]);
+xlabel('Bob correlation : $\Delta f_N/\Delta f_C$')
+ylabel('Max of SR (bit/channel use)')
+box on; grid on;
+legend('First order','Second order','Ergodic','location','bestoutside')
+
 
 
 %% PLOT SECTION 
