@@ -43,8 +43,8 @@ nb_run = 1500;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
-alpha_step = 2;                           % Percentage between subsequent alpha values
-alpha = 1;%0:alpha_step/100:1;         
+alpha_step = 5;                           % Percentage between subsequent alpha values
+alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
 Q = 16;
@@ -74,12 +74,12 @@ sigma_tau = .5e-6 ;                                         % Delay spread (3us 
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
 % Correlation @ Bob
-coef_freq_b = [1:.5:12].*N.'/6;                              % From min/6 ∆fc to max/6 ∆fc, depending on N
+coef_freq_b = [1:.5:3].*N.'/6;                              % From min/6 ∆fc to max/6 ∆fc, depending on N
 delta_f_n_b = coef_freq_b.*delta_f_c;   
 b_subcar_b = delta_f_n_b./N.';                              % Bandwidth of each subcarrier
 
 % Correlation @ Eve
-coef_freq_e = [100000].*N.'/6;%coef_freq_b;                                  % From min/6 ∆fc to max/6 ∆fc, depending on N
+coef_freq_e = coef_freq_b;                                  % From min/6 ∆fc to max/6 ∆fc, depending on N
 delta_f_n_e = coef_freq_e.*delta_f_c;
 b_subcar_e = delta_f_n_e./N.';                              % Bandwidth of each subcarrier
 % 
@@ -144,7 +144,7 @@ for bb = 1:length(U)
     for dd = 2:size(b_subcar_b,2) % Bob
         [Hb(:,:,bb,dd), Hb1(:,:,bb,dd), abs_rho(:,bb,dd), Tb(:,:,bb,dd)] = corr_frequency( Q , b_subcar_b(bb,dd) , sigma_tau , nb_run ) ;
     end
-    for dd = 1:size(b_subcar_e,2) % Eve
+    for dd = 2:size(b_subcar_e,2) % Eve
         [He(:,:,bb,dd), He1(:,:,bb,dd), ~ , Te(:,:,bb,dd)] = corr_frequency( Q , b_subcar_e(bb,dd) , sigma_tau , nb_run ) ;
     end
 end
@@ -178,15 +178,15 @@ else
 end
 
 
-% if ee == 1
-%     He_TX = 1/sqrt(2)*(randn(1) + 1j*randn(1))*eye(Q);
-% else
-%     He_TX = diag(squeeze(He1(iter,:,bb,ee)).');          % Variable correlation at Eve
-% end
+if ee == 1
+    He_TX = 1/sqrt(2)*(randn(1) + 1j*randn(1))*eye(Q);
+else
+    He_TX = diag(squeeze(He1(iter,:,bb,ee)).');          % Variable correlation at Eve
+end
 %He_TX = 1/sqrt(2)*(randn(1) + 1j*randn(1))*eye(Q);  % Eve fully correlated
 
 % Hwe_TX = diag(squeeze(He(iter,:,bb,ee)).');
-He_TX = diag(squeeze(He1(iter,:,bb,ee)).');          % Variable correlation at Eve
+% He_TX = diag(squeeze(He1(iter,:,bb,ee)).');          % Variable correlation at Eve
 He_RX = ctranspose(He_TX);
 % Hwe_RX = ctranspose(Hwe_TX);
 

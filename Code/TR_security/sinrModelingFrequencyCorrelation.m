@@ -29,7 +29,52 @@ switch type
         Hb2Hb2He2He2 = modelCorrelHb2Hb2He2He2(N,U,Tb,Te); % Derivation FC40/FC41
         e_noise = sigma_e;
         e_sym = alpha./(U^2)*(4*U + Hb2Hb2He2He2);
-        sinr = e_sym./e_noise;
+         % TERM AN:
+        tmp1 = 0;    % |t_ik|^2 |t_jk|^2 |h_k|^4
+        tmp2 = 0;    % |t_ik|^2 |t_jl|^2 |h_k|^2 |h_l|^2
+        tmp3 = 0;         % t_ik t_il^* t_jk t_jl^* |h_k|^2 |h_l|^2
+
+        for ii = 0: U-1
+            for jj = ii+1 : U-1
+                for kk = 1 : 1+ii*N
+                     %[{1+ii*N,kk}  {1+jj*N,kk}] % tuples
+                    tmp1 = tmp1 + 2*abs(Tb(1+ii*N,kk))^2 * abs(Tb(1+jj*N,kk))^2;
+                end
+            end
+        end
+        for ii = 0: U-2
+            for jj = ii+1 : U-1
+                for kk = 1 : 1+ii*N
+                    for ll = 1 : 1+jj*N
+                        if ll ~= kk
+                            %[{1+ii*N,kk}  {1+jj*N,ll}] % tuples
+                            tmp2 = tmp2 + abs(Tb(1+ii*N,kk))^2 * abs(Tb(1+jj*N,ll))^2   ;
+                        end   
+                    end
+                end
+            end
+        end
+
+        for ii = 0: U-2
+            for jj = ii+1 : U-1
+                for kk = 1 : 1+ii*N
+                    for ll = kk+1 : 1+ii*N
+                        %[{1+ii*N,kk}  {1+ii*N,ll} , {1+jj*N,kk} {1+jj*N,ll}] % tuples
+                        tmp3 = tmp3 + 2*real(conj(Tb(1+ii*N,kk)) * Tb(1+ii*N,ll) * Tb(1+jj*N,kk) * conj(Tb(1+jj*N,ll)))   ;
+                    end
+                end
+            end
+        end
+
+
+        sum_double_square_an = 2*(tmp1 + tmp2 + tmp3);                  % ∑_i ∑_{j!=i}  |h_i|^2 |h_j|^2
+        sum_fourth_an = 2*U;
+        
+        v1_2 = 1./U;
+        v1_4 = 2./U.^2 ./ (1./(U.^2).*(sum_fourth_an + sum_double_square_an));
+        
+        e_an = (1-alpha).*U./(U-1).*(v1_2 - v1_4 );%1./(U+1);%*
+        sinr = e_an;%e_sym./(e_noise+e_an);
         
         
     case "eve_decod2_correl"

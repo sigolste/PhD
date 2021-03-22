@@ -1,9 +1,21 @@
-% LAST MODIF: 
-% should uncomment plot section, change the legends and include the new
-% model (model 5) where Eve knows her own channel He. 
-% DATE: 28.07.2020
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%
+%   Code to check the impact of estmation error of Bob's channel performed
+%   at Alice. Due to the error, the precoding does not lead to a perfect
+%   matched filter at Bob, reducing the SR performances. 
+%   Plot of the SR as a function of alpha for different BOR and different
+%   decoding structures at Eve.
+%
+%   Code Started:   19.11.2020
+%   Last Update:    15.03.2021
+%
+%
+%  © SIDNEY GOLSTEIN
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all;
 %close all;
 
@@ -20,13 +32,15 @@ h = waitbar(0,'Simulation Progression...');
 %% Parameters
 % Simulation parameters
 nb_run = 1000;              % number of experiments
-alpha_step = 2;             % Percentage between subsequent alpha values
+alpha_step = 5;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;  
-sigma_tilde = 0;    % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
+
+sigma_tilde = [0:0.025:0.5];                 % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
+sigma_tilde_db = 10*log10(sigma_tilde);     % CSI error in dB.
 
 % Communication parameters
-Q = 32;
-U = [4];
+Q = 16;
+U = [2 4 8 16];
 N = Q./U;
 
 M = 4;
@@ -34,32 +48,32 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-snr_b  = 20; %EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = 20; %EbN0_e + 10*log10(k);  % SNR @Eve
+snr_b  = [0 10 20]; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = [0 10 20]; %EbN0_e + 10*log10(k);  % SNR @Eve
 
 % Channel parameters 
 mu = 0;         % Channel mean
 sigma = 1;      % Channel variance
 
 
-if (length(snr_b) == 1 && length(snr_e) ==1)
+
 %% Matrices preallocation
-e_an_TX             = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
+e_an_TX             = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
 
-e_sym_decod1_b      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_noise_decod1_b    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_an_decod1_b       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_denom_decod1_b    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
+e_sym_decod1_b      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_noise_decod1_b    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_an_decod1_b       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_denom_decod1_b    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
 
-e_sym_decod1_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_noise_decod1_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_an_decod1_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_denom_decod1_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
+e_sym_decod1_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_noise_decod1_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_an_decod1_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_denom_decod1_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
 
-e_sym_decod2_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_noise_decod2_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_an_decod2_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_denom_decod2_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
+e_sym_decod2_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_noise_decod2_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_an_decod2_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_denom_decod2_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
 % 
 % e_sym_decod3_e      = zeros(nb_run,length(alpha),length(U));
 % e_noise_decod3_e    = zeros(nb_run,length(alpha),length(U));
@@ -71,10 +85,10 @@ e_denom_decod2_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
 % e_an_decod4_e       = zeros(nb_run,length(alpha),length(U));
 % e_denom_decod4_e    = zeros(nb_run,length(alpha),length(U));
 % 
-e_sym_decod5_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_noise_decod5_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_an_decod5_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
-e_denom_decod5_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde));
+e_sym_decod5_e      = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_noise_decod5_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_an_decod5_e       = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
+e_denom_decod5_e    = zeros(nb_run,length(alpha),length(U),length(sigma_tilde),length(snr_b),length(snr_e));
 
 
 %% Mainloop
@@ -134,10 +148,11 @@ sym_e = He_RX*sym_precoded_TX;
 
 
 
-
+for nb = 1:length(snr_b)
+for ne = 1:length(snr_e)
 % Noise symbol
-[noise_b, ~ ] = addNoise(sym_b , snr_b, energy(sym_precoded_TX+an_TX));     %addNoise(sym_b , snr_b, energy(sym_RX_b)); 
-[noise_e, e_noise_e ] = addNoise(sym_e , snr_e, energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
+[noise_b, ~ ] = addNoise(sym_b , snr_b(nb), energy(sym_precoded_TX+an_TX));     %addNoise(sym_b , snr_b, energy(sym_RX_b)); 
+[noise_e, e_noise_e ] = addNoise(sym_e , snr_e(ne), energy(sym_precoded_TX+an_TX)); % addNoise(sym_e , snr_e, energy(sym_RX_e));   
 
 % AN symbol
 an_b = Hb_RX*an_TX; % @Bob : not 0 since imperfect CSI
@@ -182,23 +197,23 @@ an_decod5_e = decod5*an_e;
 
 %% Energy of the different RX components 
 % @ Bob
-e_sym_decod1_b(iter,aa,bb,ss)      = energy(sym_decod1_b);
-e_noise_decod1_b(iter,aa,bb,ss)    = energy(noise_decod1_b);
-e_an_decod1_b(iter,aa,bb,ss)       = energy(an_decod1_b);
-e_denom_decod1_b(iter,aa,bb,ss)    = energy(noise_decod1_b + an_decod1_b);        % energy of the sinr denominator for decoder 1 @Eve
+e_sym_decod1_b(iter,aa,bb,ss,nb,ne)      = energy(sym_decod1_b);
+e_noise_decod1_b(iter,aa,bb,ss,nb,ne)    = energy(noise_decod1_b);
+e_an_decod1_b(iter,aa,bb,ss,nb,ne)       = energy(an_decod1_b);
+e_denom_decod1_b(iter,aa,bb,ss,nb,ne)    = energy(noise_decod1_b + an_decod1_b);        % energy of the sinr denominator for decoder 1 @Eve
 
 
 % @ Eve : decod 1
-e_sym_decod1_e(iter,aa,bb,ss)     = energy(sym_decod1_e);
-e_noise_decod1_e(iter,aa,bb,ss)   = energy(noise_decod1_e);
-e_an_decod1_e(iter,aa,bb,ss)      = energy(an_decod1_e);
-e_denom_decod1_e(iter,aa,bb,ss)   = energy(noise_decod1_e + an_decod1_e);        % energy of the sinr denominator for decoder 1 @Eve
+e_sym_decod1_e(iter,aa,bb,ss,nb,ne)     = energy(sym_decod1_e);
+e_noise_decod1_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod1_e);
+e_an_decod1_e(iter,aa,bb,ss,nb,ne)      = energy(an_decod1_e);
+e_denom_decod1_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod1_e + an_decod1_e);        % energy of the sinr denominator for decoder 1 @Eve
 
 % @ Eve : decod 2
-e_sym_decod2_e(iter,aa,bb,ss)     = energy(sym_decod2_e);
-e_noise_decod2_e(iter,aa,bb,ss)   = energy(noise_decod2_e);
-e_an_decod2_e(iter,aa,bb,ss)      = energy(an_decod2_e);
-e_denom_decod2_e(iter,aa,bb,ss)   = energy(noise_decod2_e + an_decod2_e);        % energy of the sinr denominator for decoder 2 @Eve
+e_sym_decod2_e(iter,aa,bb,ss,nb,ne)     = energy(sym_decod2_e);
+e_noise_decod2_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod2_e);
+e_an_decod2_e(iter,aa,bb,ss,nb,ne)      = energy(an_decod2_e);
+e_denom_decod2_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod2_e + an_decod2_e);        % energy of the sinr denominator for decoder 2 @Eve
 % 
 % % @ Eve : decod 3
 % e_sym_decod3_e(iter,aa,bb)     = energy(sym_decod3_e);
@@ -213,12 +228,13 @@ e_denom_decod2_e(iter,aa,bb,ss)   = energy(noise_decod2_e + an_decod2_e);       
 % e_denom_decod4_e(iter,aa,bb)   = energy(noise_decod4_e + an_decod4_e);        % energy of the sinr denominator for decoder 4 @Eve
 % 
 % @ Eve : decod 5
-e_sym_decod5_e(iter,aa,bb,ss)     = energy(sym_decod5_e);
-e_noise_decod5_e(iter,aa,bb,ss)   = energy(noise_decod5_e);
-e_an_decod5_e(iter,aa,bb,ss)      = energy(an_decod5_e);
-e_denom_decod5_e(iter,aa,bb,ss)   = energy(noise_decod5_e + an_decod5_e);        % energy of the sinr denominator for decoder 5 @Eve
+e_sym_decod5_e(iter,aa,bb,ss,nb,ne)     = energy(sym_decod5_e);
+e_noise_decod5_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod5_e);
+e_an_decod5_e(iter,aa,bb,ss,nb,ne)      = energy(an_decod5_e);
+e_denom_decod5_e(iter,aa,bb,ss,nb,ne)   = energy(noise_decod5_e + an_decod5_e);        % energy of the sinr denominator for decoder 5 @Eve
 
-
+end
+end
 end
 waitbar(iter / nb_run)
 end
@@ -295,33 +311,73 @@ sr5_avg = squeeze(mean(sr5,1));
 
 %% SINR modeling: % PCSI : perfect CSI / ICSI : imperfect CSI
 
-sinr1_PCSI_model_b = sinrModeling(alpha,U,snr_b,snr_e,1,1,1,"bob_decod1");              
-sinr1_ICSI_model_b = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"bob_decod1");
-sinr1_ICSI_model_e = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"eve_decod1");
-sinr2_ICSI_model_e = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"eve_decod2");
-sinr5_ICSI_model_e = sinrModelingICSI(alpha,U,snr_b,snr_e,sigma_tilde,"eve_decod5");
+% Matrix allocation
 
-sr1_PCSI_model = secrecyCapacity(sinr1_PCSI_model_b,sinr1_ICSI_model_e);
-sr1_ICSI_model = secrecyCapacity(sinr1_ICSI_model_b,sinr1_ICSI_model_e);
-sr2_ICSI_model = secrecyCapacity(sinr1_ICSI_model_b,sinr2_ICSI_model_e);
-sr5_ICSI_model = secrecyCapacity(sinr1_ICSI_model_b,sinr5_ICSI_model_e);
+sinr1_ICSI_model_b = zeros(length(alpha),length(U),length(sigma_tilde),length(snr_b));
+sinr1_ICSI_model_e = zeros(length(alpha),length(U),length(sigma_tilde),length(snr_e));
+sinr2_ICSI_model_e = zeros(length(alpha),length(U),length(sigma_tilde),length(snr_e));
+sinr5_ICSI_model_e = zeros(length(alpha),length(U),length(sigma_tilde),length(snr_e));
+
+
+for bb = 1:length(U)
+for ss = 1:length(sigma_tilde)           
+for nb = 1:length(snr_b)
+sinr1_ICSI_model_b(:,bb,ss,nb) = sinrModelingICSI(alpha,U(bb),snr_b(nb),NaN,sigma_tilde(ss),"bob_decod1");
+end
+for ne = 1:length(snr_e)
+%sinr1_PCSI_model_b(:,bb,nb,ne) = sinrModeling(alpha,U(bb),snr_b(nb),snr_e(ne),1,1,1,"bob_decod1");              
+sinr1_ICSI_model_e(:,bb,ss,ne) = sinrModelingICSI(alpha,U(bb),NaN,snr_e(ne),sigma_tilde(ss),"eve_decod1");
+sinr2_ICSI_model_e(:,bb,ss,ne) = sinrModelingICSI(alpha,U(bb),NaN,snr_e(ne),sigma_tilde(ss),"eve_decod2");
+sinr5_ICSI_model_e(:,bb,ss,ne) = sinrModelingICSI(alpha,U(bb),NaN,snr_e(ne),sigma_tilde(ss),"eve_decod5");
+end
+end
+end
 % 
+%sr1_PCSI_model = secrecyCapacity(sinr1_PCSI_model_b,sinr1_ICSI_model_e);
+for bb = 1:length(U)
+for ss = 1:length(sigma_tilde)           
+for nb = 1:length(snr_b)
+for ne = 1:length(snr_e)
+sr1_ICSI_model(:,bb,ss,nb,ne) = secrecyCapacity(sinr1_ICSI_model_b(:,bb,ss,nb),sinr1_ICSI_model_e(:,bb,ss,ne));
+sr2_ICSI_model(:,bb,ss,nb,ne) = secrecyCapacity(sinr1_ICSI_model_b(:,bb,ss,nb),sinr2_ICSI_model_e(:,bb,ss,ne));
+sr5_ICSI_model(:,bb,ss,nb,ne) = secrecyCapacity(sinr1_ICSI_model_b(:,bb,ss,nb),sinr5_ICSI_model_e(:,bb,ss,ne));
+end
+end
+end
+end
+
+
+%% PLOT Section
+
+
+% 1. SR as a function of AN : model vs simu
+nb = find(snr_b == 10);
+ne = find(snr_e == 10);
+bb = find(U == 4);
+ss = find(sigma_tilde == 0.1);
+
+
 
 figure;
-plot(100*(1-alpha),sr2_avg,'Marker','o'); hold on;
-plot(100*(1-alpha),sr2_ICSI_model,'Marker','<'); hold on; 
-% plot(100*(1-alpha),sr2_avg,'Marker','square','color','m'); hold on;
-% plot(100*(1-alpha),sr2_model,'Marker','square','color','g'); hold on;
-% plot(100*(1-alpha),sr5_avg,'Marker','diamond','color','c'); hold on;
-% plot(100*(1-alpha),sr5_model,'Marker','diamond','color','y'); hold on;
+plot(100*(1-alpha),sr1_avg(:,bb,ss,nb,ne),'Marker','o'); hold on;
+plot(100*(1-alpha),sr1_ICSI_model(:,bb,ss,nb,ne),'Marker','<'); hold on; 
+plot(100*(1-alpha),sr2_avg(:,bb,ss,nb,ne),'Marker','square','color','m'); hold on;
+plot(100*(1-alpha),sr2_ICSI_model(:,bb,ss,nb,ne),'Marker','square','color','g'); hold on;
+plot(100*(1-alpha),sr5_avg(:,bb,ss,nb,ne),'Marker','diamond','color','c'); hold on;
+plot(100*(1-alpha),sr5_ICSI_model(:,bb,ss,nb,ne),'Marker','diamond','color','y'); hold on;
 box on; grid on;
 xlabel('Percentage of radiated AN energy (\%)')
 ylabel('Secrecy rate (bit/channel use)')
-ylim([-2 3])
-legend('Same decoder - Simulation' , 'Same decoder - Modeling' , 'Matched filtering - Simulation' , 'Matched filtering - Modeling', 'Own channel - Simulation', 'Own channel - Modeling', 'location', 'best')
+%ylim([min(sr2_avg(:,bb,ss,nb,ne)-1,max(sr1_ICSI_model(:,bb,ss,nb,ne))+1])
+legend('SDS - Simulation' , 'SDS - Modeling' , 'MF - Simulation' , 'MF - Modeling', 'OC - Simulation', 'OC - Modeling', 'location', 'bestoutside')
 
 
-end
+
+
+
+
+% 2. Best alpha as a function of the error
+
 
 
 

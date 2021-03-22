@@ -39,7 +39,7 @@ h = waitbar(0,'Simulation Progression...');
 
 %% Parameters
 % Simulation parameters
-nb_run = 1500;                               % number of experiments
+nb_run = 3500;                               % number of experiments
 fc = 2e9 ;                                  % Carrier frequency
 c = 3e8;                                    % Light speed
 
@@ -75,8 +75,8 @@ sigma_tau_e = .5e-6 ;                                         % Delay spread (3u
 delta_f_c_b = 1 / 2 / pi / sigma_tau_b ;                        % Approximation of coherence bandwidth
 delta_f_c_e = 1 / 2 / pi / sigma_tau_e ;                        % Approximation of coherence bandwidth
 
-coef_freq_b = [1].*N.'/6;
-coef_freq_e = [1].*N.'/6;
+coef_freq_b = [100000].*N.'/6;
+coef_freq_e = [1:18].*N.'/6;
 
 delta_f_n_b = coef_freq_b.*delta_f_c_b; 
 delta_f_n_e = coef_freq_e.*delta_f_c_e;   
@@ -84,8 +84,8 @@ delta_f_n_e = coef_freq_e.*delta_f_c_e;
 b_subcar_b = delta_f_n_b./N.';                                    % Bandwidth of each subcarrier
 b_subcar_e = delta_f_n_e./N.';                                    % Bandwidth of each subcarrier
 
-x_axis_b  = delta_f_n_b./delta_f_c_b;
-x_axis_e  = delta_f_n_e./delta_f_c_e;
+x_axis_b  = b_subcar_b./delta_f_c_b;
+x_axis_e  = b_subcar_e./delta_f_c_e;
 
 
 %% Matrix instantiation
@@ -464,17 +464,41 @@ capa1_b_model = log2(1+sinr1_b_model);
 capa1_e_model = log2(1+sinr1_e_model);
 capa2_e_model = log2(1+sinr2_e_model);
 
+
+capa2e_semi_model  = log2(1+sinr2_e_avg);
+capa1b_semi_model = log2(1+sinr1_b_avg);
+
+sr2_semi_model = capa1b_semi_model - capa2e_semi_model;
+
+
 sr1_model  = capa1_b_model - capa1_e_model; 
 sr2_test = log2(1+sinr1_b_avg.') - log(1+sinr2_e_avg.');
 
 figure;
-plot(sinr2_e_model,'-o') ; hold on; plot(e_avg_sym_decod2_e,':')
-figure;
-plot(sr1_model,'-o'); hold on; plot(sr1_ergodic,':')
+plot(squeeze(sinr2_e_model),'-o') ; hold on; plot(e_avg_an_decod2_e,':')
 
 
 figure;
-plot(sr2_test,'-o'); hold on; plot(sr2_ergodic,':')
+plot(squeeze(sr1_model),'-o'); hold on; plot(sr1_ergodic,':')
+
+figure;
+plot(x_axis_e,  max(sr1_avg),'-o'); hold on; plot(x_axis_e,max(squeeze(sr1_model)),':','Marker','diamond')
+box on; grid on;
+xlabel('$\Delta f_N/\Delta f_C$')
+ylabel('max of SR (bit/channel use)')
+legend('Ergodic SR',"Simulated Jensen's innequality")
+xlim([min(x_axis_e) max(x_axis_e)])
+
+
+
+figure;
+plot(x_axis_e,  max(sr2_avg),'-o'); hold on; plot(x_axis_e,max(squeeze(sr2_semi_model)),':','Marker','diamond')
+box on; grid on;
+xlabel('$\Delta f_N/\Delta f_C$')
+ylabel('max of SR (bit/channel use)')
+legend('Ergodic SR',"Simulated Jensen's innequality")
+xlim([min(x_axis_e) max(x_axis_e)])
+
 %%
 
 
@@ -487,7 +511,7 @@ plot(sr2_test,'-o'); hold on; plot(sr2_ergodic,':')
 
 %% Plot Section : max SR as a function of variable correlations at Bob and/or Eve
 % a = b_subcar_e./delta_f_c;
-a = b_subcar_b./delta_f_c;
+ai ma = b_subcar_b./delta_f_c;
 figure;
 plot(a ,max(sr1_avg),'Marker','o'); hold on;
 plot(a ,max(sr2_avg),'Marker','square'); hold on;

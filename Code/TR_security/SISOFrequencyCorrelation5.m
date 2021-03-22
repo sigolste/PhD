@@ -2,7 +2,7 @@
 %
 %
 %
-%   Cpde to check and prove that Eve capa decreases when correlation is
+%   Code to check and prove that Eve capa decreases when correlation is
 %   introduced between her subcarriers. Not sure that it is the case. 
 %   Test here: 
 %   Variable correlation at Eve and Bob and check in which scenario and
@@ -47,7 +47,7 @@ alpha_step = 2;                           % Percentage between subsequent alpha 
 alpha = 0:alpha_step/100:1;         
 
 % Communication parameters
-Q = 64;
+Q = 8;
 U = [4];
 N = Q./U;
 
@@ -74,7 +74,7 @@ sigma_tau = .5e-6 ;                                         % Delay spread (3us 
 delta_f_c = 1 / 2 / pi / sigma_tau ;                        % Approximation of coherence bandwidth
 
 % Correlation @ Bob
-coef_freq_b = [1 10000].*N.'/6;                               % From min/6 ∆fc to max/6 ∆fc, depending on N
+coef_freq_b = [10000].*N.'/6;                                   % From min/6 ∆fc to max/6 ∆fc, depending on N
 delta_f_n_b = coef_freq_b.*delta_f_c;   
 b_subcar_b = delta_f_n_b./N.';                              % Bandwidth of each subcarrier
 
@@ -168,7 +168,7 @@ for ee = 1:size(b_subcar_e,2)
 %channel generation
 Hb_TX = diag(squeeze(Hb1(iter,:,bb,dd)).');          % Variable correlation at Bob
 Hwb_TX = diag(squeeze(Hb(iter,:,bb,dd)).');         
-Hb_TX = 1/sqrt(2)*(randn(1) + 1j*randn(1))*eye(Q);  % Bob fully correlated
+% Hb_TX = 1/sqrt(2)*(randn(1) + 1j*randn(1))*eye(Q);  % Bob fully correlated
 
 
 %He_TX = diag(squeeze(He1(iter,:,bb,ee)).');          % Variable correlation at Eve
@@ -383,6 +383,13 @@ capa3_e = log2(1+sinr3_e);
 capa4_e = log2(1+sinr4_e);
 capa5_e = log2(1+sinr5_e);
 
+% Jensen's capa
+capa1_b_jensen = log2(1+e_avg_sym_decod1_b./e_avg_noise_decod1_b);
+capa1_e_jensen = log2(1+e_avg_sym_decod1_e./(e_avg_noise_decod1_e+e_avg_an_decod1_e));
+capa2_e_jensen = log2(1+e_avg_sym_decod2_e./(e_avg_noise_decod2_e+e_avg_an_decod2_e));
+capa5_e_jensen = log2(1+e_avg_sym_decod5_e./(e_avg_noise_decod5_e+e_avg_an_decod5_e));
+
+
 % Instantaneous SR
 sr1 = secrecyCapacity(sinr1_b,sinr1_e);
 sr2 = secrecyCapacity(sinr1_b,sinr2_e);
@@ -427,6 +434,22 @@ sr4_ergodic = sr4_avg;
 sr5_ergodic = sr5_avg;
 
 %% Plot Section : SR as a function of AN energy, for different decoding structures and different correlation environments
+figure;
+plot(100*(1-alpha),squeeze(capa1_e_jensen),'Marker','o'); hold on;
+plot(100*(1-alpha),squeeze(capa1_e_avg),'Marker','<'); hold on;
+plot(100*(1-alpha),squeeze(capa2_e_jensen),'Marker','square'); hold on;
+plot(100*(1-alpha),squeeze(capa2_e_avg),'Marker','diamond'); hold on;
+plot(100*(1-alpha),squeeze(capa5_e_jensen),'Marker','>'); hold on;
+plot(100*(1-alpha),squeeze(capa5_e_avg),'Marker','v'); hold on;
+legend('SDS jensen','SDS ergodic','MF jensen', 'MF ergodic','OC jensen', 'OC ergodic','Location','bestoutside')
+box on; grid on;
+xlabel('Percentage of AN energy ($\%$)');
+ylabel('Capacity (bit/channel use)')
+title('Ergodic capacity vs Jensen @E , no correlation @B, fully correlated @E')
+
+
+
+
 
 figure;
 plot(100*(1-alpha),squeeze(sr1_avg(:,1,1)),'Marker','o'); hold on;

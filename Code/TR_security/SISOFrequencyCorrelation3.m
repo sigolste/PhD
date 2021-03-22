@@ -349,14 +349,14 @@ sr5_avg = squeeze(mean(sr5));%capa1_b_correl_avg - capa2_e_avg;
 
 % Decoder 1
 
-% sinr1_e_simu = e_avg_sym_decod1_e./e_avg_denom_decod1_e;
-% sinr1_e_simu_square = sinr1_e_simu.^2;
-% expected1_e_simu_square = e_avg_sym_decod1_e_exp4./e_avg_denom_decod1_e_exp4;
-% var1_e_simu = expected1_e_simu_square - sinr1_e_simu_square;
-% 
-% capa1_e_ergodic = capa1_e_avg;
-% capa1_e_jensen_simu = log2(1+sinr1_e_simu);
-% capa1_e_new_approx_simu = log2(1+sinr1_e_simu) - 1/2*var1_e_simu./((1+sinr1_e_simu).^2);
+sinr1_e_simu = e_avg_sym_decod1_e./e_avg_denom_decod1_e;
+sinr1_e_simu_square = sinr1_e_simu.^2;
+expected1_e_simu_square = e_avg_sym_decod1_e_exp4./e_avg_denom_decod1_e_exp4;
+var1_e_simu = expected1_e_simu_square - sinr1_e_simu_square;
+
+capa1_e_ergodic = capa1_e_avg;
+capa1_e_jensen_simu = log2(1+sinr1_e_simu);
+capa1_e_new_approx_simu = log2(1+sinr1_e_simu) - 1/2*var1_e_simu./((1+sinr1_e_simu).^2);
 
 
 
@@ -386,12 +386,12 @@ tic;
 for bb = 1:length(U)
     for dd = 1:size(b_subcar,2)
         parfor nn = 1:length(snr_b)
-            sinr_b_model(:,bb,dd,nn)    = sinrModelingFrequencyCorrelation(alpha,U(bb),N(bb),T(:,:,bb,dd),snr_b(nn),snr_e,"bob_correl").';
+            sinr_b_model(:,bb,dd,nn)    = sinrModelingFrequencyCorrelation(alpha,U(bb),N(bb),T(:,:,bb,dd),T(:,:,bb,dd), snr_b(nn),snr_e,"bob_correl").';
             var_b_model(:,bb,dd,nn)     = modelVariance(alpha,N(bb),U(bb),T(:,:,bb,dd),sinr_b_model(:,bb,dd,nn),snr_b(nn),snr_e,"bob_correl");
             capa_b_jensen(:,bb,dd,nn)   = log2(1+sinr_b_model(:,bb,dd,nn));
             capa_b_new_approx(:,bb,dd,nn)  = log2(1+sinr_b_model(:,bb,dd,nn)) - 1/2*var_b_model(:,bb,dd,nn)./((1+sinr_b_model(:,bb,dd,nn)).^2);
             
-            sinr1_e_model(:,bb,dd,nn)    = sinrModelingFrequencyCorrelation(alpha,U(bb),N(bb),T(:,:,bb,dd),snr_b(nn),snr_e,"eve_decod1_correl").';
+            sinr1_e_model(:,bb,dd,nn)    = sinrModelingFrequencyCorrelation(alpha,U(bb),N(bb),T(:,:,bb,dd),T(:,:,bb,dd), snr_b(nn),snr_e,"eve_decod1_correl").';
             var1_e_model(:,bb,dd,nn)     = modelVariance(alpha,N(bb),U(bb),T(:,:,bb,dd),sinr1_e_model(:,bb,dd,nn),snr_b(nn),snr_e,"eve_decod1_correl");
             capa1_e_jensen(:,bb,dd,nn)       = log2(1+sinr1_e_model(:,bb,dd,nn));
             capa1_e_new_approx(:,bb,dd,nn)   = log2(1+sinr1_e_model(:,bb,dd,nn)) - 1/2*var1_e_model(:,bb,dd,nn)./((1+sinr1_e_model(:,bb,dd,nn)).^2);
@@ -433,7 +433,7 @@ error_2nd_order_5e_simu = capa5_e_ergodic - capa5_e_new_approx_simu;
 
 % SR
 
-sr1_jensen = capa_b_jensen - capa1_e_jensen;
+sr1_jensen = capa_b_jensen - capa1_e_jensen_simu;
 sr1_new_approx = capa_b_new_approx - capa1_e_new_approx;
 sr1_ergodic = capa_b_ergodic - capa1_e_ergodic;
 
@@ -457,6 +457,27 @@ ylabel('Max of SR (bit/channel use)')
 box on; grid on;
 legend('First order','Second order','Ergodic','location','bestoutside')
 
+
+figure;
+plot(x_axis(1,:), max(sr2_jensen),'Marker','o'); hold on;
+plot(x_axis(1,:), max(sr2_new_approx),'Marker','square'); 
+plot(x_axis(1,:), max(sr2_avg),'Marker','v'); 
+xlim([min(x_axis(1,:)) max(x_axis(1,:))]);
+xlabel('Bob correlation : $\Delta f_N/\Delta f_C$')
+ylabel('Max of SR (bit/channel use)')
+box on; grid on;
+legend('First order','Second order','Ergodic','location','bestoutside')
+
+
+figure;
+plot(x_axis(1,:), max(sr5_jensen),'Marker','o'); hold on;
+plot(x_axis(1,:), max(sr5_new_approx),'Marker','square'); 
+plot(x_axis(1,:), max(sr5_avg),'Marker','v'); 
+xlim([min(x_axis(1,:)) max(x_axis(1,:))]);
+xlabel('Bob correlation : $\Delta f_N/\Delta f_C$')
+ylabel('Max of SR (bit/channel use)')
+box on; grid on;
+legend('First order','Second order','Ergodic','location','bestoutside')
 
 
 %% PLOT SECTION 
