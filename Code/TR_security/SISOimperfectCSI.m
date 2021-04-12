@@ -32,10 +32,10 @@ h = waitbar(0,'Simulation Progression...');
 %% Parameters
 % Simulation parameters
 nb_run = 1000;              % number of experiments
-alpha_step = 5;             % Percentage between subsequent alpha values
+alpha_step = 4;             % Percentage between subsequent alpha values
 alpha = 0:alpha_step/100:1;  
 
-sigma_tilde = [0:0.025:0.5];                 % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
+sigma_tilde = [0:0.02:0.5];                % sigma_tilde := percentage of CSI error --> = 0 : perfect CSI @Alice , = 1: 100% error
 sigma_tilde_db = 10*log10(sigma_tilde);     % CSI error in dB.
 
 % Communication parameters
@@ -48,8 +48,10 @@ k = log2(M);
 nb_bit = k.*N;
 
 % AWGN parameters
-snr_b  = [0 10 20]; %EbN0_b + 10*log10(k);  % SNR @Bob
-snr_e  = [0 10 20]; %EbN0_e + 10*log10(k);  % SNR @Eve
+snr_b  = [10]; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = [20]; %EbN0_e + 10*log10(k);  % SNR @Eve
+sigma_b = 1./U.'./10.^(snr_b./10);    % expected noise energy @Bob
+sigma_e = 1./U.'./10.^(snr_e./10);    % expected noise energy @Eve
 
 % Channel parameters 
 mu = 0;         % Channel mean
@@ -309,6 +311,9 @@ sr2_avg = squeeze(mean(sr2,1));
 sr5_avg = squeeze(mean(sr5,1));
 
 
+
+
+
 %% SINR modeling: % PCSI : perfect CSI / ICSI : imperfect CSI
 
 % Matrix allocation
@@ -350,12 +355,12 @@ end
 %% PLOT Section
 
 
-% 1. SR as a function of AN : model vs simu
+% 1. SR as a function of AN for a given ICSI: model vs simu
 nb = find(snr_b == 10);
-ne = find(snr_e == 10);
+ne = find(snr_e == 20);
 bb = find(U == 4);
 ss = find(sigma_tilde == 0.1);
-
+set(0,'defaultAxesFontSize',26)
 
 
 figure;
@@ -370,16 +375,338 @@ xlabel('Percentage of radiated AN energy (\%)')
 ylabel('Secrecy rate (bit/channel use)')
 %ylim([min(sr2_avg(:,bb,ss,nb,ne)-1,max(sr1_ICSI_model(:,bb,ss,nb,ne))+1])
 legend('SDS - Simulation' , 'SDS - Modeling' , 'MF - Simulation' , 'MF - Modeling', 'OC - Simulation', 'OC - Modeling', 'location', 'bestoutside')
+title(['Imperfect CSI = ', num2str(sigma_tilde_db(ss)), 'dB, U = ', num2str(U(bb)), ' SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+
+
+%% 2. SR as a function of AN for different ICSI and a given model : model
+
+% 2.1 For SDS
+figure;
+plot(100*(1-alpha),squeeze(sr1_ICSI_model(:,bb,1:4:end,nb,ne)),'Marker','o'); hold on; 
+legend(cellstr(num2str(sigma_tilde_db(1:4:end).', 'Imperfect CSI = %-0.f dB')), 'location', 'bestoutside')
+box on; grid on;
+xlabel('Percentage of radiated AN energy (\%)')
+ylabel('Secrecy rate (bit/channel use)')
+title(['SDS Decoder, U = ', num2str(U(bb)), ', SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+
+% 2.2 For MF
+figure;
+plot(100*(1-alpha),squeeze(sr2_ICSI_model(:,bb,1:4:end,nb,ne)),'Marker','o'); hold on; 
+legend(cellstr(num2str(sigma_tilde_db(1:4:end).', 'Imperfect CSI = %-0.f dB')), 'location', 'bestoutside')
+box on; grid on;
+xlabel('Percentage of radiated AN energy (\%)')
+ylabel('Secrecy rate (bit/channel use)')
+title(['MF Decoder, U = ', num2str(U(bb)), ', SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+
+
+% 2.3 For OC
+figure;
+plot(100*(1-alpha),squeeze(sr5_ICSI_model(:,bb,1:4:end,nb,ne)),'Marker','o'); hold on; 
+legend(cellstr(num2str(sigma_tilde_db(1:4:end).', 'Imperfect CSI = %-0.f dB')), 'location', 'bestoutside')
+box on; grid on;
+xlabel('Percentage of radiated AN energy (\%)')
+ylabel('Secrecy rate (bit/channel use)')
+title(['OC Decoder, U = ', num2str(U(bb)), ', SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+
+
+%% 3. Best alpha to inject
+% 3.1 For SDS
+alpha_opt1 = optimalAlphaICSI(U,snr_b,snr_e,sigma_tilde,"decod1");
+figure; 
+plot(sigma_tilde_db,100*(1-alpha_opt1),'-o');
+legend(cellstr(num2str(U.', 'U = %-0.f')), 'location', 'bestoutside')
+box on; grid on;
+xlabel('CSI error (dB)')
+ylabel('Optimal AN energy to inject (\%)')
+title(['SDS Decoder, SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+% 3.2 For MF
+% Not determined since condition on sigma to have positive SR
+
+% 3.3 For OC
+alpha_opt5 = optimalAlphaICSI(U,snr_b,snr_e,sigma_tilde,"decod5");
+figure; 
+plot(sigma_tilde_db,100*(1-alpha_opt5),'-o');
+legend(cellstr(num2str(U.', 'U = %-0.f')), 'location', 'bestoutside')
+box on; grid on;
+xlabel('CSI error (dB)')
+ylabel('Optimal AN energy to inject (\%)')
+title(['SDS Decoder, SNR @B = ', num2str(snr_b(nb)), 'dB, SNR @E = ', num2str(snr_b(nb)), 'dB'])
+
+
+%% 4. Sigma max in order to have SR > 0 when Eve is noisy
+snr_b  = [0:25]; %EbN0_b + 10*log10(k);  % SNR @Bob
+snr_e  = [0:25 200];
+
+sigma_b = 1./U.'./10.^(snr_b./10);    % expected noise energy @Bob
+sigma_e = 1./U.'./10.^(snr_e./10);    % expected noise energy @Eve
+
+% 4.1 SDS Decoder
+
+sigma_max1 = ICSImaxSigmaEveNoisy(U,snr_b,snr_e,alpha,"decod1");
+sigma_max1_db = 10*log10(sigma_max1);
+
+% 4.1 MF Decoder
+
+sigma_max2 = ICSImaxSigmaEveNoisy(U,snr_b,snr_e,alpha,"decod2");
+sigma_max2_db = 10*log10(sigma_max2);
+
+% 4.1 OC Decoder
+
+sigma_max5 = ICSImaxSigmaEveNoisy(U,snr_b,snr_e,alpha,"decod5");
+sigma_max5_db = 10*log10(sigma_max5);
+
+
+%% 5. Guaranteeing SR = ∆ bit/channel use
+SR_target = [0.2:.1:4];
+SR_target_lin = 2.^SR_target.';
+
+% 5.1 Max allowed sigma to ensure SR = ∆ when sigma_e = 0 (Eve noiseless)
+% 5.1.1 SDS Decoder
+sigma_max_noiseless1 = ICSImaxSigmaEveNoiseless(U,SR_target_lin,"decod1");
+sigma_max_noiseless1_db = 10*log10(sigma_max_noiseless1);
+figure;
+plot(SR_target,sigma_max_noiseless1_db,'-o');
+legend(cellstr(num2str(U.', 'U = %-0.f')), 'location', 'bestoutside')
+box on; grid on;
+ylabel('CSI error (dB)')
+xlabel('Targeted SR (bit/channel use)')
+xlim([min(SR_target) max(SR_target)])
+title(['SDS Decoder, maximum allowed CSI error that can be made @A'])
+
+
+
+% 5.1.2 MF Decoder
+sigma_max_noiseless2 = ICSImaxSigmaEveNoiseless(U,SR_target_lin,"decod2");
+sigma_max_noiseless2_db = 10*log10(sigma_max_noiseless2);
+figure;
+plot(SR_target,sigma_max_noiseless2_db,'-o');
+legend(cellstr(num2str(U.', 'U = %-0.f')), 'location', 'bestoutside')
+box on; grid on;
+ylabel('CSI error (dB)')
+xlabel('Targeted SR (bit/channel use)')
+xlim([min(SR_target) max(SR_target)])
+title(['MF Decoder, maximum allowed CSI error that can be made @A'])
+
+
+% 5.1.3 OC Decoder
+sigma_max_noiseless5 = ICSImaxSigmaEveNoiseless(U,SR_target_lin,"decod5");
+sigma_max_noiseless5_db = 10*log10(sigma_max_noiseless5);
+figure;
+plot(SR_target,sigma_max_noiseless5_db,'-o');
+legend(cellstr(num2str(U.', 'U = %-0.f')), 'location', 'bestoutside')
+box on; grid on;
+ylabel('CSI error (dB)')
+xlabel('Targeted SR (bit/channel use)')
+xlim([min(SR_target) max(SR_target)])
+title(['OC Decoder, maximum allowed CSI error that can be made @A'])
+
+
+% 5.2 Optimal alpha to inject to ensure SR = ∆ when sigma_e = 0 
+% If Alice is aware of the error of CSI estimation, the real alpha_opt is
+% given by:
+
+nb_sigma = 36; % Number of CSI error from 0 to sigma_max
+sigma_tilde1 = zeros(length(U),nb_sigma,size(sigma_max_noiseless1,1));
+sigma_tilde2 = zeros(length(U),nb_sigma,size(sigma_max_noiseless1,1));
+sigma_tilde5 = zeros(length(U),nb_sigma,size(sigma_max_noiseless1,1));
+
+for aa = 1:size(sigma_max_noiseless1,1)
+    for bb = 1:length(U)
+        sigma_tilde1(bb,:,aa) = linspace(0,sigma_max_noiseless1(aa,bb),nb_sigma);
+        sigma_tilde2(bb,:,aa) = linspace(0,sigma_max_noiseless2(aa,bb),nb_sigma);
+        sigma_tilde5(bb,:,aa) = linspace(0,sigma_max_noiseless5(aa,bb),nb_sigma);
+    end
+end
+    
+sigma_tilde1_db = 10*log10(sigma_tilde1);
+sigma_tilde2_db = 10*log10(sigma_tilde2);
+sigma_tilde5_db = 10*log10(sigma_tilde5);
+alpha_opt1_inf = zeros(length(U), nb_sigma-1,length(SR_target_lin));
+alpha_opt2_inf = zeros(length(U), nb_sigma-1,length(SR_target_lin));
+
+for aa = 1:length(U)
+for bb = 1:nb_sigma-1
+for cc = 1:length(SR_target_lin)
+    A = (U(aa)+1)*(1-sigma_tilde1(aa,bb,cc));
+    B = sigma_tilde1(aa,bb,cc)*(SR_target_lin(cc)-1);
+    C = A+B;
+    delta = 4*A^2*(SR_target_lin(cc)-1)^2 - 4*A*(-(SR_target_lin(cc)-1)*C-B);
+    alpha_opt1_inf(aa,bb,cc) = (-2*A*(SR_target_lin(cc)-1) + sqrt(delta))/(2*A);
+    if alpha_opt1_inf(aa,bb,cc) > 1
+        alpha_opt1_inf(aa,bb,cc) = NaN;
+    end
+    
+    BB = U(aa)^2+3*U(aa)+3;
+    X = sigma_tilde2(aa,bb,cc)*(SR_target_lin(cc)*BB +U(aa)*(U(aa)+1)) - U(aa)*(U(aa)+1);
+    Y = sigma_tilde2(aa,bb,cc)*(SR_target_lin(cc)*U(aa) - SR_target_lin(cc)*BB - U(aa)*(U(aa)+2)) + U(aa)*(U(aa)+1);
+    Z = U(aa)+SR_target_lin(cc)*BB;
+    T = U(aa)*(1-SR_target_lin(cc));
+    alpha_opt2_inf(aa,bb,cc) = (X*T-sqrt(X^2*T^2+Z*X*T*(sigma_tilde2(aa,bb,cc)*Z+Y) ))/(Z*X);
+    if alpha_opt2_inf(aa,bb,cc) > 1
+        alpha_opt2_inf(aa,bb,cc) = NaN;
+    end
+end
+end
+end
+alpha_opt5_inf  = alpha_opt1_inf;
+
+% Since Alice is not aware of the error shes doing, she wants to inject
+% alpha_opt considering that there is no CSI error. Therefore, she will
+% inject another amount of AN energy. 
+
+% % SDS Decoder
+% A1 = SR_target_lin - 1;
+% alpha_opt1_estimated = sqrt(A1.^2+A1)-A1;                    % alpha to inject in order to minimize Bob SNR expression when sigma_e = infinite and model = model1
+% SNRb1 = 10*log10(sqrt(A1.^2+A1)./((U+1).*(-2*A1.^2-2*A1+sqrt(A1.^2+A1).*(2*A1+1))));
+% 
+% % MF Decoder
+% B2 = U.*(sr_lin-1);
+% A2 = sr_lin.*(U+1).*(U+3)-B2;
+% alpha_opt2_estimated = (-2*B2 + sqrt(4.*A2.*B2+4.*B2.^2))./(2.*A2);                     % alpha to inject in order to minimize Bob SNR expression when sigma_e = infinite and model = model2
+% SNRb2 = 10*log10((alpha2.*A2 + B2)./((-alpha2.^2+alpha2).*(U+1).*U));
+% 
+% % OC Decoder
+% alpha_opt5_estimated = alpha_opt1_estimated;                % alpha to inject in order to minimize Bob SNR expression when sigma_e = infinite and model = model5
+% SNRb5 = SNRb1;
+% 
+% 
 
 
 
 
 
 
-% 2. Best alpha as a function of the error
+sr1_tmp = find(SR_target == 2);
+sr2_tmp = find(SR_target == 4);
+sr3_tmp = find(SR_target == 6);
+
+% SDS plot
+figure; 
+plot(squeeze(sigma_tilde1_db(1,1:end-1,sr1_tmp)),100*(1-squeeze(alpha_opt1_inf(1,:,sr1_tmp))),'-o'); hold on;
+plot(squeeze(sigma_tilde1_db(2,1:end-1,sr1_tmp)),100*(1-squeeze(alpha_opt1_inf(2,:,sr1_tmp))),'-o'); hold on;
+legendCell1 = cellstr(num2str(U.', 'U = %-0.f, SR = 2 bits/ch use'));
+
+plot(squeeze(sigma_tilde1_db(1,1:end-1,sr2_tmp)),100*(1-squeeze(alpha_opt1_inf(1,:,sr2_tmp))),'marker','diamond'); hold on;
+plot(squeeze(sigma_tilde1_db(2,1:end-1,sr2_tmp)),100*(1-squeeze(alpha_opt1_inf(2,:,sr2_tmp))),'marker','diamond'); hold on;
+legendCell2 = cellstr(num2str(U.', 'U = %-0.f, SR = 4 bits/ch use'));
+
+plot(squeeze(sigma_tilde1_db(1,1:end-1,sr3)),100*(1-squeeze(alpha_opt1_inf(1,:,sr3))),'marker','square'); hold on;
+plot(squeeze(sigma_tilde1_db(2,1:end-1,sr3)),100*(1-squeeze(alpha_opt1_inf(2,:,sr3))),'marker','square');
+legendCell3 = cellstr(num2str(U.', 'U = %-0.f, SR = 6 bits/ch use'));
+
+legendCell =[legendCell1;legendCell2;legendCell3];
+legend(legendCell, 'location', 'bestoutside')
+box on; grid on;
+xlabel('CSI error (dB)')
+ylabel('Optimal AN energy to inject (\%)')
+title(['SDS Decoder, Eve noiseless'])
+
+% MF plot
+figure; 
+plot(squeeze(sigma_tilde2_db(1,1:end-1,sr1_tmp)),100*(1-squeeze(alpha_opt2_inf(1,:,sr1_tmp))),'-o'); hold on;
+plot(squeeze(sigma_tilde2_db(2,1:end-1,sr1_tmp)),100*(1-squeeze(alpha_opt2_inf(2,:,sr1_tmp))),'-o'); hold on;
+legendCell1 = cellstr(num2str(U.', 'U = %-0.f, SR = 2 bits/ch use'));
+
+plot(squeeze(sigma_tilde2_db(1,1:end-1,sr2_tmp)),100*(1-squeeze(alpha_opt2_inf(1,:,sr2_tmp))),'marker','diamond'); hold on;
+plot(squeeze(sigma_tilde2_db(2,1:end-1,sr2_tmp)),100*(1-squeeze(alpha_opt2_inf(2,:,sr2_tmp))),'marker','diamond'); hold on;
+legendCell2 = cellstr(num2str(U.', 'U = %-0.f, SR = 4 bits/ch use'));
+
+plot(squeeze(sigma_tilde2_db(1,1:end-1,sr3_tmp)),100*(1-squeeze(alpha_opt2_inf(1,:,sr3_tmp))),'marker','square'); hold on;
+plot(squeeze(sigma_tilde2_db(2,1:end-1,sr3_tmp)),100*(1-squeeze(alpha_opt2_inf(2,:,sr3_tmp))),'marker','square');
+legendCell3 = cellstr(num2str(U.', 'U = %-0.f, SR = 6 bits/ch use'));
+
+legendCell =[legendCell1;legendCell2;legendCell3];
+legend(legendCell, 'location', 'bestoutside')
+box on; grid on;
+xlabel('CSI error (dB)')
+ylabel('Optimal AN energy to inject (\%)')
+title(['MF Decoder, Eve noiseless'])
+
+
+% OC plot
+figure; 
+plot(squeeze(sigma_tilde5_db(1,1:end-1,sr1)),100*(1-squeeze(alpha_opt5_inf(1,:,sr1))),'-o'); hold on;
+plot(squeeze(sigma_tilde5_db(2,1:end-1,sr1)),100*(1-squeeze(alpha_opt5_inf(2,:,sr1))),'-o'); hold on;
+legendCell1 = cellstr(num2str(U.', 'U = %-0.f, SR = 2 bits/ch use'));
+
+plot(squeeze(sigma_tilde5_db(1,1:end-1,sr2)),100*(1-squeeze(alpha_opt5_inf(1,:,sr2))),'marker','diamond'); hold on;
+plot(squeeze(sigma_tilde5_db(2,1:end-1,sr2)),100*(1-squeeze(alpha_opt5_inf(2,:,sr2))),'marker','diamond'); hold on;
+legendCell2 = cellstr(num2str(U.', 'U = %-0.f, SR = 4 bits/ch use'));
+
+plot(squeeze(sigma_tilde5_db(1,1:end-1,sr3)),100*(1-squeeze(alpha_opt5_inf(1,:,sr3))),'marker','square'); hold on;
+plot(squeeze(sigma_tilde5_db(2,1:end-1,sr3)),100*(1-squeeze(alpha_opt5_inf(2,:,sr3))),'marker','square');
+legendCell3 = cellstr(num2str(U.', 'U = %-0.f, SR = 6 bits/ch use'));
+
+legendCell =[legendCell1;legendCell2;legendCell3];
+legend(legendCell, 'location', 'bestoutside')
+box on; grid on;
+xlabel('CSI error (dB)')
+ylabel('Optimal AN energy to inject (\%)')
+title(['OC Decoder, Eve noiseless'])
+
+
+% 5.3 Required SNR at Bob to ensure SR = ∆ when sigma_e = 0 
+% 5.3.1 SDS Decoder cfr recto p16
+alpha1 = alpha_opt1_inf;
+snr_b_inf1 = zeros(length(U), nb_sigma-1,length(SR_target_lin));
+for aa = 1:length(U)
+for bb = 1:nb_sigma-1
+for cc = 1:length(SR_target_lin)
+    snr_b_inf1(aa,bb,cc) = 10*log10((alpha1(aa,bb,cc) + (SR_target_lin(cc)-1) ) / ...
+                           (-alpha1(aa,bb,cc)^2*(U(aa)+1)*(1-sigma_tilde1(aa,bb,cc)) + ...
+                           alpha1(aa,bb,cc)*( (U(aa) + 1)*(1-sigma_tilde1(aa,bb,cc)) + SR_target_lin(cc)*sigma_tilde1(aa,bb,cc) -sigma_tilde1(aa,bb,cc) ) + ...
+                           sigma_tilde1(aa,bb,cc)*(1-SR_target_lin(cc)) )) ;                        
+end
+end
+end
+
+% 5.3.2 MF Decoder
+alpha2 = alpha_opt2_inf;
+snr_b_inf2 = zeros(length(U), nb_sigma-1,length(SR_target_lin));
+for aa = 1:length(U)
+for bb = 1:nb_sigma-1
+for cc = 1:length(SR_target_lin)
+    B = U(aa)^2 + 3*U(aa) + 3;
+    snr_b_inf2(aa,bb,cc) = 10*log10((alpha2(aa,bb,cc)*(U(aa) + SR_target_lin(cc)*B ) + U(aa)*(SR_target_lin(cc)-1) ) / ...
+                           ( alpha2(aa,bb,cc)^2*( SR_target_lin(cc)*B*sigma_tilde2(aa,bb,cc) -  ...
+                           U(aa)*(U(aa)+1)*(1-sigma_tilde2(aa,bb,cc)))  + ...
+                           alpha2(aa,bb,cc)*(SR_target_lin(cc)*U(aa)*sigma_tilde2(aa,bb,cc) - SR_target_lin(cc)*sigma_tilde2(aa,bb,cc)*B + ...
+                           U(aa)*(U(aa)+1)*(1 - sigma_tilde2(aa,bb,cc)) - U(aa)*sigma_tilde2(aa,bb,cc)) + ...
+                           U(aa)*sigma_tilde2(aa,bb,cc)*(1-SR_target_lin(cc)) )) ;                        
+end
+end
+end
 
 
 
+
+% 5.3.3 OC Decoder
+snr_b_inf5 = snr_b_inf1;
+
+
+
+figure;
+plot(SR_target,squeeze(snr_b_inf1(:,1,:)),'--'); hold on;
+legendCell1 = cellstr(num2str(U.', 'U = %-0.f, $\sigma$ = -\infty dB'));
+plot(SR_target,squeeze(snr_b_inf1(:,5,:)),'-o');
+legendCell2 = cellstr(num2str(U.', 'U = %-0.f, $\sigma$ = -\infty dB'));
+
+
+figure;
+plot(SR_target,squeeze(snr_b_inf2(:,1,:)),'--'); hold on;
+legendCell1 = cellstr(num2str(U.', 'U = %-0.f, $\sigma$ = -\infty dB'));
+plot(SR_target,squeeze(snr_b_inf2(:,30,:)),'-o');
+
+
+%% 6 Outage probability
+s_outage1 = sort(squeeze(max(sr1,[],2)),1); % Max over AN dimension (i.e. the 2nd dimension of the sr1 matrix) --> dim of tmp1 = nb_iter x nb_BOR x nb_ICSI
+figure;
+plot(s_outage1(:,:,1),linspace(0,1,nb_run))
 
 %% FAIRE DES SWITCH CASE POUR LES PARTIES DU CODE: 1 SIMU ; 2 MODELING & POST PROCESS
 
